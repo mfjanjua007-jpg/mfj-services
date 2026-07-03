@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MFJ Tax Consultant | Pakistan</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --c1:#FF006E; --c2:#FB5607; --c3:#FFBE0B; --c4:#3A86FF; --c5:#8338EC; --c6:#06D6A0;
+  --dark:#0A0A0F; --white:#FFFFFF;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat','Segoe UI','Noto Nastaliq Urdu',sans-serif;background:var(--dark);color:#fff;overflow-x:hidden;}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow{position:fixed;width:400px;height:400px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(58,134,255,.12),transparent 70%);
+  transform:translate(-50%,-50%);transition:left .1s,top .1s;}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(10,10,15,.8);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);}
+.nav-logo{display:flex;align-items:center;gap:12px;}
+.logo-3d{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,var(--c4),var(--c5));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;color:#fff;
+  box-shadow:0 8px 20px rgba(58,134,255,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  transform:perspective(200px) rotateX(10deg);
+  transition:all .3s;
+}
+.logo-3d:hover{transform:perspective(200px) rotateX(0deg) scale(1.1);}
+.logo-name{font-size:16px;font-weight:900;background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-link{padding:8px 16px;border-radius:20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:700;transition:all .2s;}
+.nav-link:hover{background:rgba(255,255,255,.1);color:#fff;}
+.nav-btn{background:linear-gradient(135deg,var(--c4),var(--c5));color:#fff;padding:10px 22px;border-radius:25px;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 4px 20px rgba(58,134,255,.4);transition:all .3s;}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(58,134,255,.6);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;}
+.hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block;}
+.mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;background:rgba(10,10,15,.97);padding:20px 5%;z-index:99;border-bottom:1px solid rgba(255,255,255,.08);}
+.mobile-menu.open{display:block;}
+.mobile-menu a{display:block;color:rgba(255,255,255,.7);text-decoration:none;padding:12px 0;font-size:15px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.06);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:100px 5% 60px;position:relative;overflow:hidden;text-align:center;}
+
+/* Animated background blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.6;animation:blobMove 8s ease-in-out infinite;}
+.blob1{width:500px;height:500px;background:radial-gradient(var(--c4),transparent 70%);top:-100px;right:-100px;animation-delay:0s;}
+.blob2{width:400px;height:400px;background:radial-gradient(var(--c5),transparent 70%);bottom:-100px;left:-100px;animation-delay:2s;}
+.blob3{width:300px;height:300px;background:radial-gradient(var(--c1),transparent 70%);top:50%;left:40%;animation-delay:4s;}
+@keyframes blobMove{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-30px) scale(1.1);}}
+
+/* Grid lines */
+.hero-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:60px 60px;}
+
+.hero-content{position:relative;z-index:2;max-width:800px;}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.8);padding:8px 20px;border-radius:30px;
+  font-size:12px;font-weight:700;margin-bottom:32px;letter-spacing:.5px;
+  backdrop-filter:blur(10px);}
+.hero-badge::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--c6);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.4);}}
+
+.hero-title{font-size:clamp(42px,7vw,88px);font-weight:900;line-height:1.05;
+  letter-spacing:-2px;margin-bottom:24px;}
+.hero-title .line1{display:block;color:#fff;}
+.hero-title .line2{display:block;
+  background:linear-gradient(135deg,var(--c3),var(--c1),var(--c4),var(--c5));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200%;animation:gradAnim 4s ease infinite;}
+@keyframes gradAnim{0%,100%{background-position:0%;}50%{background-position:100%;}}
+
+.hero-sub{font-size:17px;color:rgba(255,255,255,.55);margin-bottom:40px;line-height:1.8;max-width:560px;margin-left:auto;margin-right:auto;}
+
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.btn-3d{
+  padding:16px 36px;border-radius:14px;font-size:15px;font-weight:800;
+  text-decoration:none;display:inline-flex;align-items:center;gap:10px;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+}
+.btn-3d::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);opacity:0;transition:opacity .2s;}
+.btn-3d:hover::before{opacity:1;}
+.btn-primary-3d{
+  background:linear-gradient(135deg,var(--c4),var(--c5));
+  color:#fff;
+  box-shadow:0 8px 32px rgba(58,134,255,.4),0 2px 0 rgba(255,255,255,.2) inset,0 -4px 0 rgba(0,0,0,.3) inset;
+}
+.btn-primary-3d:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(58,134,255,.6),0 2px 0 rgba(255,255,255,.2) inset;}
+.btn-wa-3d{
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#fff;
+  box-shadow:0 8px 32px rgba(37,211,102,.4),0 2px 0 rgba(255,255,255,.2) inset,0 -4px 0 rgba(0,0,0,.3) inset;
+}
+.btn-wa-3d:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(37,211,102,.6);}
+
+/* Stats */
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:700px;margin:0 auto;}
+.stat-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:20px 12px;text-align:center;
+  backdrop-filter:blur(10px);
+  transform:perspective(500px) rotateX(5deg);
+  transition:all .3s;
+}
+.stat-card:hover{transform:perspective(500px) rotateX(0deg) translateY(-4px);background:rgba(255,255,255,.08);}
+.stat-num{font-size:28px;font-weight:900;margin-bottom:4px;}
+.stat-label{font-size:11px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── MARQUEE ── */
+.marquee-wrap{padding:0;overflow:hidden;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+.marquee-track{display:flex;animation:marquee 20s linear infinite;width:max-content;}
+.marquee-item{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:16px 28px;font-size:14px;font-weight:800;color:rgba(255,255,255,.6);
+  white-space:nowrap;border-right:1px solid rgba(255,255,255,.06);
+}
+.marquee-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── SERVICES ── */
+#services{padding:100px 5%;position:relative;}
+.sec-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:3px;margin-bottom:12px;}
+.sec-title{font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.2;margin-bottom:16px;}
+.sec-sub{font-size:15px;color:rgba(255,255,255,.45);max-width:500px;}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px;}
+.svc-3d{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:32px 28px;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;cursor:default;
+  transform:perspective(800px) rotateY(0deg);
+}
+.svc-3d::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-grad,linear-gradient(90deg,var(--c4),var(--c5)));
+}
+.svc-3d::after{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:var(--card-grad,linear-gradient(135deg,rgba(58,134,255,.08),transparent));
+  opacity:0;transition:opacity .3s;
+}
+.svc-3d:hover{
+  transform:perspective(800px) rotateY(-5deg) translateY(-8px);
+  border-color:rgba(255,255,255,.2);
+  box-shadow:20px 20px 60px rgba(0,0,0,.4),-2px -2px 20px rgba(255,255,255,.04);
+}
+.svc-3d:hover::after{opacity:1;}
+.svc-icon-3d{
+  width:60px;height:60px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  margin-bottom:20px;position:relative;z-index:1;
+  box-shadow:0 8px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.svc-name{font-size:17px;font-weight:800;color:#fff;margin-bottom:10px;position:relative;z-index:1;}
+.svc-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.8;position:relative;z-index:1;}
+.svc-tag{display:inline-block;margin-top:14px;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;position:relative;z-index:1;}
+
+/* ── PROCESS ── */
+#process{padding:100px 5%;background:rgba(255,255,255,.02);}
+.process-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:48px;position:relative;}
+.process-grid::before{content:'';position:absolute;top:40px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c4),var(--c5),var(--c1),var(--c3));opacity:.3;}
+.proc-card{text-align:center;position:relative;}
+.proc-num{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:900;color:#fff;position:relative;z-index:1;
+  box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.3);
+  transition:all .3s;
+}
+.proc-card:hover .proc-num{transform:translateY(-6px) scale(1.1);}
+.proc-title{font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;}
+.proc-desc{font-size:12.5px;color:rgba(255,255,255,.4);line-height:1.7;}
+
+/* ── REVIEWS ── */
+#reviews{padding:100px 5%;}
+.reviews-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:48px;}
+.rev-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;padding:28px;position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.rev-card::before{content:'"';position:absolute;top:-10px;right:20px;font-size:100px;color:rgba(255,255,255,.04);font-family:Georgia,serif;line-height:1;}
+.rev-card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.07);}
+.rev-stars{margin-bottom:12px;}
+.rev-star{font-size:16px;}
+.rev-text{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.9;margin-bottom:20px;}
+.rev-author{display:flex;align-items:center;gap:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px;}
+.rev-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.rev-name{font-size:13.5px;font-weight:800;color:#fff;}
+.rev-city{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+
+/* ── FAQ ── */
+#faq{padding:100px 5%;background:rgba(255,255,255,.02);}
+.faq-wrap{max-width:760px;margin:48px auto 0;}
+.faq-item{border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s;}
+.faq-item.open{border-color:rgba(58,134,255,.4);background:rgba(58,134,255,.06);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;cursor:pointer;font-size:14.5px;font-weight:700;color:rgba(255,255,255,.85);}
+.faq-arr{font-size:20px;color:var(--c4);transition:transform .25s;}
+.faq-item.open .faq-arr{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.faq-item.open .faq-a{max-height:200px;}
+.faq-a p{padding:0 22px 18px;font-size:13.5px;color:rgba(255,255,255,.45);line-height:1.9;}
+
+/* ── APPOINTMENT ── */
+#appointment{padding:100px 5%;}
+.appt-wrap{max-width:600px;margin:48px auto 0;}
+.appt-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:28px;padding:40px;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+}
+.appt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--c4),var(--c5),var(--c1));}
+.appt-card{position:relative;}
+.appt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.f-label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:7px;text-transform:uppercase;letter-spacing:.6px;}
+.f-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-size:14px;font-family:inherit;transition:all .2s;}
+.f-input:focus{outline:none;border-color:var(--c4);background:rgba(58,134,255,.08);box-shadow:0 0 0 3px rgba(58,134,255,.15);}
+.f-input::placeholder{color:rgba(255,255,255,.2);}
+.f-input option{background:#1a1a2e;}
+.f-full{grid-column:span 2;}
+.appt-submit{
+  width:100%;margin-top:20px;padding:16px;border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--c4),var(--c5));
+  color:#fff;font-size:15px;font-weight:800;font-family:inherit;
+  box-shadow:0 8px 32px rgba(58,134,255,.4),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.appt-submit:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(58,134,255,.6);}
+
+/* ── CONTACT ── */
+#contact{padding:100px 5%;background:rgba(255,255,255,.02);}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1100px;margin:48px auto 0;}
+.c-cards{display:flex;flex-direction:column;gap:14px;}
+.c-card{
+  display:flex;align-items:center;gap:16px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:18px 22px;text-decoration:none;
+  transition:all .3s;
+}
+.c-card:hover{border-color:rgba(58,134,255,.4);background:rgba(58,134,255,.08);transform:translateX(-6px);}
+.c-icon-3d{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+  box-shadow:0 6px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.c-lbl{font-size:10.5px;color:rgba(255,255,255,.35);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.c-val{font-size:14px;font-weight:800;color:#fff;margin-top:3px;}
+.contact-form-box{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:32px;
+}
+.contact-form-box h3{font-size:18px;font-weight:900;margin-bottom:20px;background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cf-field{margin-bottom:14px;}
+.cf-submit{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c4),var(--c5));color:#fff;font-size:14px;font-weight:800;font-family:inherit;box-shadow:0 6px 24px rgba(58,134,255,.4);transition:all .3s;}
+.cf-submit:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(58,134,255,.6);}
+
+/* ── FOOTER ── */
+footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padding:48px 5% 24px;}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+.f-brand-name{font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;}
+.f-brand-desc{font-size:12.5px;color:rgba(255,255,255,.35);line-height:1.9;}
+.f-col h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:16px;}
+.f-col a{display:block;color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;margin-bottom:10px;transition:color .2s;}
+.f-col a:hover{color:#fff;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.25);}
+
+/* ── WA FLOAT ── */
+.wa-float{position:fixed;bottom:28px;left:28px;z-index:90;width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;
+  box-shadow:0 8px 32px rgba(37,211,102,.5);animation:waPop 2.5s ease-in-out infinite;}
+@keyframes waPop{0%,100%{box-shadow:0 8px 32px rgba(37,211,102,.5);}50%{box-shadow:0 8px 48px rgba(37,211,102,.8),0 0 0 12px rgba(37,211,102,.1);}}
+
+.toast{position:fixed;bottom:28px;right:28px;z-index:200;
+  background:rgba(255,255,255,.1);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;padding:14px 22px;border-radius:14px;font-size:13.5px;font-weight:700;
+  transform:translateY(100px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* REVIEW MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);}
+.modal-bg.show{display:flex;}
+.modal-box{background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:32px;max-width:420px;width:100%;animation:popIn .4s cubic-bezier(.16,1,.3,1) both;}
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-title{font-size:18px;font-weight:900;margin-bottom:20px;background:linear-gradient(135deg,var(--c3),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .hero-stats{grid-template-columns:1fr 1fr;}
+  .appt-grid{grid-template-columns:1fr;}
+  .f-full{grid-column:span 1;}
+  .contact-grid,.footer-top{grid-template-columns:1fr;}
+  .process-grid::before{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-3d">MFJ</div>
+    <span class="logo-name">MFJ Tax Consultant</span>
+  </div>
+  <div class="nav-links">
+    <a href="#services" class="nav-link">خدمات</a>
+    <a href="#reviews" class="nav-link">آراء</a>
+    <a href="#faq" class="nav-link">سوالات</a>
+    <a href="#contact" class="nav-link">رابطہ</a>
+    <a href="client.html" class="nav-link">👤 پورٹل</a>
+    <a href="#appointment" class="nav-btn">📅 اپائنٹمنٹ</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" onclick="toggleMenu()">📊 خدمات</a>
+  <a href="#reviews" onclick="toggleMenu()">⭐ آراء</a>
+  <a href="#faq" onclick="toggleMenu()">❓ سوالات</a>
+  <a href="#appointment" onclick="toggleMenu()">📅 اپائنٹمنٹ</a>
+  <a href="#contact" onclick="toggleMenu()">📞 رابطہ</a>
+  <a href="client.html" onclick="toggleMenu()">👤 کلائنٹ پورٹل</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🟢 پورے پاکستان میں آن لائن خدمات</div>
+    <h1 class="hero-title">
+      <span class="line1">Pakistan کا</span>
+      <span class="line2">Tax Consultant</span>
+    </h1>
+    <p class="hero-sub">Income Tax، NTN، Sales Tax، Business Registration — گھر بیٹھے کروائیں، مناسب فیس میں</p>
+    <div class="hero-btns">
+      <a href="#appointment" class="btn-3d btn-primary-3d">📅 اپائنٹمنٹ بک کریں</a>
+      <a href="https://wa.me/923469592120" class="btn-3d btn-wa-3d" target="_blank">💬 WhatsApp کریں</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-num" style="background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">1000+</div><div class="stat-label">کلائنٹ سالانہ</div></div>
+      <div class="stat-card"><div class="stat-num" style="background:linear-gradient(135deg,var(--c6),var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">5+</div><div class="stat-label">سال تجربہ</div></div>
+      <div class="stat-card"><div class="stat-num" style="background:linear-gradient(135deg,var(--c3),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">24/7</div><div class="stat-label">دستیاب</div></div>
+      <div class="stat-card"><div class="stat-num" style="background:linear-gradient(135deg,var(--c1),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">100%</div><div class="stat-label">اطمینان</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c4);"></span>Income Tax Return</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c6);"></span>NTN Registration</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c3);"></span>Sales Tax</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c5);"></span>Business Registration</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c1);"></span>Tax Withholding</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c2);"></span>Tax Consultation</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c4);"></span>1000+ کلائنٹ</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c6);"></span>24/7 دستیاب</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c4);"></span>Income Tax Return</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c6);"></span>NTN Registration</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c3);"></span>Sales Tax</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c5);"></span>Business Registration</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c1);"></span>Tax Withholding</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c2);"></span>Tax Consultation</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c4);"></span>1000+ کلائنٹ</span>
+    <span class="marquee-item"><span class="marquee-dot" style="background:var(--c6);"></span>24/7 دستیاب</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="sec-label" style="color:var(--c4);">— ہماری خدمات</div>
+  <h2 class="sec-title">آپ کے لیے <span style="background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">کیا کر سکتے ہیں؟</span></h2>
+  <p class="sec-sub">پورے پاکستان میں آن لائن خدمات — مناسب فیس، تیز رفتار</p>
+  <div class="services-grid">
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(58,134,255,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c4),#0066CC);">📊</div>
+      <div class="svc-name">Income Tax Return</div>
+      <div class="svc-desc">ملازم، کاروباری یا فری لانسر — سالانہ ریٹرن فائل کریں</div>
+      <span class="svc-tag" style="background:rgba(58,134,255,.15);color:var(--c4);">مناسب فیس</span>
+    </div>
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(6,214,160,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c6),#059669);">🪪</div>
+      <div class="svc-name">NTN Registration</div>
+      <div class="svc-desc">نیشنل ٹیکس نمبر گھر بیٹھے آسانی سے حاصل کریں</div>
+      <span class="svc-tag" style="background:rgba(6,214,160,.15);color:var(--c6);">مناسب فیس</span>
+    </div>
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(255,190,11,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c3),#D97706);">🧾</div>
+      <div class="svc-name">Sales Tax</div>
+      <div class="svc-desc">FBR پر Sales Tax registration کروائیں — کاروبار کے لیے ضروری</div>
+      <span class="svc-tag" style="background:rgba(255,190,11,.15);color:var(--c3);">مناسب فیس</span>
+    </div>
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(131,56,236,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c5),#5B21B6);">🏢</div>
+      <div class="svc-name">Business Registration</div>
+      <div class="svc-desc">اپنا کاروبار باقاعدہ رجسٹر کریں — آسان اور تیز</div>
+      <span class="svc-tag" style="background:rgba(131,56,236,.15);color:var(--c5);">مناسب فیس</span>
+    </div>
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(255,0,110,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c1),#C2185B);">🧮</div>
+      <div class="svc-name">Tax Withholding (WHT)</div>
+      <div class="svc-desc">Withholding Tax کٹوتی اور FBR میں جمع کروانا</div>
+      <span class="svc-tag" style="background:rgba(255,0,110,.15);color:var(--c1);">مناسب فیس</span>
+    </div>
+    <div class="svc-3d" style="--card-grad:linear-gradient(135deg,rgba(251,86,7,.15),transparent);">
+      <div class="svc-icon-3d" style="background:linear-gradient(135deg,var(--c2),#C2410C);">📋</div>
+      <div class="svc-name">Tax Consultation</div>
+      <div class="svc-desc">Tax بچت اور FBR معاملات میں ماہرانہ مشاورت</div>
+      <span class="svc-tag" style="background:rgba(251,86,7,.15);color:var(--c2);">مناسب فیس</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="sec-label" style="color:var(--c6);">— طریقہ کار</div>
+  <h2 class="sec-title">صرف <span style="background:linear-gradient(135deg,var(--c6),var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4 آسان قدم</span></h2>
+  <p class="sec-sub">گھر بیٹھے کام کروائیں — کہیں آنے کی ضرورت نہیں</p>
+  <div class="process-grid">
+    <div class="proc-card"><div class="proc-num" style="background:linear-gradient(135deg,var(--c4),#0066CC);">1</div><div class="proc-title">WhatsApp کریں</div><div class="proc-desc">رابطہ کریں اور ضرورت بتائیں</div></div>
+    <div class="proc-card"><div class="proc-num" style="background:linear-gradient(135deg,var(--c6),#059669);">2</div><div class="proc-title">دستاویزات بھیجیں</div><div class="proc-desc">WhatsApp پر کاغذات send کریں</div></div>
+    <div class="proc-card"><div class="proc-num" style="background:linear-gradient(135deg,var(--c3),#D97706);">3</div><div class="proc-title">کام شروع</div><div class="proc-desc">ہم فوری کام شروع کر دیتے ہیں</div></div>
+    <div class="proc-card"><div class="proc-num" style="background:linear-gradient(135deg,var(--c1),#C2185B);">4</div><div class="proc-title">مکمل اطلاع</div><div class="proc-desc">کام ختم ہونے پر فوری اطلاع</div></div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="sec-label" style="color:var(--c3);">— آراء</div>
+  <h2 class="sec-title">پورے پاکستان سے <span style="background:linear-gradient(135deg,var(--c3),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">آراء</span></h2>
+  <div class="reviews-track" id="reviewsGrid">
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">Income Tax Return صرف 2 دن میں فائل ہو گئی۔ Fahad بھائی نے بہت اچھی طرح سمجھایا۔ فیس بھی بالکل مناسب تھی۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c4),var(--c5));">ا</div><div><div class="rev-name">اسلم خان</div><div class="rev-city">راولپنڈی</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">NTN registration گھر بیٹھے ہو گئی۔ WhatsApp پر کاغذات بھیجے اور کام ہو گیا۔ بہت professional سروس!</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c6),#059669);">س</div><div><div class="rev-name">سعد احمد</div><div class="rev-city">اسلام آباد</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">Sales Tax registration میں بہت مدد ملی۔ کراچی سے online لی اور بہت satisfied ہوں۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c1),#C2185B);">ف</div><div><div class="rev-name">فیصل محمود</div><div class="rev-city">کراچی</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">Business registration Online کروائی، 3 دن میں مکمل ہو گئی۔ Highly recommended!</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c5),#5B21B6);">ر</div><div><div class="rev-name">رانا طارق</div><div class="rev-city">لاہور</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">Freelancer ہوں، NTN + Tax Return دونوں کروائے۔ فیس مناسب، کام تیز۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c2),#C2410C);">ع</div><div><div class="rev-name">عمر فاروق</div><div class="rev-city">لاہور</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">پشاور سے online سروس لی۔ Fahad صاحب بہت helpful اور قابل اعتماد ہیں۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c3),#D97706);">ز</div><div><div class="rev-name">ضیاء الرحمن</div><div class="rev-city">پشاور</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">ملتان سے Tax consultation لی۔ بہت detailed اور آسان طریقے سے سمجھایا۔ اب ہر سال یہاں سے کرواتا ہوں۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c4),var(--c6));">م</div><div><div class="rev-name">محمد علی</div><div class="rev-city">ملتان</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">کوئٹہ سے contact کیا۔ Tax Return + consultation دونوں لیے۔ سروس 100% reliable ہے۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c1),var(--c5));">ب</div><div><div class="rev-name">براق احمد</div><div class="rev-city">کوئٹہ</div></div></div></div>
+    <div class="rev-card"><div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">★★★★★</span></div><div class="rev-text">فیصل آباد سے پہلی بار Tax Return فائل کروائی۔ MFJ نے بہت اچھے سے guide کیا۔</div><div class="rev-author"><div class="rev-avatar" style="background:linear-gradient(135deg,var(--c6),var(--c4));">ن</div><div><div class="rev-name">نادیہ سلطان</div><div class="rev-city">فیصل آباد</div></div></div></div>
+  </div>
+  <div style="text-align:center;margin-top:32px;">
+    <button onclick="document.getElementById('reviewModal').classList.add('show')" class="btn-3d btn-primary-3d">⭐ اپنی رائے دیں</button>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="sec-label" style="color:var(--c5);">— سوالات</div>
+  <h2 class="sec-title">عمومی <span style="background:linear-gradient(135deg,var(--c5),var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">سوالات</span></h2>
+  <div class="faq-wrap" id="faqWrap">
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Income Tax Return فائل کرنے میں کتنا وقت لگتا ہے؟</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>عام طور پر 2-3 دن میں مکمل ہو جاتا ہے، اگر تمام دستاویزات موجود ہوں۔</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>NTN بنوانے کے لیے کیا دستاویزات چاہئیں؟</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>CNIC کاپی، موبائل نمبر اور ای میل ایڈریس کافی ہیں۔</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>کیا گھر بیٹھے سب کام کروا سکتا ہوں؟</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>جی ہاں! WhatsApp پر دستاویزات بھیجیں، ہم باقی سب کریں گے۔</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>فیس کتنی ہے؟</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>ہر خدمت کی فیس مختلف اور مناسب ہے — تفصیل کے لیے WhatsApp کریں۔</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>کیا پورے پاکستان میں سروس ملتی ہے؟</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>جی ہاں! ہم پورے پاکستان میں آن لائن خدمات دیتے ہیں — کراچی، لاہور، پشاور، کوئٹہ، سب جگہ۔</p></div></div>
+  </div>
+</section>
+
+<!-- APPOINTMENT -->
+<section id="appointment">
+  <div class="sec-label" style="color:var(--c1);">— اپائنٹمنٹ</div>
+  <h2 class="sec-title">ابھی <span style="background:linear-gradient(135deg,var(--c1),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">بک کریں</span></h2>
+  <div class="appt-wrap">
+    <div class="appt-card">
+      <div class="appt-grid">
+        <div><label class="f-label">نام</label><input class="f-input" type="text" id="aName" placeholder="آپ کا نام"></div>
+        <div><label class="f-label">موبائل</label><input class="f-input" type="tel" id="aMobile" placeholder="03XX-XXXXXXX"></div>
+        <div class="f-full"><label class="f-label">خدمت</label>
+          <select class="f-input" id="aService">
+            <option value="">-- خدمت منتخب کریں --</option>
+            <option>Income Tax Return</option><option>NTN Registration</option>
+            <option>Sales Tax</option><option>Business Registration</option>
+            <option>Tax Withholding (WHT)</option><option>Tax Consultation</option><option>دیگر</option>
+          </select>
+        </div>
+        <div><label class="f-label">تاریخ</label><input class="f-input" type="date" id="aDate"></div>
+        <div><label class="f-label">وقت</label><input class="f-input" type="time" id="aTime"></div>
+        <div class="f-full"><label class="f-label">پیغام (اختیاری)</label><textarea class="f-input" id="aMsg" style="height:80px;resize:none;" placeholder="کوئی خاص بات..."></textarea></div>
+      </div>
+      <button class="appt-submit" onclick="bookAppointment()">📅 اپائنٹمنٹ بک کریں</button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-label" style="color:var(--c2);">— رابطہ</div>
+  <h2 class="sec-title">آج ہی <span style="background:linear-gradient(135deg,var(--c2),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">بات کریں</span></h2>
+  <div class="contact-grid">
+    <div class="c-cards">
+      <a href="https://wa.me/923469592120" class="c-card" target="_blank"><div class="c-icon-3d" style="background:linear-gradient(135deg,#25D366,#128C7E);">💬</div><div><div class="c-lbl">WhatsApp</div><div class="c-val">+92 346 9592120</div></div></a>
+      <a href="tel:+923469592120" class="c-card"><div class="c-icon-3d" style="background:linear-gradient(135deg,var(--c4),#0066CC);">📞</div><div><div class="c-lbl">Call کریں</div><div class="c-val">0346-9592120</div></div></a>
+      <div class="c-card"><div class="c-icon-3d" style="background:linear-gradient(135deg,var(--c5),#5B21B6);">👤</div><div><div class="c-lbl">نام</div><div class="c-val">Muhammad Fahad Janjua</div></div></div>
+      <div class="c-card"><div class="c-icon-3d" style="background:linear-gradient(135deg,var(--c1),#C2185B);">📍</div><div><div class="c-lbl">مقام</div><div class="c-val">راولپنڈی — آن لائن پورا پاکستان</div></div></div>
+      <div class="c-card"><div class="c-icon-3d" style="background:linear-gradient(135deg,var(--c3),#D97706);">🕐</div><div><div class="c-lbl">اوقات</div><div class="c-val">24 گھنٹے، 7 دن — ہمیشہ دستیاب</div></div></div>
+    </div>
+    <div class="contact-form-box">
+      <h3>📩 پیغام بھیجیں</h3>
+      <div class="cf-field"><label class="f-label">نام</label><input class="f-input" type="text" id="cName" placeholder="آپ کا نام"></div>
+      <div class="cf-field"><label class="f-label">موبائل</label><input class="f-input" type="tel" id="cPhone" placeholder="03XX-XXXXXXX"></div>
+      <div class="cf-field"><label class="f-label">خدمت</label>
+        <select class="f-input" id="cService">
+          <option value="">-- خدمت منتخب کریں --</option>
+          <option>Income Tax Return</option><option>NTN Registration</option>
+          <option>Sales Tax</option><option>Business Registration</option>
+          <option>Tax Withholding</option><option>Tax Consultation</option><option>دیگر</option>
+        </select>
+      </div>
+      <div class="cf-field"><label class="f-label">پیغام</label><textarea class="f-input" id="cMsg" style="height:80px;resize:none;" placeholder="سوال یا ضرورت..."></textarea></div>
+      <button class="cf-submit" onclick="sendContactWA()">💬 WhatsApp پر بھیجیں</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="f-brand-name">MFJ Tax Consultant</div>
+      <p class="f-brand-desc">Muhammad Fahad Janjua<br>راولپنڈی — آن لائن پورا پاکستان<br>Tax & Business Solutions — 24/7 دستیاب</p>
+    </div>
+    <div class="f-col">
+      <h4>خدمات</h4>
+      <a href="#services">Income Tax Return</a>
+      <a href="#services">NTN Registration</a>
+      <a href="#services">Sales Tax</a>
+      <a href="#services">Business Registration</a>
+      <a href="#services">Tax Consultation</a>
+    </div>
+    <div class="f-col">
+      <h4>لنکس</h4>
+      <a href="client.html">کلائنٹ پورٹل</a>
+      <a href="#appointment">اپائنٹمنٹ</a>
+      <a href="#faq">سوالات</a>
+      <a href="#contact">رابطہ</a>
+      <a href="https://wa.me/923469592120" target="_blank">WhatsApp</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 MFJ Tax Consultant — تمام حقوق محفوظ</span>
+    <span style="background:linear-gradient(135deg,var(--c4),var(--c5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;">راولپنڈی، پاکستان</span>
+  </div>
+</footer>
+
+<a href="https://wa.me/923469592120" class="wa-float" target="_blank">💬</a>
+<div class="toast" id="toast"></div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-bg" id="reviewModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <div class="modal-title">⭐ اپنی رائے دیں</div>
+    <div class="cf-field"><label class="f-label">نام</label><input class="f-input" type="text" id="rName"></div>
+    <div class="cf-field"><label class="f-label">شہر</label><input class="f-input" type="text" id="rCity"></div>
+    <div class="cf-field"><label class="f-label">ریٹنگ</label>
+      <select class="f-input" id="rRating">
+        <option value="5">⭐⭐⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="3">⭐⭐⭐</option>
+      </select>
+    </div>
+    <div class="cf-field"><label class="f-label">رائے</label><textarea class="f-input" id="rText" style="height:80px;resize:none;" placeholder="اپنا تجربہ بتائیں..."></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="appt-submit" onclick="submitReview()" style="flex:1;">جمع کریں</button>
+      <button class="appt-submit" style="flex:1;background:rgba(255,255,255,.1);box-shadow:none;" onclick="document.getElementById('reviewModal').classList.remove('show')">منسوخ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://ixgsartlktmgqfnzzatv.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8';
+const _supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+/* Cursor glow */
+document.addEventListener('mousemove',e=>{
+  const g=document.getElementById('cursorGlow');
+  g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px';
+});
+
+/* Nav */
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('mobileMenu');
+  if(m.classList.contains('open')&&!m.contains(e.target)&&!document.querySelector('.hamburger').contains(e.target))
+    m.classList.remove('open');
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+  });
+});
+
+/* Toast */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* FAQ */
+function toggleFaq(el){el.parentElement.classList.toggle('open');}
+
+/* Appointment */
+async function bookAppointment(){
+  const name=document.getElementById('aName').value.trim();
+  const mobile=document.getElementById('aMobile').value.trim();
+  const service=document.getElementById('aService').value;
+  const date=document.getElementById('aDate').value;
+  const time=document.getElementById('aTime').value;
+  const msg=document.getElementById('aMsg').value.trim();
+  if(!name||!mobile||!service||!date){showToast('⚠ تمام ضروری فیلڈز بھریں');return;}
+  try{await _supa.from('appointments').insert({name,mobile,service,preferred_date:date,preferred_time:time,message:msg,status:'pending'});}
+  catch(e){console.warn(e);}
+  const waMsg=`📅 *نئی اپائنٹمنٹ*\n👤 ${name}\n📱 ${mobile}\n💼 ${service}\n📅 ${date} ${time}\n${msg?'💬 '+msg:''}`;
+  window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
+  showToast('✅ اپائنٹمنٹ بک ہو گئی!');
+  ['aName','aMobile','aDate','aTime','aMsg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('aService').value='';
+}
+
+/* Contact */
+function sendContactWA(){
+  const name=document.getElementById('cName').value.trim();
+  const phone=document.getElementById('cPhone').value.trim();
+  const service=document.getElementById('cService').value;
+  const msg=document.getElementById('cMsg').value.trim();
+  if(!name||!phone){showToast('⚠ نام اور موبائل ضروری ہے');return;}
+  const waMsg=`السلام علیکم!\n👤 ${name}\n📱 ${phone}\n💼 ${service||'—'}\n${msg?'💬 '+msg:''}`;
+  window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
+}
+
+/* Review */
+async function submitReview(){
+  const name=document.getElementById('rName').value.trim();
+  const city=document.getElementById('rCity').value.trim();
+  const rating=parseInt(document.getElementById('rRating').value);
+  const text=document.getElementById('rText').value.trim();
+  if(!name||!text){showToast('⚠ نام اور رائے ضروری ہے');return;}
+  try{await _supa.from('reviews').insert({name,city,rating,review_text:text,approved:false});}
+  catch(e){console.warn(e);}
+  showToast('✅ شکریہ! آپ کی رائے جلد شائع ہوگی');
+  document.getElementById('reviewModal').classList.remove('show');
+  ['rName','rCity','rText'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* Load reviews from Supabase */
+async function loadApprovedReviews(){
+  try{
+    const {data,error}=await _supa.from('reviews').select('*').eq('approved',true).order('created_at',{ascending:false}).limit(6);
+    if(error||!data||!data.length)return;
+    const colors=['var(--c4)','var(--c6)','var(--c1)','var(--c5)','var(--c2)','var(--c3)'];
+    const grid=document.getElementById('reviewsGrid');
+    const extra=data.map((r,i)=>`
+      <div class="rev-card">
+        <div class="rev-stars"><span class="rev-star" style="color:#FFBE0B;">${'★'.repeat(r.rating||5)}</span></div>
+        <div class="rev-text">${r.review_text}</div>
+        <div class="rev-author">
+          <div class="rev-avatar" style="background:linear-gradient(135deg,${colors[i%6]},${colors[(i+1)%6]});">${(r.name||'?')[0]}</div>
+          <div><div class="rev-name">${r.name}</div><div class="rev-city">${r.city||''}</div></div>
+        </div>
+      </div>`).join('');
+    grid.innerHTML=extra+grid.innerHTML;
+  }catch(e){console.warn(e);}
+}
+
+/* Load site content */
+async function loadSiteContent(){
+  try{
+    const {data}=await _supa.from('site_content').select('*').eq('status','published');
+    if(!data)return;
+    data.forEach(row=>{
+      const c=row.content||{};
+      if(row.section==='faq'&&c.items&&c.items.length){
+        c.items.forEach(f=>{
+          const div=document.createElement('div');
+          div.className='faq-item';
+          div.innerHTML='<div class="faq-q" onclick="toggleFaq(this)"><span>'+f.q+'</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>'+f.a+'</p></div>';
+          document.getElementById('faqWrap').appendChild(div);
+        });
+      }
+    });
+  }catch(e){console.warn(e);}
+}
+
+/* Scroll animations */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0) perspective(800px) rotateY(0deg)';
+    }
+  });
+},{threshold:0.08});
+document.querySelectorAll('.svc-3d,.rev-card,.stat-card,.proc-card,.c-card').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(30px)';
+  el.style.transition='opacity .6s ease,transform .6s ease';
+  obs.observe(el);
+});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadApprovedReviews();
+  loadSiteContent();
+});
+</script>
+</body>
+</html>

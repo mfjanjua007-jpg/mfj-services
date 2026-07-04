@@ -205,6 +205,36 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 5%;
 .rev-city{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
 
 /* ── FAQ ── */
+/* BLOG */
+#blog{padding:100px 5%;}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px;}
+.blog-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;overflow:hidden;cursor:pointer;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.blog-card:hover{transform:translateY(-8px);border-color:rgba(58,134,255,.4);box-shadow:0 20px 50px rgba(0,0,0,.4);}
+.blog-cover{
+  height:140px;display:flex;align-items:center;justify-content:center;font-size:52px;
+  position:relative;overflow:hidden;
+}
+.blog-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);}
+.blog-body{padding:22px;}
+.blog-date{font-size:11px;color:rgba(255,255,255,.35);font-weight:700;margin-bottom:8px;}
+.blog-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:10px;line-height:1.4;}
+.blog-excerpt{font-size:13px;color:rgba(255,255,255,.45);line-height:1.8;}
+.blog-empty{grid-column:1/-1;text-align:center;padding:40px 20px;color:rgba(255,255,255,.3);font-size:13.5px;}
+
+.blog-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:350;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);}
+.blog-modal-bg.show{display:flex;}
+.blog-modal-box{background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;animation:popIn .4s cubic-bezier(.16,1,.3,1) both;}
+.blog-modal-cover{font-size:60px;margin-bottom:16px;}
+.blog-modal-title{font-size:22px;font-weight:900;color:#fff;margin-bottom:14px;}
+.blog-modal-content{font-size:14px;color:rgba(255,255,255,.6);line-height:2;white-space:pre-wrap;}
+.blog-modal-close{margin-top:24px;width:100%;padding:13px;border-radius:12px;border:none;cursor:pointer;background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:700;font-family:inherit;}
+.blog-modal-close:hover{background:rgba(255,255,255,.15);}
+
+/* FAQ */
 #faq{padding:100px 5%;background:rgba(255,255,255,.02);}
 .faq-wrap{max-width:760px;margin:48px auto 0;}
 .faq-item{border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s;}
@@ -323,6 +353,7 @@ footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padd
   </div>
   <div class="nav-links">
     <a href="#services" class="nav-link">خدمات</a>
+    <a href="#blog" class="nav-link">بلاگ</a>
     <a href="#reviews" class="nav-link">آراء</a>
     <a href="#faq" class="nav-link">سوالات</a>
     <a href="#contact" class="nav-link">رابطہ</a>
@@ -333,6 +364,7 @@ footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padd
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#services" onclick="toggleMenu()">📊 خدمات</a>
+  <a href="#blog" onclick="toggleMenu()">📝 بلاگ</a>
   <a href="#reviews" onclick="toggleMenu()">⭐ آراء</a>
   <a href="#faq" onclick="toggleMenu()">❓ سوالات</a>
   <a href="#appointment" onclick="toggleMenu()">📅 اپائنٹمنٹ</a>
@@ -349,8 +381,8 @@ footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padd
   <div class="hero-content">
     <div class="hero-badge">🟢 پورے پاکستان میں آن لائن خدمات</div>
     <h1 class="hero-title">
-      <span class="line1">Pakistan کا</span>
-      <span class="line2">Tax Consultant</span>
+      <span class="line1">خوش</span>
+      <span class="line2">آمدید</span>
     </h1>
     <p class="hero-sub">Income Tax، NTN، Sales Tax، Business Registration — گھر بیٹھے کروائیں، مناسب فیس میں</p>
     <div class="hero-btns">
@@ -466,6 +498,16 @@ footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padd
   </div>
 </section>
 
+<!-- BLOG -->
+<section id="blog">
+  <div class="sec-label" style="color:var(--c4);">— بلاگ</div>
+  <h2 class="sec-title">مفید <span style="background:linear-gradient(135deg,var(--c4),var(--c6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">معلومات</span></h2>
+  <p class="sec-sub">Tax اور Business سے متعلق تازہ ترین آرٹیکلز</p>
+  <div class="blog-grid" id="blogGrid">
+    <div class="blog-empty">📭 ابھی کوئی بلاگ پوسٹ شائع نہیں ہوئی</div>
+  </div>
+</section>
+
 <!-- FAQ -->
 <section id="faq">
   <div class="sec-label" style="color:var(--c5);">— سوالات</div>
@@ -567,6 +609,16 @@ footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padd
 
 <a href="https://wa.me/923469592120" class="wa-float" target="_blank">💬</a>
 <div class="toast" id="toast"></div>
+
+<!-- BLOG MODAL -->
+<div class="blog-modal-bg" id="blogModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="blog-modal-box">
+    <div class="blog-modal-cover" id="blogModalCover">📝</div>
+    <div class="blog-modal-title" id="blogModalTitle"></div>
+    <div class="blog-modal-content" id="blogModalContent"></div>
+    <button class="blog-modal-close" onclick="document.getElementById('blogModal').classList.remove('show')">بند کریں</button>
+  </div>
+</div>
 
 <!-- REVIEW MODAL -->
 <div class="modal-bg" id="reviewModal" onclick="if(event.target===this)this.classList.remove('show')">
@@ -763,9 +815,48 @@ document.querySelectorAll('.svc-3d,.rev-card,.stat-card,.proc-card,.c-card').for
   obs.observe(el);
 });
 
+/* Load blog posts from Supabase */
+let _blogPostsCache = [];
+async function loadBlogPosts(){
+  try{
+    const {data,error}=await _supa.from('blog_posts').select('*').eq('published',true).order('created_at',{ascending:false}).limit(9);
+    if(error){ console.warn('Blog load error:', error); return; }
+    const grid=document.getElementById('blogGrid');
+    if(!data||!data.length){
+      grid.innerHTML='<div class="blog-empty">📭 ابھی کوئی بلاگ پوسٹ شائع نہیں ہوئی</div>';
+      return;
+    }
+    _blogPostsCache = data;
+    const colors=['linear-gradient(135deg,var(--c4),var(--c5))','linear-gradient(135deg,var(--c6),var(--c4))','linear-gradient(135deg,var(--c1),var(--c5))','linear-gradient(135deg,var(--c3),var(--c2))','linear-gradient(135deg,var(--c5),var(--c1))','linear-gradient(135deg,var(--c2),var(--c6))'];
+    grid.innerHTML = data.map((b,i)=>{
+      const dateStr = new Date(b.created_at).toLocaleDateString('ur-PK',{day:'numeric',month:'short',year:'numeric'});
+      const excerpt = (b.content||'').slice(0,90);
+      return `
+      <div class="blog-card" onclick="openBlogPost(${i})">
+        <div class="blog-cover" style="background:${colors[i%colors.length]};">${b.cover_emoji||'📝'}</div>
+        <div class="blog-body">
+          <div class="blog-date">${dateStr}</div>
+          <div class="blog-title">${b.title}</div>
+          <div class="blog-excerpt">${excerpt}${(b.content||'').length>90?'...':''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){ console.warn('Blog error:', e); }
+}
+
+function openBlogPost(i){
+  const b = _blogPostsCache[i];
+  if(!b) return;
+  document.getElementById('blogModalCover').textContent = b.cover_emoji||'📝';
+  document.getElementById('blogModalTitle').textContent = b.title;
+  document.getElementById('blogModalContent').textContent = b.content||'';
+  document.getElementById('blogModal').classList.add('show');
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   loadApprovedReviews();
   loadSiteContent();
+  loadBlogPosts();
 });
 </script>
 </body>

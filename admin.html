@@ -2116,6 +2116,18 @@ tbody tr:hover td{background:var(--primary-ultra);}
             <div class="field"><label>عنوان</label><input type="text" id="bTitle" placeholder="بلاگ کا عنوان"></div>
             <div class="field"><label>Cover Emoji</label><input type="text" id="bEmoji" value="📝" maxlength="4" style="width:80px;"></div>
             <div class="field"><label>مضمون</label><textarea id="bContent" style="height:120px;" placeholder="بلاگ کا مواد..."></textarea></div>
+
+            <div class="field">
+              <label>📷 تصویر یا 🎥 ویڈیو (اختیاری)</label>
+              <input type="file" id="bMedia" accept="image/*,video/*" onchange="previewBlogMedia(event)" style="padding:9px;border:1.5px dashed var(--border);border-radius:8px;width:100%;font-family:inherit;font-size:12.5px;">
+              <div id="bMediaPreview" style="margin-top:10px;display:none;">
+                <img id="bMediaPreviewImg" style="max-width:200px;max-height:150px;border-radius:10px;display:none;object-fit:cover;">
+                <video id="bMediaPreviewVid" style="max-width:200px;max-height:150px;border-radius:10px;display:none;" controls></video>
+                <button class="btn btn-sm btn-secondary" style="margin-top:6px;" onclick="removeBlogMedia()">🗑 ہٹائیں</button>
+              </div>
+              <div id="bMediaUploadStatus" style="font-size:11.5px;color:var(--text-mute);margin-top:6px;"></div>
+            </div>
+
             <div style="display:flex;gap:8px;margin-top:8px;">
               <button class="btn btn-primary" onclick="saveBlogPost(false)">💾 Draft</button>
               <button class="btn btn-primary" style="background:var(--success);" onclick="saveBlogPost(true)">🚀 Publish</button>
@@ -5335,15 +5347,68 @@ async function loadBlogAdminList(){
   try{
     const {data,error}=await _supa.from('blog_posts').select('*').order('created_at',{ascending:false});
     if(error||!data||!data.length){ el.innerHTML='<div class="empty"><p>کوئی پوسٹ نہیں</p></div>'; return; }
-    el.innerHTML=data.map(b=>`
+    el.innerHTML=data.map(b=>{
+      const mediaThumb = b.media_url
+        ? (b.media_type==='video'
+            ? `<video src="${b.media_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;"></video>`
+            : `<img src="${b.media_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">`)
+        : `<span style="font-size:18px;">${b.cover_emoji||'📝'}</span>`;
+      return `
       <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
-        <div><span style="font-size:18px;">${b.cover_emoji||'📝'}</span> <strong>${b.title}</strong> <span style="font-size:11px;color:${b.published?'#10B981':'#94A3B8'};">${b.published?'✅ Published':'📝 Draft'}</span></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${mediaThumb}
+          <div><strong>${b.title}</strong> <span style="font-size:11px;color:${b.published?'#10B981':'#94A3B8'};">${b.published?'✅ Published':'📝 Draft'}</span>${b.media_url?` <span style="font-size:10px;color:var(--text-mute);">${b.media_type==='video'?'🎥':'📷'}</span>`:''}</div>
+        </div>
         <div style="display:flex;gap:6px;">
           <button class="btn btn-sm" style="background:${b.published?'#F59E0B':'#10B981'};color:#fff;border:none;" onclick="toggleBlog('${b.id}',${!b.published})">${b.published?'Unpublish':'🚀 Publish'}</button>
           <button class="btn btn-sm btn-secondary" onclick="deleteBlog('${b.id}')">🗑</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch(e){}
+}
+
+let _bMediaFile = null;
+
+function previewBlogMedia(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  _bMediaFile = file;
+  const isVideo = file.type.startsWith('video/');
+  const preview = document.getElementById('bMediaPreview');
+  const imgEl = document.getElementById('bMediaPreviewImg');
+  const vidEl = document.getElementById('bMediaPreviewVid');
+  const url = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  if(isVideo){
+    vidEl.src = url; vidEl.style.display='block';
+    imgEl.style.display='none';
+  } else {
+    imgEl.src = url; imgEl.style.display='block';
+    vidEl.style.display='none';
+  }
+  document.getElementById('bMediaUploadStatus').textContent = '📎 '+file.name+' ('+(file.size/1024/1024).toFixed(1)+' MB)';
+}
+
+function removeBlogMedia(){
+  _bMediaFile = null;
+  document.getElementById('bMedia').value='';
+  document.getElementById('bMediaPreview').style.display='none';
+  document.getElementById('bMediaUploadStatus').textContent='';
+}
+
+async function uploadBlogMedia(file){
+  if(!_supa) return null;
+  const ext = file.name.split('.').pop();
+  const fileName = 'blog_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  try{
+    const {data, error} = await _supa.storage.from('blog-media').upload(fileName, file, {
+      cacheControl: '3600', upsert: false
+    });
+    if(error){ console.error('Upload error:', error); return null; }
+    const {data: urlData} = _supa.storage.from('blog-media').getPublicUrl(fileName);
+    return { url: urlData.publicUrl, type: file.type.startsWith('video/') ? 'video' : 'image' };
+  } catch(e){ console.error('Upload exception:', e); return null; }
 }
 
 async function saveBlogPost(publish){
@@ -5352,15 +5417,28 @@ async function saveBlogPost(publish){
   const emoji=document.getElementById('bEmoji').value.trim()||'📝';
   if(!title||!text){ showToast('⚠ عنوان اور مضمون ضروری'); return; }
   if(!_supa){ showToast('⚠ Supabase connect نہیں'); return; }
+
+  let mediaUrl = null, mediaType = null;
+  if(_bMediaFile){
+    document.getElementById('bMediaUploadStatus').textContent = '⏳ اپلوڈ ہو رہا ہے...';
+    const result = await uploadBlogMedia(_bMediaFile);
+    if(result){ mediaUrl = result.url; mediaType = result.type; }
+    else { showToast('⚠ میڈیا اپلوڈ نہیں ہوا — بغیر میڈیا کے محفوظ ہو رہا ہے'); }
+  }
+
   try{
     const slug=title.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,50);
-    await _supa.from('blog_posts').insert({title,content:text,cover_emoji:emoji,slug,published:publish});
+    await _supa.from('blog_posts').insert({
+      title, content:text, cover_emoji:emoji, slug, published:publish,
+      media_url: mediaUrl, media_type: mediaType
+    });
     showToast(publish?'🚀 Publish ہو گئی!':'💾 Draft محفوظ!');
     document.getElementById('blogFormCard').style.display='none';
     document.getElementById('bTitle').value='';
     document.getElementById('bContent').value='';
+    removeBlogMedia();
     loadBlogAdminList();
-  } catch(e){ showToast('⚠ محفوظ نہیں ہوئی'); }
+  } catch(e){ console.error(e); showToast('⚠ محفوظ نہیں ہوئی: '+e.message); }
 }
 
 async function toggleBlog(id,publish){

@@ -2066,19 +2066,10 @@ tbody tr:hover td{background:var(--primary-ultra);}
         <div id="wtab-content">
           <div class="card" style="margin-bottom:14px;">
             <div class="card-header"><span class="card-title">🏠 Hero Section</span></div>
-            <div class="field"><label>مرکزی عنوان (بڑا)</label><input type="text" id="wc-hero-title" placeholder="پاکستان کا قابل اعتماد Tax Consultant"></div>
+            <div class="field"><label>مرکزی عنوان (بڑا) — دو لائنوں کے لیے || استعمال کریں</label><input type="text" id="wc-hero-title" placeholder="Pakistan کا || Tax Consultant"></div>
             <div class="field"><label>Sub Title</label><input type="text" id="wc-hero-sub" placeholder="Income Tax، NTN، Sales Tax..."></div>
             <div class="field"><label>WhatsApp نمبر</label><input type="text" id="wc-whatsapp" placeholder="923469592120"></div>
             <button class="btn btn-primary btn-sm" onclick="saveWebContent('hero')">💾 محفوظ کریں</button>
-          </div>
-
-          <div class="card" style="margin-bottom:14px;">
-            <div class="card-header"><span class="card-title">👤 About Section</span></div>
-            <div class="field"><label>نام</label><input type="text" id="wc-about-name" placeholder="Muhammad Fahad Janjua"></div>
-            <div class="field"><label>عہدہ</label><input type="text" id="wc-about-role" placeholder="Founder — MFJ Services"></div>
-            <div class="field"><label>پہلا paragraph</label><textarea id="wc-about-p1" style="height:80px;" placeholder="MFJ Services پاکستان میں قائم..."></textarea></div>
-            <div class="field"><label>دوسرا paragraph</label><textarea id="wc-about-p2" style="height:80px;" placeholder="ہمارا مقصد..."></textarea></div>
-            <button class="btn btn-primary btn-sm" onclick="saveWebContent('about')">💾 محفوظ کریں</button>
           </div>
 
           <div class="card" style="margin-bottom:14px;">
@@ -5202,16 +5193,29 @@ async function initMessagesTab(){
   const el = document.getElementById('msgClientList');
   if(!el) return;
   if(!clients.length){ el.innerHTML='<div class="empty"><p>کوئی کلائنٹ نہیں</p></div>'; return; }
-  el.innerHTML = clients.slice(0,60).map(c=>`
-    <div onclick="openAdminChat('${c.id}')" style="padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:6px;background:var(--surface2);border:1px solid var(--border);transition:all .15s;" onmouseover="this.style.background='#EFF6FF'" onmouseout="this.style.background='var(--surface2)'">
-      <div style="font-size:13px;font-weight:700;">${c.name}</div>
+
+  // Load all messages once to know which clients have unread messages
+  let allMsgs = [];
+  try{
+    const {data} = await _supa.from('messages').select('client_id,sender,is_read');
+    allMsgs = data||[];
+  } catch(e){ console.warn(e); }
+
+  el.innerHTML = clients.slice(0,60).map(c=>{
+    const cid = String(c.id).trim();
+    const hasUnread = allMsgs.some(m => String(m.client_id||'').trim()===cid && m.sender==='client' && !m.is_read);
+    return `
+    <div onclick="openAdminChat('${c.id}')" style="padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:6px;background:var(--surface2);border:1px solid var(--border);transition:all .15s;position:relative;" onmouseover="this.style.background='#EFF6FF'" onmouseout="this.style.background='var(--surface2)'">
+      <div style="font-size:13px;font-weight:700;">${c.name} ${hasUnread?'<span style=\'color:#EF4444;\'>●</span>':''}</div>
       <div style="font-size:11px;color:var(--text-mute);">${c.mobile||''}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function openAdminChat(clientId){
+  clientId = String(clientId).trim();
   _activeMsgClient = clientId;
-  const c = clients.find(x=>x.id===clientId);
+  const c = clients.find(x=>String(x.id).trim()===clientId);
   const hdr = document.getElementById('msgChatHeader');
   if(hdr) hdr.textContent = c ? c.name+' — '+(c.mobile||'') : 'چیٹ';
   const box = document.getElementById('msgChatBox');
@@ -5219,10 +5223,12 @@ async function openAdminChat(clientId){
   box.innerHTML = '<div style="text-align:center;color:var(--text-mute);padding:20px;font-size:12px;">لوڈ ہو رہا ہے...</div>';
   if(!_supa){ box.innerHTML='<div class="empty"><p>Supabase connect نہیں</p></div>'; return; }
   try{
-    const {data,error} = await _supa.from('messages').select('*').eq('client_id',clientId).order('created_at',{ascending:true});
+    // Fetch ALL messages then filter client-side to avoid any type/whitespace mismatch with .eq()
+    const {data,error} = await _supa.from('messages').select('*').order('created_at',{ascending:true});
     if(error) throw error;
-    if(!data||!data.length){ box.innerHTML='<div class="empty"><p>ابھی کوئی پیغام نہیں</p></div>'; return; }
-    box.innerHTML = data.map(m=>`
+    const filtered = (data||[]).filter(m => String(m.client_id||'').trim() === clientId);
+    if(!filtered.length){ box.innerHTML='<div class="empty"><p>ابھی کوئی پیغام نہیں</p></div>'; return; }
+    box.innerHTML = filtered.map(m=>`
       <div style="max-width:75%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;margin-bottom:4px;align-self:${m.sender==='admin'?'flex-end':'flex-start'};background:${m.sender==='admin'?'linear-gradient(135deg,#0EA5E9,#8B5CF6)':'#F1F5F9'};color:${m.sender==='admin'?'#fff':'#0F172A'};">
         ${m.message}
         <div style="font-size:9px;opacity:.6;margin-top:3px;">${new Date(m.created_at).toLocaleTimeString('ur-PK',{hour:'2-digit',minute:'2-digit'})}</div>
@@ -5230,7 +5236,7 @@ async function openAdminChat(clientId){
     box.style.display='flex'; box.style.flexDirection='column';
     box.scrollTop = box.scrollHeight;
     await _supa.from('messages').update({is_read:true}).eq('client_id',clientId).eq('sender','client');
-  } catch(e){ console.warn(e); box.innerHTML='<div class="empty"><p>⚠ پیغامات نہیں ملے</p></div>'; }
+  } catch(e){ console.warn(e); box.innerHTML='<div class="empty"><p>⚠ پیغامات نہیں ملے: '+e.message+'</p></div>'; }
 }
 
 async function sendAdminMsg(){

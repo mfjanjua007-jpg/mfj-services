@@ -688,20 +688,63 @@ async function loadApprovedReviews(){
 /* Load site content */
 async function loadSiteContent(){
   try{
-    const {data}=await _supa.from('site_content').select('*').eq('status','published');
-    if(!data)return;
+    const {data,error}=await _supa.from('site_content').select('*').eq('status','published');
+    if(error){ console.warn('Site content load error:', error); return; }
+    if(!data||!data.length) return;
+
     data.forEach(row=>{
       const c=row.content||{};
-      if(row.section==='faq'&&c.items&&c.items.length){
-        c.items.forEach(f=>{
-          const div=document.createElement('div');
-          div.className='faq-item';
-          div.innerHTML='<div class="faq-q" onclick="toggleFaq(this)"><span>'+f.q+'</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>'+f.a+'</p></div>';
-          document.getElementById('faqWrap').appendChild(div);
-        });
+
+      /* ── HERO ── */
+      if(row.section==='hero'){
+        if(c.title){
+          const line2 = document.querySelector('.hero-title .line2');
+          const line1 = document.querySelector('.hero-title .line1');
+          // If title has a line break marker "||", split into two lines
+          if(c.title.includes('||')){
+            const parts = c.title.split('||');
+            if(line1) line1.textContent = parts[0].trim();
+            if(line2) line2.textContent = parts[1].trim();
+          } else if(line2){
+            line2.textContent = c.title;
+          }
+        }
+        if(c.sub){
+          const sub = document.querySelector('.hero-sub');
+          if(sub) sub.textContent = c.sub;
+        }
+        if(c.whatsapp){
+          document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{
+            a.href = a.href.replace(/wa\.me\/\d+/, 'wa.me/'+c.whatsapp);
+          });
+        }
+      }
+
+      /* ── ABOUT (not present as separate section in this design, skip safely) ── */
+
+      /* ── CONTACT ── */
+      if(row.section==='contact'){
+        const cVals = document.querySelectorAll('.c-val');
+        // Order in DOM: WhatsApp, Call, نام, مقام, اوقات
+        if(c.phone && cVals[1]) cVals[1].textContent = c.phone;
+        if(c.city && cVals[3]) cVals[3].textContent = c.city;
+        if(c.timing && cVals[4]) cVals[4].textContent = c.timing;
+      }
+
+      /* ── FAQ ── */
+      if(row.section==='faq' && c.items && c.items.length){
+        const wrap = document.getElementById('faqWrap');
+        if(wrap){
+          c.items.forEach(f=>{
+            const div=document.createElement('div');
+            div.className='faq-item';
+            div.innerHTML='<div class="faq-q" onclick="toggleFaq(this)"><span>'+f.q+'</span><span class="faq-arr">▾</span></div><div class="faq-a"><p>'+f.a+'</p></div>';
+            wrap.appendChild(div);
+          });
+        }
       }
     });
-  }catch(e){console.warn(e);}
+  }catch(e){ console.warn('Site content error:', e); }
 }
 
 /* Scroll animations */

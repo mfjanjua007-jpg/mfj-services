@@ -2069,7 +2069,24 @@ tbody tr:hover td{background:var(--primary-ultra);}
             <div class="field"><label>مرکزی عنوان (بڑا) — دو لائنوں کے لیے || استعمال کریں</label><input type="text" id="wc-hero-title" placeholder="Pakistan کا || Tax Consultant"></div>
             <div class="field"><label>Sub Title</label><input type="text" id="wc-hero-sub" placeholder="Income Tax، NTN، Sales Tax..."></div>
             <div class="field"><label>WhatsApp نمبر</label><input type="text" id="wc-whatsapp" placeholder="923469592120"></div>
+
+            <div class="field">
+              <label>🖼️ Hero تصویر</label>
+              <input type="file" id="wc-hero-img" accept="image/*" onchange="previewWebImage(event,'hero')" style="padding:9px;border:1.5px dashed var(--border);border-radius:8px;width:100%;font-family:inherit;font-size:12.5px;">
+              <div id="wc-hero-img-preview" style="margin-top:10px;"></div>
+            </div>
+
             <button class="btn btn-primary btn-sm" onclick="saveWebContent('hero')">💾 محفوظ کریں</button>
+          </div>
+
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-header"><span class="card-title">🏢 آفس / Why-Us تصویر</span></div>
+            <div class="field">
+              <label>🖼️ تصویر منتخب کریں</label>
+              <input type="file" id="wc-office-img" accept="image/*" onchange="previewWebImage(event,'office')" style="padding:9px;border:1.5px dashed var(--border);border-radius:8px;width:100%;font-family:inherit;font-size:12.5px;">
+              <div id="wc-office-img-preview" style="margin-top:10px;"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveWebContent('officeimg')">💾 محفوظ کریں</button>
           </div>
 
           <div class="card" style="margin-bottom:14px;">
@@ -5402,11 +5419,11 @@ async function uploadBlogMedia(file){
   const ext = file.name.split('.').pop();
   const fileName = 'blog_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
   try{
-    const {data, error} = await _supa.storage.from('blog-media').upload(fileName, file, {
+    const {data, error} = await _supa.storage.from('media-blog').upload(fileName, file, {
       cacheControl: '3600', upsert: false
     });
     if(error){ console.error('Upload error:', error); return null; }
-    const {data: urlData} = _supa.storage.from('blog-media').getPublicUrl(fileName);
+    const {data: urlData} = _supa.storage.from('media-blog').getPublicUrl(fileName);
     return { url: urlData.publicUrl, type: file.type.startsWith('video/') ? 'video' : 'image' };
   } catch(e){ console.error('Upload exception:', e); return null; }
 }
@@ -5613,6 +5630,16 @@ async function loadWebsiteContent(){
         if(t) t.value=c.title||'';
         if(s) s.value=c.sub||'';
         if(w) w.value=c.whatsapp||'';
+        if(c.image){
+          const prev = document.getElementById('wc-hero-img-preview');
+          if(prev) prev.innerHTML = `<img src="${c.image}" style="max-width:220px;max-height:140px;border-radius:10px;object-fit:cover;"><div style="font-size:11px;color:var(--text-mute);margin-top:4px;">✅ موجودہ تصویر</div>`;
+        }
+      }
+      if(row.section==='officeimg'){
+        if(c.image){
+          const prev = document.getElementById('wc-office-img-preview');
+          if(prev) prev.innerHTML = `<img src="${c.image}" style="max-width:220px;max-height:140px;border-radius:10px;object-fit:cover;"><div style="font-size:11px;color:var(--text-mute);margin-top:4px;">✅ موجودہ تصویر</div>`;
+        }
       }
       if(row.section==='about'){
         const n=document.getElementById('wc-about-name');
@@ -5637,15 +5664,62 @@ async function loadWebsiteContent(){
   } catch(e){ console.warn(e); }
 }
 
+/* ── Website image upload (Hero / Office) ── */
+let _wcImageFiles = { hero:null, office:null };
+
+function previewWebImage(evt, key){
+  const file = evt.target.files[0];
+  if(!file) return;
+  _wcImageFiles[key] = file;
+  const url = URL.createObjectURL(file);
+  const preview = document.getElementById('wc-'+key+'-img-preview');
+  preview.innerHTML = `<img src="${url}" style="max-width:220px;max-height:140px;border-radius:10px;object-fit:cover;">
+    <div style="font-size:11px;color:var(--text-mute);margin-top:4px;">📎 ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)</div>`;
+}
+
+async function uploadWebImage(file, key){
+  if(!_supa || !file) return null;
+  const ext = file.name.split('.').pop();
+  const fileName = 'site_'+key+'_'+Date.now()+'.'+ext;
+  try{
+    const {error} = await _supa.storage.from('media-blog').upload(fileName, file, {cacheControl:'3600', upsert:false});
+    if(error){ console.error('Image upload error:', error); return null; }
+    const {data: urlData} = _supa.storage.from('media-blog').getPublicUrl(fileName);
+    return urlData.publicUrl;
+  } catch(e){ console.error(e); return null; }
+}
+
 async function saveWebContent(section){
   if(!_supa){ showToast('⚠ Supabase connect نہیں'); return; }
   let contentData = {};
+
   if(section==='hero'){
+    let imgUrl = null;
+    if(_wcImageFiles.hero){
+      showToast('⏳ تصویر اپلوڈ ہو رہی ہے...');
+      imgUrl = await uploadWebImage(_wcImageFiles.hero, 'hero');
+    }
+    // Preserve existing image if no new upload
+    if(!imgUrl){
+      try{
+        const {data} = await _supa.from('site_content').select('content').eq('id','hero').single();
+        imgUrl = data?.content?.image || null;
+      } catch(e){}
+    }
     contentData = {
       title: document.getElementById('wc-hero-title')?.value||'',
       sub:   document.getElementById('wc-hero-sub')?.value||'',
-      whatsapp: document.getElementById('wc-whatsapp')?.value||''
+      whatsapp: document.getElementById('wc-whatsapp')?.value||'',
+      image: imgUrl
     };
+  } else if(section==='officeimg'){
+    let imgUrl = null;
+    if(_wcImageFiles.office){
+      showToast('⏳ تصویر اپلوڈ ہو رہی ہے...');
+      imgUrl = await uploadWebImage(_wcImageFiles.office, 'office');
+    }
+    if(!imgUrl){ showToast('⚠ پہلے تصویر منتخب کریں'); return; }
+    contentData = { image: imgUrl };
   } else if(section==='about'){
     contentData = {
       name: document.getElementById('wc-about-name')?.value||'',
@@ -5660,13 +5734,15 @@ async function saveWebContent(section){
       timing: document.getElementById('wc-timing')?.value||''
     };
   }
+
   try{
+    const dbSection = section==='officeimg' ? 'officeimg' : section;
     const {error} = await _supa.from('site_content').upsert({
-      id: section, section, content: contentData, status:'published',
+      id: dbSection, section: dbSection, content: contentData, status:'published',
       updated_at: new Date().toISOString()
     },{onConflict:'id'});
     if(error) throw error;
-    showToast('✅ '+section+' محفوظ ہو گیا!');
+    showToast('✅ محفوظ ہو گیا!');
   } catch(e){ console.warn(e); showToast('⚠ محفوظ نہیں ہوا'); }
 }
 

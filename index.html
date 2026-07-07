@@ -37,9 +37,10 @@
   "openingHours": "Mo-Su 00:00-23:59"
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --navy:#0F2A3D; --navy2:#153B54;
@@ -244,7 +245,7 @@ body.dark-mode .skel{background:linear-gradient(90deg,#182536 25%,#213249 37%,#1
 .confetti-piece{position:fixed;top:-10px;width:8px;height:8px;z-index:199;animation:confettiFall linear forwards;}
 @keyframes confettiFall{to{transform:translateY(100vh) rotate(540deg);opacity:.3;}}
 
-.hero-blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;will-change:transform;}
 .hero-blob.b1{width:420px;height:420px;top:-140px;right:-100px;background:radial-gradient(circle,rgba(15,138,95,.22),transparent 70%);animation:blobFloat1 9s ease-in-out infinite;}
 .hero-blob.b2{width:340px;height:340px;bottom:-120px;left:-80px;background:radial-gradient(circle,rgba(245,166,35,.16),transparent 70%);animation:blobFloat2 11s ease-in-out infinite;}
 @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-25px,20px) scale(1.08);}}
@@ -306,6 +307,30 @@ section{padding:90px 5% 0;}
 .services-cta{text-align:center;margin-top:36px;}
 @media (prefers-reduced-motion: reduce){
   .svc-card:hover{transform:translateY(-4px);}
+}
+
+/* TAX ESTIMATE */
+#tax-estimate{padding-bottom:20px;}
+.tax-est-card{max-width:560px;margin:0 auto;background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:30px 28px;box-shadow:0 10px 30px rgba(15,42,61,.06);}
+.tax-est-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.tax-est-field label{display:block;font-size:12.5px;font-weight:700;color:var(--mute);margin-bottom:7px;}
+.tax-est-field select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+.tax-est-field select:focus{outline:none;border-color:var(--green);}
+.tax-est-note{margin-top:16px;font-size:12.5px;color:var(--mute);line-height:1.7;text-align:center;}
+@media(max-width:600px){
+  .tax-est-row{grid-template-columns:1fr;}
+}
+body.dark-mode .tax-est-card{background:var(--surface);}
+body.dark-mode .tax-est-field select{background:var(--bg);border-color:var(--border);color:var(--ink);}
+
+/* DEADLINE BANNER */
+.deadline-banner{background:linear-gradient(90deg,#B91C1C,#DC2626);color:#fff;display:flex;align-items:center;justify-content:center;gap:16px;padding:11px 16px;font-size:13px;font-weight:700;flex-wrap:wrap;position:relative;}
+.deadline-text strong{color:#FFE28A;}
+.deadline-cta{background:#fff;color:#B91C1C;padding:6px 16px;border-radius:20px;font-size:12.5px;font-weight:800;white-space:nowrap;}
+.deadline-close{position:absolute;left:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;opacity:.8;font-size:15px;cursor:pointer;}
+@media(max-width:600px){
+  .deadline-banner{font-size:11.5px;padding:9px 34px 9px 14px;}
+  .deadline-cta{padding:5px 12px;font-size:11px;}
 }
 
 /* PROCESS */
@@ -531,6 +556,17 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   </div>
 </div>
 
+<!-- DEADLINE COUNTDOWN BANNER -->
+<div class="deadline-banner" id="deadlineBanner" style="display:none;">
+  <div class="deadline-text">
+    ⏰ <span id="deadlineLabel">Income Tax Return فائل کرنے کی آخری تاریخ:</span>
+    <strong id="deadlineDateText"></strong>
+    — <span id="deadlineCountdown"></span>
+  </div>
+  <a href="#appointment-strip" class="deadline-cta" data-i18n="deadlineCta">ابھی بک کریں</a>
+  <button class="deadline-close" onclick="dismissDeadlineBanner()" aria-label="Close">✕</button>
+</div>
+
 <!-- MAIN NAV -->
 <nav class="main-nav">
   <a href="#" class="logo-wrap">
@@ -731,6 +767,39 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       <div class="process-title" data-i18n="process4t">تصدیق حاصل کریں</div>
       <div class="process-desc" data-i18n="process4d">مکمل ہونے کی تصدیق اور دستاویزات آپ کو موصول ہوں گی</div>
     </div>
+  </div>
+</section>
+
+<!-- TAX ESTIMATE -->
+<section id="tax-estimate">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="taxEstEyebrow">مفت تخمینہ</div>
+    <h2 class="sec-title" data-i18n="taxEstTitle">اپنا Tax تخمینہ حاصل کریں</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label data-i18n="taxEstType">آمدنی کی قسم</label>
+        <select id="taxEstType">
+          <option value="salaried" data-i18n="taxEstSalaried">تنخواہ دار (Salaried)</option>
+          <option value="business" data-i18n="taxEstBusiness">کاروبار (Business)</option>
+          <option value="freelancer" data-i18n="taxEstFreelancer">فری لانسر</option>
+        </select>
+      </div>
+      <div class="tax-est-field">
+        <label data-i18n="taxEstIncome">ماہانہ آمدنی (تقریباً)</label>
+        <select id="taxEstIncome">
+          <option value="0-50k" data-i18n="taxEstI1">Rs 50,000 سے کم</option>
+          <option value="50k-100k" data-i18n="taxEstI2">Rs 50,000 – 100,000</option>
+          <option value="100k-200k" data-i18n="taxEstI3">Rs 100,000 – 200,000</option>
+          <option value="200k-350k" data-i18n="taxEstI4">Rs 200,000 – 350,000</option>
+          <option value="350k+" data-i18n="taxEstI5">Rs 350,000 سے زیادہ</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;" onclick="requestTaxEstimate()"><span data-i18n="taxEstBtn">مفت تخمینہ حاصل کریں (WhatsApp)</span></button>
+    <div class="tax-est-note" data-i18n="taxEstNote">💡 یہ ایک عمومی سوال ہے — ہماری ٹیم آپ کی مخصوص صورتحال کے مطابق درست تخمینہ WhatsApp پر بتائے گی۔</div>
   </div>
 </section>
 
@@ -952,7 +1021,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
 </div>
 
 <div class="mobile-cta-bar">
-  <a href="#appointment-strip" class="mcb-book"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span data-i18n="mcbBook">اپائنٹمنٹ بک کریں</span></a>
+  <a href="#appointment-strip" class="mcb-book" onclick="trackEvent('mobile_cta_book_click')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span data-i18n="mcbBook">اپائنٹمنٹ بک کریں</span></a>
   <button class="mcb-wa" onclick="toggleWaPopup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -985,6 +1054,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://ixgsartlktmgqfnzzatv.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8';
@@ -998,7 +1068,7 @@ const I18N = {
     heroEyebrow:'پاکستان کا قابل اعتماد', heroTitle1:'Tax اور Business', heroTitle2:'Solutions',
     heroSub:'ہم پورے پاکستان میں پیشہ ورانہ Tax، Accounting اور Business Consultancy خدمات فراہم کرتے ہیں — 100% کلائنٹ اطمینان کے ساتھ۔', typewriterLabel:'ہم ماہر ہیں:',
     chk1:'Income Tax', chk2:'NTN Registration', chk3:'Sales Tax', chk4:'Business Registration', chk5:'FBR Consultancy',
-    heroBtn1:'اپائنٹمنٹ بک کریں', heroBtn2:'WhatsApp چیٹ', badgeGoogle:'4.9★ Google ریٹنگ', badgeFbr:'FBR رجسٹرڈ کنسلٹنٹ', mcbBook:'اپائنٹمنٹ',
+    heroBtn1:'اپائنٹمنٹ بک کریں', heroBtn2:'WhatsApp چیٹ', badgeGoogle:'4.9★ Google ریٹنگ', badgeFbr:'FBR رجسٹرڈ کنسلٹنٹ', mcbBook:'اپائنٹمنٹ', deadlineCta:'ابھی بک کریں',
     waOnline:'آن لائن', waWelcome:'السلام علیکم! 👋 ہم آپ کی کیسے مدد کر سکتے ہیں؟ نیچے سے موضوع منتخب کریں:',
     waQ1:'Income Tax Return کے بارے میں پوچھنا ہے', waQ2:'NTN Registration کروانی ہے',
     waQ3:'Sales Tax / Company Registration', waQ4:'عمومی سوال ہے',
@@ -1014,6 +1084,10 @@ const I18N = {
     svc8t:'Document Verification', svc8d:'FBR دستاویزات کی تصدیق اور متعلقہ خدمات',
     svcCta:'تمام خدمات دیکھیں',
     processEyebrow:'ہمارا طریقہ کار', processTitle:'صرف 4 آسان مراحل میں',
+    taxEstEyebrow:'مفت تخمینہ', taxEstTitle:'اپنا Tax تخمینہ حاصل کریں',
+    taxEstType:'آمدنی کی قسم', taxEstSalaried:'تنخواہ دار (Salaried)', taxEstBusiness:'کاروبار (Business)', taxEstFreelancer:'فری لانسر',
+    taxEstIncome:'ماہانہ آمدنی (تقریباً)', taxEstI1:'Rs 50,000 سے کم', taxEstI2:'Rs 50,000 – 100,000', taxEstI3:'Rs 100,000 – 200,000', taxEstI4:'Rs 200,000 – 350,000', taxEstI5:'Rs 350,000 سے زیادہ',
+    taxEstBtn:'مفت تخمینہ حاصل کریں (WhatsApp)', taxEstNote:'💡 یہ ایک عمومی سوال ہے — ہماری ٹیم آپ کی مخصوص صورتحال کے مطابق درست تخمینہ WhatsApp پر بتائے گی۔',
     process1t:'رابطہ کریں', process1d:'کال، WhatsApp یا فارم کے ذریعے ہم سے رابطہ کریں',
     process2t:'دستاویزات بھیجیں', process2d:'اپنی ضروری دستاویزات WhatsApp یا پورٹل پر شیئر کریں',
     process3t:'ہم کام کریں', process3d:'ہماری ٹیم آپ کا کام درست اور تیزی سے مکمل کرتی ہے',
@@ -1042,7 +1116,7 @@ const I18N = {
     heroEyebrow:"Pakistan's Trusted", heroTitle1:'Tax & Business', heroTitle2:'Solutions',
     heroSub:'We provide professional tax, accounting and business consultancy services across Pakistan — with 100% client satisfaction.', typewriterLabel:'We specialize in:',
     chk1:'Income Tax', chk2:'NTN Registration', chk3:'Sales Tax', chk4:'Business Registration', chk5:'FBR Consultancy',
-    heroBtn1:'Book Appointment', heroBtn2:'Chat on WhatsApp', badgeGoogle:'4.9★ Google Rating', badgeFbr:'FBR Registered Consultant', mcbBook:'Book Now',
+    heroBtn1:'Book Appointment', heroBtn2:'Chat on WhatsApp', badgeGoogle:'4.9★ Google Rating', badgeFbr:'FBR Registered Consultant', mcbBook:'Book Now', deadlineCta:'Book Now',
     waOnline:'Online', waWelcome:'Hello! 👋 How can we help you? Pick a topic below:',
     waQ1:'Question about Income Tax Return', waQ2:'Want to register NTN',
     waQ3:'Sales Tax / Company Registration', waQ4:'General question',
@@ -1058,6 +1132,10 @@ const I18N = {
     svc8t:'Document Verification', svc8d:'FBR document verification and related services',
     svcCta:'View All Services',
     processEyebrow:'Our Process', processTitle:'In Just 4 Simple Steps',
+    taxEstEyebrow:'Free Estimate', taxEstTitle:'Get Your Tax Estimate',
+    taxEstType:'Income Type', taxEstSalaried:'Salaried', taxEstBusiness:'Business', taxEstFreelancer:'Freelancer',
+    taxEstIncome:'Approx. Monthly Income', taxEstI1:'Under Rs 50,000', taxEstI2:'Rs 50,000 – 100,000', taxEstI3:'Rs 100,000 – 200,000', taxEstI4:'Rs 200,000 – 350,000', taxEstI5:'Over Rs 350,000',
+    taxEstBtn:'Get Free Estimate (WhatsApp)', taxEstNote:'💡 This is a general inquiry — our team will give you an accurate estimate based on your specific situation via WhatsApp.',
     process1t:'Get In Touch', process1d:'Contact us via call, WhatsApp, or the form',
     process2t:'Send Documents', process2d:'Share your required documents via WhatsApp or the portal',
     process3t:'We Handle It', process3d:'Our team completes your work accurately and quickly',
@@ -1156,6 +1234,7 @@ async function bookAppointment(){
   }catch(e){ console.warn(e); }
   const waMsg=`📅 *نئی اپائنٹمنٹ*\\n👤 ${name}\\n📱 ${mobile}\\n💼 ${service}\\n${email?'✉️ '+email+'\\n':''}${msg?'💬 '+msg:''}`;
   window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
+  trackEvent('appointment_submit', service);
   showSuccessAnimation(currentLang==='ur'?'✅ اپائنٹمنٹ بک ہو گئی!':'✅ Appointment booked!');
   ['aName','aMobile','aEmail','aMsg'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('aService').value='';
@@ -1169,6 +1248,7 @@ function sendContactWA(){
   const msg=document.getElementById('cMsg').value.trim();
   if(!name||!phone){ showToast(currentLang==='ur'?'⚠ نام اور موبائل ضروری ہے':'⚠ Name and mobile required'); return; }
   const waMsg=`السلام علیکم!\\n👤 ${name}\\n📱 ${phone}\\n💼 ${service||'—'}\\n${msg?'💬 '+msg:''}`;
+  trackEvent('contact_whatsapp_submit', service);
   window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
 }
 
@@ -1373,8 +1453,38 @@ async function loadSiteContent(){
           });
         }
       }
+      if(row.section==='deadline'){
+        _deadlineConfig = c;
+      }
     });
+    initDeadlineBanner();
   } catch(e){ console.warn('Site content load error:', e); }
+}
+
+/* ═══════════════ TAX DEADLINE COUNTDOWN ═══════════════ */
+let _deadlineConfig = null;
+function initDeadlineBanner(){
+  const banner = document.getElementById('deadlineBanner');
+  if(!banner) return;
+  if(!_deadlineConfig || !_deadlineConfig.active || !_deadlineConfig.date){ banner.style.display='none'; return; }
+  if(sessionStorage.getItem('mfj_deadline_dismissed')){ banner.style.display='none'; return; }
+  const deadline = new Date(_deadlineConfig.date+'T23:59:59');
+  const now = new Date();
+  const diffMs = deadline - now;
+  if(diffMs <= 0){ banner.style.display='none'; return; }
+  const days = Math.ceil(diffMs / (1000*60*60*24));
+  const labelEl = document.getElementById('deadlineLabel');
+  const dateEl = document.getElementById('deadlineDateText');
+  const cdEl = document.getElementById('deadlineCountdown');
+  if(labelEl) labelEl.textContent = _deadlineConfig.label || (currentLang==='ur' ? 'Income Tax Return فائل کرنے کی آخری تاریخ:' : 'Income Tax Return filing deadline:');
+  if(dateEl) dateEl.textContent = deadline.toLocaleDateString(currentLang==='ur'?'ur-PK':'en-US',{day:'numeric',month:'long',year:'numeric'});
+  if(cdEl) cdEl.textContent = currentLang==='ur' ? `${days} دن باقی ہیں` : `${days} days left`;
+  banner.style.display = 'flex';
+}
+function dismissDeadlineBanner(){
+  const banner = document.getElementById('deadlineBanner');
+  if(banner) banner.style.display='none';
+  sessionStorage.setItem('mfj_deadline_dismissed','1');
 }
 
 /* ═══════════════ PAGE LOADER ═══════════════ */
@@ -1384,12 +1494,34 @@ function hidePageLoader(){
 }
 window.addEventListener('load', ()=> setTimeout(hidePageLoader, 400));
 setTimeout(hidePageLoader, 3500); // safety fallback if a resource (e.g. map) delays load event
+/* ═══════════════ TAX ESTIMATE LEAD CAPTURE ═══════════════ */
+function requestTaxEstimate(){
+  const type = document.getElementById('taxEstType');
+  const income = document.getElementById('taxEstIncome');
+  const typeLabel = type.options[type.selectedIndex].text;
+  const incomeLabel = income.options[income.selectedIndex].text;
+  const msg = currentLang==='ur'
+    ? `السلام علیکم! مجھے اپنے Tax کا تخمینہ چاہیے۔\nآمدنی کی قسم: ${typeLabel}\nماہانہ آمدنی: ${incomeLabel}`
+    : `Hello! I'd like a tax estimate.\nIncome type: ${typeLabel}\nMonthly income: ${incomeLabel}`;
+  trackEvent('tax_estimate_request', type.value+'|'+income.value);
+  window.open('https://wa.me/923469592120?text='+encodeURIComponent(msg), '_blank');
+}
+
+/* ═══════════════ ANALYTICS EVENT TRACKING ═══════════════ */
+function trackEvent(eventType, meta){
+  try{ _supa.from('site_events').insert({event_type:eventType, meta:meta||null}); }catch(e){}
+}
+
 /* ═══════════════ WHATSAPP QUICK-CHAT POPUP ═══════════════ */
 function toggleWaPopup(){
-  document.getElementById('waPopup').classList.toggle('show');
+  const popup = document.getElementById('waPopup');
+  const opening = !popup.classList.contains('show');
+  popup.classList.toggle('show');
+  if(opening) trackEvent('whatsapp_popup_open');
 }
 function waQuickMsg(key){
   const msg = I18N[currentLang][key] || '';
+  trackEvent('whatsapp_quick_message', key);
   window.open('https://wa.me/923469592120?text='+encodeURIComponent(msg), '_blank');
   document.getElementById('waPopup').classList.remove('show');
 }

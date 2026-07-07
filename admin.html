@@ -1693,6 +1693,12 @@ tbody tr:hover td{background:var(--primary-ultra);}
       <div id="tab-analytics" class="panel">
         <div class="section-head"><h3>📈 Analytics ڈیش بورڈ</h3></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;">
+          <div class="card" style="grid-column:1/-1;">
+            <div class="card-header"><span class="card-title">🌐 Website Visitor Activity</span></div>
+            <div id="webAnalyticsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;padding:6px 0;">
+              <div style="color:var(--text-mute);font-size:13px;">لوڈ ہو رہا ہے...</div>
+            </div>
+          </div>
           <div class="card">
             <div class="card-header"><span class="card-title">📊 ماہانہ کلائنٹس</span></div>
             <div class="chart-wrap"><div class="bar-chart" id="monthlyChart"></div></div>
@@ -2080,6 +2086,18 @@ tbody tr:hover td{background:var(--primary-ultra);}
           </div>
 
           <div class="card" style="margin-bottom:14px;">
+            <div class="card-header"><span class="card-title">⏰ Tax Deadline Countdown</span></div>
+            <div class="field"><label>آخری تاریخ (Date)</label><input type="date" id="wc-deadline-date"></div>
+            <div class="field"><label>پیغام (Label)</label><input type="text" id="wc-deadline-label" placeholder="Income Tax Return فائل کرنے کی آخری تاریخ:"></div>
+            <div class="field" style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="wc-deadline-active" style="width:auto;">
+              <label style="margin:0;">Banner فعال کریں (website پر نظر آئے)</label>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-mute);margin-bottom:10px;">⚠ درست/موجودہ FBR تاریخ خود تصدیق کر کے درج کریں — یہ تبدیل ہوتی رہتی ہے</div>
+            <button class="btn btn-primary btn-sm" onclick="saveWebContent('deadline')">💾 محفوظ کریں</button>
+          </div>
+
+          <div class="card" style="margin-bottom:14px;">
             <div class="card-header"><span class="card-title">🏢 آفس / Why-Us تصویر</span></div>
             <div class="field">
               <label>🖼️ تصویر منتخب کریں</label>
@@ -2131,6 +2149,16 @@ tbody tr:hover td{background:var(--primary-ultra);}
           <div class="card" id="blogFormCard" style="display:none;">
             <div class="card-header"><span class="card-title">✍️ نئی پوسٹ</span></div>
             <div class="field"><label>عنوان</label><input type="text" id="bTitle" placeholder="بلاگ کا عنوان"></div>
+            <div class="field"><label>Category</label>
+              <select id="bCategory">
+                <option value="general">General / عمومی</option>
+                <option value="income_tax">Income Tax</option>
+                <option value="ntn">NTN Registration</option>
+                <option value="sales_tax">Sales Tax</option>
+                <option value="company">Company Registration</option>
+                <option value="news">FBR News / Updates</option>
+              </select>
+            </div>
             <div class="field"><label>Cover Emoji</label><input type="text" id="bEmoji" value="📝" maxlength="4" style="width:80px;"></div>
             <div class="field"><label>مضمون</label><textarea id="bContent" style="height:120px;" placeholder="بلاگ کا مواد..."></textarea></div>
 
@@ -2427,7 +2455,7 @@ function _showTabBase(name){
   if(name==='clients') renderTable();
   if(name==='referral') renderReferralNetwork();
   if(name==='referral-tree') renderTreeTab();
-  if(name==='analytics') renderAnalytics();
+  if(name==='analytics'){ renderAnalytics(); loadWebsiteAnalytics(); }
   if(name==='reports') renderReports();
   if(name==='followup') renderFollowUp();
   if(name==='data') {}
@@ -3163,6 +3191,50 @@ function renderMsgTab(){
 /* ═══════════════════════════════════════════════════════
    ANALYTICS
    ═══════════════════════════════════════════════════════ */
+async function loadWebsiteAnalytics(){
+  const grid = document.getElementById('webAnalyticsGrid');
+  if(!grid || !_supa) return;
+  try{
+    const [visitsRes, eventsRes] = await Promise.all([
+      _supa.from('site_visits').select('count').eq('id',1).single(),
+      _supa.from('site_events').select('event_type,created_at').order('created_at',{ascending:false}).limit(5000)
+    ]);
+    const totalVisits = (visitsRes.data && visitsRes.data.count) || 0;
+    const events = eventsRes.data || [];
+    const counts = {};
+    const now = Date.now();
+    const last7Days = events.filter(e => (now - new Date(e.created_at).getTime()) < 7*24*60*60*1000);
+    events.forEach(e=>{ counts[e.event_type] = (counts[e.event_type]||0) + 1; });
+    const labelMap = {
+      whatsapp_popup_open:'💬 WhatsApp کھولا',
+      whatsapp_quick_message:'💬 Quick Message',
+      appointment_submit:'📅 اپائنٹمنٹ فارم',
+      contact_whatsapp_submit:'✉️ Contact فارم',
+      mobile_cta_book_click:'📱 موبائل Book کلک'
+    };
+    let html = `
+      <div style="text-align:center;padding:12px;background:var(--bg-soft,#F5F7FA);border-radius:10px;">
+        <div style="font-size:24px;font-weight:800;color:var(--primary,#0F8A5F);">${totalVisits.toLocaleString()}</div>
+        <div style="font-size:11.5px;color:var(--text-mute);margin-top:4px;">کل وزٹس</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--bg-soft,#F5F7FA);border-radius:10px;">
+        <div style="font-size:24px;font-weight:800;color:#3B82F6;">${last7Days.length.toLocaleString()}</div>
+        <div style="font-size:11.5px;color:var(--text-mute);margin-top:4px;">پچھلے 7 دن کے Events</div>
+      </div>`;
+    Object.keys(labelMap).forEach(key=>{
+      html += `
+      <div style="text-align:center;padding:12px;background:var(--bg-soft,#F5F7FA);border-radius:10px;">
+        <div style="font-size:24px;font-weight:800;color:var(--navy,#0F2A3D);">${(counts[key]||0).toLocaleString()}</div>
+        <div style="font-size:11.5px;color:var(--text-mute);margin-top:4px;">${labelMap[key]}</div>
+      </div>`;
+    });
+    grid.innerHTML = html;
+  }catch(e){
+    console.warn('Website analytics error:', e);
+    grid.innerHTML = `<div style="color:var(--text-mute);font-size:13px;">⚠ Analytics لوڈ نہیں ہوئی — چیک کریں کہ site_events/site_visits ٹیبلز موجود ہیں</div>`;
+  }
+}
+
 function renderAnalytics(){
   const now = new Date();
   // Monthly clients bar chart (last 6 months)
@@ -5419,11 +5491,11 @@ async function uploadBlogMedia(file){
   const ext = file.name.split('.').pop();
   const fileName = 'blog_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
   try{
-    const {data, error} = await _supa.storage.from('media-blog').upload(fileName, file, {
+    const {data, error} = await _supa.storage.from('blog-media').upload(fileName, file, {
       cacheControl: '3600', upsert: false
     });
     if(error){ console.error('Upload error:', error); return null; }
-    const {data: urlData} = _supa.storage.from('media-blog').getPublicUrl(fileName);
+    const {data: urlData} = _supa.storage.from('blog-media').getPublicUrl(fileName);
     return { url: urlData.publicUrl, type: file.type.startsWith('video/') ? 'video' : 'image' };
   } catch(e){ console.error('Upload exception:', e); return null; }
 }
@@ -5432,6 +5504,7 @@ async function saveBlogPost(publish){
   const title=document.getElementById('bTitle').value.trim();
   const text=document.getElementById('bContent').value.trim();
   const emoji=document.getElementById('bEmoji').value.trim()||'📝';
+  const category=document.getElementById('bCategory').value||'general';
   if(!title||!text){ showToast('⚠ عنوان اور مضمون ضروری'); return; }
   if(!_supa){ showToast('⚠ Supabase connect نہیں'); return; }
 
@@ -5446,13 +5519,14 @@ async function saveBlogPost(publish){
   try{
     const slug=title.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,50);
     await _supa.from('blog_posts').insert({
-      title, content:text, cover_emoji:emoji, slug, published:publish,
+      title, content:text, cover_emoji:emoji, slug, published:publish, category,
       media_url: mediaUrl, media_type: mediaType
     });
     showToast(publish?'🚀 Publish ہو گئی!':'💾 Draft محفوظ!');
     document.getElementById('blogFormCard').style.display='none';
     document.getElementById('bTitle').value='';
     document.getElementById('bContent').value='';
+    document.getElementById('bCategory').value='general';
     removeBlogMedia();
     loadBlogAdminList();
   } catch(e){ console.error(e); showToast('⚠ محفوظ نہیں ہوئی: '+e.message); }
@@ -5660,6 +5734,14 @@ async function loadWebsiteContent(){
         if(ti) ti.value=c.timing||'';
       }
       if(row.section==='faq') renderFAQAdmin(c.items||[]);
+      if(row.section==='deadline'){
+        const d=document.getElementById('wc-deadline-date');
+        const l=document.getElementById('wc-deadline-label');
+        const a=document.getElementById('wc-deadline-active');
+        if(d) d.value=c.date||'';
+        if(l) l.value=c.label||'';
+        if(a) a.checked=!!c.active;
+      }
     });
   } catch(e){ console.warn(e); }
 }
@@ -5682,9 +5764,9 @@ async function uploadWebImage(file, key){
   const ext = file.name.split('.').pop();
   const fileName = 'site_'+key+'_'+Date.now()+'.'+ext;
   try{
-    const {error} = await _supa.storage.from('media-blog').upload(fileName, file, {cacheControl:'3600', upsert:false});
+    const {error} = await _supa.storage.from('blog-media').upload(fileName, file, {cacheControl:'3600', upsert:false});
     if(error){ console.error('Image upload error:', error); return null; }
-    const {data: urlData} = _supa.storage.from('media-blog').getPublicUrl(fileName);
+    const {data: urlData} = _supa.storage.from('blog-media').getPublicUrl(fileName);
     return urlData.publicUrl;
   } catch(e){ console.error(e); return null; }
 }
@@ -5718,7 +5800,7 @@ async function saveWebContent(section){
       showToast('⏳ تصویر اپلوڈ ہو رہی ہے...');
       imgUrl = await uploadWebImage(_wcImageFiles.office, 'office');
     }
-    if(!imgUrl){ showToast('⚠ پہلے تصویر منتخب کریں'); return; }
+    if(!imgUrl){ showToast('⚠ تصویر اپلوڈ نہیں ہوئی — Supabase Storage policies چیک کریں'); return; }
     contentData = { image: imgUrl };
   } else if(section==='about'){
     contentData = {
@@ -5732,6 +5814,12 @@ async function saveWebContent(section){
       phone:  document.getElementById('wc-phone')?.value||'',
       city:   document.getElementById('wc-city')?.value||'',
       timing: document.getElementById('wc-timing')?.value||''
+    };
+  } else if(section==='deadline'){
+    contentData = {
+      date:  document.getElementById('wc-deadline-date')?.value||'',
+      label: document.getElementById('wc-deadline-label')?.value||'',
+      active: document.getElementById('wc-deadline-active')?.checked || false
     };
   }
 

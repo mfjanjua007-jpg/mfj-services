@@ -72,6 +72,9 @@ body{font-family:'Segoe UI','Noto Nastaliq Urdu',Tahoma,Arial,sans-serif;backgro
 .p-docs-table{width:100%;border-collapse:collapse;font-size:13px;}
 .p-docs-table th{padding:9px 12px;text-align:right;color:#475569;font-size:11px;background:#F8FAFF;font-weight:700;}
 .p-docs-table td{padding:10px 12px;border-top:1px solid #F1F5F9;}
+.doc-upload-box{border:2px dashed #BAE6FD;border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#F8FAFF;}
+.doc-upload-box:hover{border-color:#0EA5E9;background:#EFF6FF;}
+.doc-upload-box.dragover{border-color:#0EA5E9;background:#EFF6FF;}
 .p-empty{text-align:center;padding:40px 20px;color:#94A3B8;font-size:13px;}
 .p-footer{text-align:center;padding:24px 16px;font-size:11.5px;color:#94A3B8;}
 .p-footer a{color:#0EA5E9;text-decoration:none;font-weight:700;}
@@ -190,6 +193,7 @@ function switchTab(tab){
   document.querySelectorAll('.p-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
   document.querySelectorAll('.p-panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+tab));
   if(tab==='messages') loadMessages();
+  if(tab==='docs' && currentClient) loadUploadedDocs(currentClient.id);
 }
 
 function showPortal(c){
@@ -254,9 +258,24 @@ function showPortal(c){
           <thead><tr><th>دستاویز</th><th>حالت</th></tr></thead>
           <tbody>${docEntries.map(([d,v])=>`<tr><td>${d}</td><td style="font-weight:700;color:${v?'#10B981':'#EF4444'};">${v?'✅ جمع':'❌ باقی'}</td></tr>`).join('')}</tbody>
         </table>
-      </div>`:`<div class="p-card"><div class="p-empty">📭 ابھی کوئی دستاویزات لسٹ موجود نہیں</div></div>`}
+      </div>`:''}
+      <div class="p-card">
+        <div class="p-card-title">📤 دستاویز اپلوڈ کریں</div>
+        <div class="doc-upload-box" onclick="document.getElementById('docFileInput').click()">
+          <div style="font-size:28px;margin-bottom:6px;">📎</div>
+          <div style="font-size:13px;font-weight:700;color:#0EA5E9;">فائل منتخب کرنے کے لیے یہاں کلک کریں</div>
+          <div style="font-size:11px;color:#94A3B8;margin-top:4px;">PDF, تصویر یا Word فائل (ایک سے زیادہ بھی منتخب کر سکتے ہیں)</div>
+        </div>
+        <input type="file" id="docFileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none;" onchange="handleDocFileChosen()">
+        <div id="docFileChosenName" style="font-size:12px;color:#475569;margin-top:8px;text-align:center;"></div>
+        <button class="login-btn" id="docUploadBtn" style="background:linear-gradient(135deg,#0EA5E9,#8B5CF6);margin-top:12px;display:none;" onclick="uploadClientDoc()">📤 اپلوڈ کریں</button>
+      </div>
+      <div class="p-card">
+        <div class="p-card-title">🗂️ آپ کی اپلوڈ کردہ فائلیں</div>
+        <div id="uploadedDocsList"><div class="p-empty" style="padding:20px;">⏳ لوڈ ہو رہا ہے...</div></div>
+      </div>
       <div class="p-card" style="background:#EFF6FF;border-color:#BAE6FD;">
-        <div style="font-size:12.5px;color:#0369A1;text-align:center;">📤 دستاویزات اپلوڈ کرنے کے لیے WhatsApp پر بھیجیں</div>
+        <div style="font-size:12.5px;color:#0369A1;text-align:center;">💬 مسئلہ ہو تو WhatsApp پر بھی بھیج سکتے ہیں</div>
       </div>
     </div>
 
@@ -288,10 +307,12 @@ function showPortal(c){
 
     <div class="p-footer">
       MFJ Services — Tax & Business Solutions<br>
-      <a href="tel:+923469592120">📞 ہم سے رابطہ کریں</a> &nbsp;|&nbsp; <a href="https://wa.me/923469592120">💬 WhatsApp</a>
+      <a href="tel:+923469592120">📞 0346-9592120</a> &nbsp;|&nbsp; <a href="tel:+923261192420">📞 0326-1192420</a><br>
+      <a href="https://wa.me/923469592120">💬 WhatsApp (0346-9592120)</a> &nbsp;|&nbsp; <a href="https://wa.me/923261192420">💬 WhatsApp (0326-1192420)</a>
     </div>
   `;
   document.getElementById('pBody').innerHTML = html;
+  loadUploadedDocs(c.id);
 }
 
 function sIcon(status){
@@ -319,6 +340,89 @@ function requestInvoiceWA(){
   if(!currentClient) return;
   const msg = `السلام علیکم! مجھے اپنی فائل (${currentClient.name}) کی رسید/انوائس چاہیے۔`;
   window.open('https://wa.me/923469592120?text='+encodeURIComponent(msg),'_blank');
+}
+
+/* DOCUMENT UPLOAD */
+function handleDocFileChosen(){
+  const input = document.getElementById('docFileInput');
+  const nameEl = document.getElementById('docFileChosenName');
+  const btn = document.getElementById('docUploadBtn');
+  const files = input.files;
+  if(!files || !files.length){ nameEl.textContent=''; btn.style.display='none'; return; }
+  nameEl.textContent = files.length===1 ? '📎 '+files[0].name : `📎 ${files.length} فائلیں منتخب کی گئیں`;
+  btn.style.display = 'block';
+}
+
+async function uploadClientDoc(){
+  if(!currentClient) return;
+  const input = document.getElementById('docFileInput');
+  const files = Array.from(input.files||[]);
+  if(!files.length){ alert('پہلے فائل منتخب کریں'); return; }
+
+  const MAX_SIZE = 15*1024*1024; // 15MB per file
+  const btn = document.getElementById('docUploadBtn');
+  btn.disabled = true; btn.textContent = '⏳ اپلوڈ ہو رہا ہے...';
+
+  let successCount = 0, failCount = 0;
+  for(const file of files){
+    if(file.size > MAX_SIZE){ failCount++; continue; }
+    try{
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
+      const path = `${currentClient.id}/${Date.now()}_${safeName}`;
+      const {error: upErr} = await _supa.storage.from('client-documents').upload(path, file, {cacheControl:'3600', upsert:false});
+      if(upErr) throw upErr;
+      const {data: urlData} = _supa.storage.from('client-documents').getPublicUrl(path);
+      const {error: dbErr} = await _supa.from('client_documents').insert({
+        client_id: currentClient.id,
+        file_name: file.name,
+        file_path: path,
+        file_url: urlData.publicUrl,
+        file_type: file.type
+      });
+      if(dbErr) throw dbErr;
+      successCount++;
+    }catch(e){ console.error(e); failCount++; }
+  }
+
+  btn.disabled = false; btn.textContent = '📤 اپلوڈ کریں'; btn.style.display='none';
+  input.value = '';
+  document.getElementById('docFileChosenName').textContent = '';
+
+  if(successCount>0) loadUploadedDocs(currentClient.id);
+
+  if(failCount===0) alert(`✅ ${successCount} فائل کامیابی سے اپلوڈ ہو گئی`);
+  else if(successCount===0) alert('⚠ اپلوڈ ناکام — دوبارہ کوشش کریں یا فائل کا سائز چیک کریں (15MB سے کم ہونا چاہیے)');
+  else alert(`✅ ${successCount} فائل اپلوڈ ہوئی، ${failCount} ناکام رہی`);
+}
+
+async function loadUploadedDocs(clientId){
+  const el = document.getElementById('uploadedDocsList');
+  if(!el) return;
+  try{
+    const {data, error} = await _supa.from('client_documents').select('*').eq('client_id', clientId).order('uploaded_at',{ascending:false});
+    if(error) throw error;
+    if(!data || !data.length){ el.innerHTML = '<div class="p-empty" style="padding:20px;">📭 ابھی کوئی فائل اپلوڈ نہیں کی</div>'; return; }
+    el.innerHTML = data.map(d=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFF;border-radius:10px;margin-bottom:8px;">
+        <div style="font-size:22px;">${fileIcon(d.file_type)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12.5px;font-weight:700;color:#0F172A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.file_name}</div>
+          <div style="font-size:10.5px;color:#94A3B8;">${new Date(d.uploaded_at).toLocaleDateString('ur-PK',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <a href="${d.file_url}" target="_blank" style="color:#0EA5E9;font-size:11px;font-weight:700;text-decoration:none;background:#EFF6FF;padding:6px 12px;border-radius:8px;white-space:nowrap;">👁 دیکھیں</a>
+      </div>`).join('');
+  }catch(e){
+    console.warn(e);
+    el.innerHTML = '<div class="p-empty" style="padding:20px;">⚠ فائلیں لوڈ نہیں ہو سکیں</div>';
+  }
+}
+
+function fileIcon(type){
+  if(!type) return '📎';
+  if(type.includes('pdf')) return '📕';
+  if(type.includes('image')) return '🖼️';
+  if(type.includes('word') || type.includes('document')) return '📘';
+  return '📎';
 }
 
 /* MESSAGES */

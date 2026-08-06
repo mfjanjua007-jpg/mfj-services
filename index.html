@@ -1658,7 +1658,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="taxRates2026_27.js"></script>
+<script src="taxRates2026_27-4.js"></script>
 <script>
 const SUPABASE_URL='https://ixgsartlktmgqfnzzatv.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8';
@@ -2502,8 +2502,7 @@ function atcCalcProperty(){
     </div>`;
   trackEvent('advance_tax_property_calculated', Math.round(value)+'|'+rate);
 }
-atcSuggestVehicleRate();
-atcSuggestPropertyRate();
+try{ atcSuggestVehicleRate(); atcSuggestPropertyRate(); }catch(e){ console.warn('Tax rate init skipped (taxRates file not loaded yet):', e); }
 
 /* DC / FBR Property Value Lookup — official links per province, from rate card */
 function atcOpenDcPortal(){
@@ -2547,7 +2546,7 @@ function wtCalculate(){
     </div>`;
   trackEvent('withholding_tax_calculated', document.getElementById('wtCategory').value+'|'+Math.round(amount)+'|'+rate);
 }
-wtSuggestRate();
+try{ wtSuggestRate(); }catch(e){ console.warn('wtSuggestRate skipped:', e); }
 function wtCtaWhatsapp(){
   const ur=currentLang==='ur';
   const msg=ur?'السلام علیکم، مجھے Advance Tax / Withholding Tax کی درست ریٹ کنفرم کروانی ہے اور فائلنگ میں مدد چاہیے۔':'Hi, I need help confirming the correct Advance/Withholding Tax rate and filing.';
@@ -2633,8 +2632,7 @@ function stCalcServices(){
     </div>`;
   trackEvent('sales_tax_services_calculated', document.getElementById('stProvince').value+'|'+Math.round(amount)+'|'+rate);
 }
-stSuggestGoodsRate();
-stSuggestServicesRate();
+try{ stSuggestGoodsRate(); stSuggestServicesRate(); }catch(e){ console.warn('stSuggestRate skipped:', e); }
 
 /* ═══════════════ ATL / NTN / STRN VERIFICATION ═══════════════ */
 function atlOpenPortal(which){
@@ -2785,8 +2783,7 @@ function cgCalcPre(){
     </div>`;
   trackEvent('cgt_property_pre_calculated', Math.round(gain)+'|'+rate);
 }
-cgSuggestPostRate();
-cgSuggestPreRate();
+try{ cgSuggestPostRate(); cgSuggestPreRate(); }catch(e){ console.warn('cgSuggestRate skipped:', e); }
 
 /* ═══════════════ UTILITY TAX (Electricity 235 / Telecom 236) ═══════════════ */
 function utSwitchTab(tab){
@@ -3151,22 +3148,23 @@ function initHeroScrollFade(){
 
 /* ═══════════════ INIT ═══════════════ */
 document.addEventListener('DOMContentLoaded', async ()=>{
-  applyLang(currentLang);
-  loadApprovedReviews();
-  loadBlogPosts();
-  trackAndShowVisits();
-  initScrollReveal();
-  initCountUp();
-  initTypewriter();
-  initParticles();
-  initScrollFx();
-  initIconDraw();
-  initRipple();
-  renderTicker();
-  initMagneticButtons();
-  initHeroScrollFade();
-  await loadSiteContent();
-  initHeroCinematic();
+  const safe = (fn, label) => { try{ fn(); }catch(e){ console.warn('Init failed: '+label, e); } };
+  safe(()=>applyLang(currentLang), 'applyLang');
+  safe(loadApprovedReviews, 'loadApprovedReviews');
+  safe(loadBlogPosts, 'loadBlogPosts');
+  safe(trackAndShowVisits, 'trackAndShowVisits');
+  safe(initScrollReveal, 'initScrollReveal');
+  safe(initCountUp, 'initCountUp');
+  safe(initTypewriter, 'initTypewriter');
+  safe(initParticles, 'initParticles');
+  safe(initScrollFx, 'initScrollFx');
+  safe(initIconDraw, 'initIconDraw');
+  safe(initRipple, 'initRipple');
+  safe(renderTicker, 'renderTicker');
+  safe(initMagneticButtons, 'initMagneticButtons');
+  safe(initHeroScrollFade, 'initHeroScrollFade');
+  try{ await loadSiteContent(); }catch(e){ console.warn('Init failed: loadSiteContent', e); }
+  safe(initHeroCinematic, 'initHeroCinematic');
 });
 </script>
 </body>

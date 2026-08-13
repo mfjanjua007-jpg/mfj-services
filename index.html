@@ -999,8 +999,13 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
           </select>
         </div>
       </div>
+      <div class="tax-est-field" id="atcVAgeRow" style="display:none;">
+        <label data-i18n="atcVAge">گاڑی کتنے سال پرانی ہے؟ (پہلی رجسٹریشن سے)</label>
+        <input type="number" id="atcVAge" min="0" step="1" placeholder="مثلاً 2" oninput="atcSuggestVehicleRate()">
+      </div>
+      <div class="wt-hint" id="atcVTransferHint" style="display:none;" data-i18n="atcVTransferHint">💡 ملکیت کی منتقلی (استعمال شدہ گاڑی) پر ٹیکس مالیت کے % کی بجائے ایک مقررہ (fixed) رقم ہوتا ہے جو ہر مکمل سال کے ساتھ 10% کم ہوتی ہے، اور 5 سال بعد صفر ہو جاتی ہے۔ 850cc تک کوئی ٹیکس نہیں۔</div>
       <div class="wt-rate-row">
-        <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="atcSuggestedRate">تخمینی ریٹ (%)</span> <span id="atcVRateUnit" style="font-weight:400;color:var(--faint);"></span></label><input type="number" id="atcVRate" step="0.1"></div>
+        <div class="tax-est-field" id="atcVRateFieldWrap"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="atcSuggestedRate">تخمینی ریٹ (%)</span> <span id="atcVRateUnit" style="font-weight:400;color:var(--faint);"></span></label><input type="number" id="atcVRate" step="0.1"></div>
         <button class="btn-solid ripple-host" style="justify-content:center;" onclick="atcCalcVehicle()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
       </div>
       <div id="atcVResult" style="display:none;"></div>
@@ -1046,10 +1051,28 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
         <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="atcSuggestedRate">تخمینی ریٹ (%)</span></label><input type="number" id="atcPRate" step="0.1"></div>
         <button class="btn-solid ripple-host" style="justify-content:center;" onclick="atcCalcProperty()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
       </div>
+
+      <div class="atc-registry-toggle" style="margin-top:16px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;">
+          <input type="checkbox" id="atcRegistryToggle" onchange="atcToggleRegistryFields()" style="width:18px;height:18px;accent-color:var(--green);">
+          <span data-i18n="atcRegistryToggle">🧾 مکمل رجسٹری اخراجات بھی شامل کریں (Stamp Duty + Registration Fee + TMA Fee)</span>
+        </label>
+      </div>
+      <div id="atcRegistryFields" style="display:none;margin-top:10px;">
+        <div class="wt-hint" data-i18n="atcRegistryHint">💡 یہ تینوں شرحیں صوبے، ضلع اور جائیداد کی نوعیت کے حساب سے مختلف ہوتی ہیں اور اکثر تبدیل ہوتی رہتی ہیں — براہ کرم اپنے متعلقہ Sub-Registrar / Excise &amp; Taxation / TMA دفتر یا ہم سے تصدیق شدہ ریٹ لے کر یہاں درج کریں۔</div>
+        <div class="tax-est-row">
+          <div class="tax-est-field"><label data-i18n="atcStampDuty">Stamp Duty (%)</label><input type="number" id="atcStampDuty" step="0.1" placeholder="مثلاً 5"></div>
+          <div class="tax-est-field"><label data-i18n="atcRegFee">Registration Fee (%)</label><input type="number" id="atcRegFee" step="0.1" placeholder="مثلاً 1"></div>
+        </div>
+        <div class="tax-est-field"><label data-i18n="atcTmaFee">TMA Fee (%)</label><input type="number" id="atcTmaFee" step="0.1" placeholder="مثلاً 1"></div>
+        <div class="ats-quickfill" style="margin-top:4px;">
+          <button onclick="atcOpenDcPortal()" data-i18n="atcDcBtn">🏛️ صوبائی DC ریٹ پورٹل کھولیں</button>
+        </div>
+      </div>
       <div id="atcPResult" style="display:none;"></div>
     </div>
 
-    <div class="wt-disclaimer" data-i18n="atcDisclaimer">⚠️ یہ کیلکولیٹر پورے پاکستان (پنجاب، سندھ، KPK، بلوچستان، اسلام آباد) کے لیے ہے کیونکہ 231B, 236C, 236K وفاقی (FBR) ٹیکس ہیں اور ہر جگہ یکساں لاگو ہوتے ہیں۔ پراپرٹی کے فائلر ریٹس Budget 2026-27 (Finance Act 2026) کے مطابق اپڈیٹ ہیں: 236K = 1.5% (خریدار)، 236C = 2.75% (فروخت کنندہ)۔ نان فائلر اور گاڑی کے ریٹس عمومی تخمینہ ہیں — آپ اوپر ریٹ خود بھی تبدیل کر سکتے ہیں۔ صوبائی Stamp Duty اس میں شامل نہیں۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔</div>
+    <div class="wt-disclaimer" data-i18n="atcDisclaimer">⚠️ یہ کیلکولیٹر پورے پاکستان (پنجاب، سندھ، KPK، بلوچستان، اسلام آباد) کے لیے ہے کیونکہ 231B, 236C, 236K وفاقی (FBR) ٹیکس ہیں اور ہر جگہ یکساں لاگو ہوتے ہیں۔ پراپرٹی کے فائلر ریٹس Finance Act 2026 کے مطابق اپڈیٹ ہیں: 236K = 1.25% (خریدار)، 236C = 2.75% (فروخت کنندہ)۔ نان فائلر اور گاڑی کے ریٹس عمومی تخمینہ ہیں — آپ اوپر ریٹ خود بھی تبدیل کر سکتے ہیں۔ صوبائی Stamp Duty، Registration Fee اور TMA Fee "رجسٹری اخراجات" آپشن میں خود درج کر کے شامل کیے جا سکتے ہیں۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔</div>
   </div>
 </section>
 
@@ -1325,28 +1348,35 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     </div>
 
     <div id="utElecForm">
-      <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label data-i18n="utMeterType">میٹر کی قسم</label>
+        <select id="utMeterType" onchange="utToggleMeterType()">
+          <option value="home" data-i18n="utMeterHome">گھریلو (Home)</option>
+          <option value="shop" data-i18n="utMeterShop">دکان/دفتر (Shop/Office)</option>
+          <option value="factory" data-i18n="utMeterFactory">فیکٹری (Factory)</option>
+        </select>
+      </div>
+      <div class="tax-est-row" id="utElecFilerRow">
         <div class="tax-est-field">
           <label data-i18n="rcFilerStatus">فائلر اسٹیٹس</label>
           <select id="utElecFiler"><option value="filer" data-i18n="atcFiler">فائلر (Filer)</option><option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option></select>
         </div>
         <div class="tax-est-field"><label data-i18n="utBillAmount">ماہانہ بل کی رقم (Rs)</label><input type="number" id="utElecAmount" placeholder="مثلاً 30000"></div>
       </div>
+      <div class="tax-est-field" id="utElecAmountOnlyRow" style="display:none;"><label data-i18n="utBillAmount">ماہانہ بل کی رقم (Rs)</label><input type="number" id="utElecAmount2" placeholder="مثلاً 30000"></div>
       <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="utCalcElec()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
-      <div class="wt-hint" data-i18n="utElecHint">💡 فائلر کے لیے گھریلو بجلی پر یہ ٹیکس مکمل معاف ہے۔ نان فائلر کے لیے، اگر ماہانہ بل Rs 25,000 سے زیادہ ہو تو پوری بل رقم پر 7.5% لاگو ہوتا ہے۔</div>
+      <div class="wt-hint" id="utElecHintBox" data-i18n="utElecHint">💡 فائلر کے لیے گھریلو بجلی پر یہ ٹیکس مکمل معاف ہے۔ نان فائلر کے لیے، اگر ماہانہ بل Rs 25,000 سے زیادہ ہو تو پوری بل رقم پر 7.5% لاگو ہوتا ہے۔</div>
       <div id="utElecResult" style="display:none;"></div>
     </div>
 
     <div id="utTelecomForm" style="display:none;">
-      <div class="tax-est-row">
-        <div class="tax-est-field">
-          <label data-i18n="rcFilerStatus">فائلر اسٹیٹس</label>
-          <select id="utTelFiler"><option value="filer" data-i18n="atcFiler">فائلر (Filer)</option><option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option></select>
-        </div>
-        <div class="tax-est-field"><label data-i18n="utTelAmount">بل / پری پیڈ لوڈ کی رقم (Rs)</label><input type="number" id="utTelAmount" placeholder="مثلاً 2000"></div>
-      </div>
+      <div class="tax-est-field"><label data-i18n="utTelAmount">بل / پری پیڈ لوڈ کی رقم (Rs)</label><input type="number" id="utTelAmount" placeholder="مثلاً 2000"></div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;font-size:14px;">
+        <input type="checkbox" id="utTelFbrNamed" style="width:18px;height:18px;accent-color:var(--green);">
+        <span data-i18n="utTelFbrNamedLabel">FBR کی جانب سے باقاعدہ نامزد نان فائلر (75% کی خصوصی شرح)</span>
+      </label>
       <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="utCalcTelecom()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
-      <div class="wt-hint" data-i18n="utTelHint">💡 یہ موبائل بل، انٹرنیٹ بل اور پری پیڈ لوڈ/کارڈ تینوں پر لاگو ہوتا ہے (Section 236)۔</div>
+      <div class="wt-hint" data-i18n="utTelHint">💡 یہ 15% فلیٹ ریٹ فائلر اور نان فائلر دونوں پر یکساں لاگو ہوتا ہے (موبائل بل، انٹرنیٹ بل، پری پیڈ لوڈ/کارڈ — Section 236)۔ صرف وہ افراد جنہیں FBR نے باقاعدہ نوٹیفیکیشن کے ذریعے "نان فائلر" قرار دیا ہو، ان پر 75% کی خصوصی شرح لاگو ہوتی ہے۔</div>
       <div id="utTelResult" style="display:none;"></div>
     </div>
 
@@ -1364,7 +1394,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   <div class="tax-est-card reveal">
     <div class="tax-est-field">
       <label data-i18n="vfProvince">صوبہ منتخب کریں</label>
-      <select id="vfProvince">
+      <select id="vfProvince" onchange="vfSuggestToken()">
         <option value="punjab">Punjab</option>
         <option value="sindh">Sindh</option>
         <option value="kpk">Khyber Pakhtunkhwa</option>
@@ -1373,21 +1403,74 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </select>
     </div>
     <button class="btn-outline" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="vfOpenPortal()">🏛️ <span data-i18n="vfPortalBtn">آفیشل ٹوکن ٹیکس پورٹل کھولیں — درست رقم چیک کریں</span></button>
-    <div class="wt-hint" style="margin-bottom:14px;" data-i18n="vfHint">💡 یہ فیسیں صوبے، گاڑی کی قیمت/انجن کیپیسٹی اور سال بہ سال بدلتی رہتی ہیں — اس لیے یہاں کوئی رقم پہلے سے نہیں بھری گئی۔ اوپر پورٹل سے درست رقم چیک کر کے نیچے درج کریں اور کُل خودکار جمع ہو جائے گا۔</div>
     <div class="tax-est-row">
-      <div class="tax-est-field"><label data-i18n="vfTokenTax">ٹوکن ٹیکس (Rs)</label><input type="number" id="vfToken" placeholder="0" oninput="vfCalcTotal()"></div>
+      <div class="tax-est-field"><label data-i18n="atcEngineCc">انجن کیپیسٹی (cc)</label><input type="number" id="vfEngineCc" placeholder="مثلاً 1300" oninput="vfSuggestToken()"></div>
+      <div class="tax-est-field"><label data-i18n="atcVehicleValue">گاڑی کی مالیت (Rs)</label><input type="number" id="vfInvoiceValue" placeholder="مثلاً 3500000" oninput="vfSuggestToken()"></div>
+    </div>
+    <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label data-i18n="atcFilerStatus">فائلر اسٹیٹس</label>
+        <select id="vfFiler" onchange="vfSuggestToken()">
+          <option value="filer" data-i18n="atcFiler">فائلر (Filer)</option>
+          <option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option>
+        </select>
+      </div>
+      <div class="tax-est-field"><label data-i18n="atcVAge">گاڑی کتنے سال پرانی ہے؟</label><input type="number" id="vfVehicleAge" min="0" step="1" placeholder="مثلاً 2" oninput="vfSuggestToken()"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:10px;font-size:14px;">
+      <input type="checkbox" id="vfEarlyPayment" style="width:18px;height:18px;accent-color:var(--green);" onchange="vfSuggestToken()">
+      <span data-i18n="vfEarlyPaymentLabel">31 اگست تک پوری رقم ادا کر رہا ہوں (Punjab میں 10% رعایت)</span>
+    </label>
+    <div class="wt-hint" style="margin-bottom:14px;" data-i18n="vfHint">💡 ٹوکن ٹیکس اور فیڈرل حصہ (Section 234) اوپر دی گئی تفصیل سے خودکار تجویز ہو جاتے ہیں (ایڈیٹ ایبل) — لیکن رجسٹریشن فیس، ٹرانسفر فیس، اسمارٹ کارڈ اور نمبر پلیٹ فیس صوبے اور سال بہ سال بدلتی رہتی ہیں، اس لیے وہ خود درج کریں۔ پورٹل سے حتمی تصدیق ضرور کر لیں۔</div>
+    <div class="tax-est-row">
+      <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="vfTokenTax">ٹوکن ٹیکس (Rs)</span></label><input type="number" id="vfToken" placeholder="0" oninput="vfCalcTotal()"></div>
+      <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="vfFederal234">فیڈرل حصہ — Section 234 (Rs)</span></label><input type="number" id="vfFederal234" placeholder="0" oninput="vfCalcTotal()"></div>
+    </div>
+    <div class="tax-est-row">
       <div class="tax-est-field"><label data-i18n="vfRegFee">رجسٹریشن فیس (Rs)</label><input type="number" id="vfReg" placeholder="0" oninput="vfCalcTotal()"></div>
+      <div class="tax-est-field"><label data-i18n="vfTransferFee">ٹرانسفر فیس (Rs)</label><input type="number" id="vfTransfer" placeholder="0" oninput="vfCalcTotal()"></div>
     </div>
     <div class="tax-est-row">
-      <div class="tax-est-field"><label data-i18n="vfTransferFee">ٹرانسفر فیس (Rs)</label><input type="number" id="vfTransfer" placeholder="0" oninput="vfCalcTotal()"></div>
       <div class="tax-est-field"><label data-i18n="vfSmartCard">اسمارٹ کارڈ فیس (Rs)</label><input type="number" id="vfSmartCard" placeholder="0" oninput="vfCalcTotal()"></div>
+      <div class="tax-est-field"><label data-i18n="vfPlateFee">نمبر پلیٹ فیس (Rs)</label><input type="number" id="vfPlate" placeholder="0" oninput="vfCalcTotal()"></div>
     </div>
-    <div class="tax-est-field"><label data-i18n="vfPlateFee">نمبر پلیٹ فیس (Rs)</label><input type="number" id="vfPlate" placeholder="0" oninput="vfCalcTotal()"></div>
     <div id="vfResult" style="display:none;"></div>
   </div>
 </section>
 
-<!-- FILING CTA -->
+<!-- PTA MOBILE TAX CALCULATOR -->
+<section id="pta-tax-calculator">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="ptaEyebrow">موبائل رجسٹریشن</div>
+    <h2 class="sec-title" data-i18n="ptaTitle">PTA موبائل ٹیکس کیلکولیٹر</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label data-i18n="ptaRoute">رجسٹریشن کا طریقہ</label>
+        <select id="ptaRoute" onchange="ptaCalc()">
+          <option value="passport" data-i18n="ptaPassport">پاسپورٹ (60 دن کے اندر)</option>
+          <option value="cnic" data-i18n="ptaCnic">CNIC</option>
+        </select>
+      </div>
+      <div class="tax-est-field">
+        <label data-i18n="ptaDeviceType">فون کی قسم</label>
+        <select id="ptaDeviceType" onchange="ptaCalc()">
+          <option value="smartphone" data-i18n="ptaSmartphone">اسمارٹ فون</option>
+          <option value="basic" data-i18n="ptaBasic">بیسک فون</option>
+        </select>
+      </div>
+    </div>
+    <div class="tax-est-row">
+      <div class="tax-est-field"><label data-i18n="ptaCfValue">فون کی کسٹمز ویلیو (US$)</label><input type="number" id="ptaCfValue" placeholder="مثلاً 666" oninput="ptaCalc()"></div>
+      <div class="tax-est-field"><label data-i18n="ptaExRate">ڈالر ریٹ (Rs)</label><input type="number" id="ptaExRate" value="280" oninput="ptaCalc()"></div>
+    </div>
+    <div class="wt-hint" data-i18n="ptaHint">💡 یہ "کسٹمز ویلیو" وہی ہے جو PTA DIRBS پر آپ کے فون ماڈل کے لیے آفیشل شائع شدہ ہوتی ہے (دکان کی قیمت نہیں) — یہ عام طور پر مارکیٹ پرائس سے کم ہوتی ہے۔ اپنے فون کی درست ویلیو <a href="https://dirbs.pta.gov.pk/drs" target="_blank" style="color:var(--green);font-weight:600;">PTA DIRBS پورٹل</a> سے چیک کریں۔</div>
+    <div id="ptaResult" style="display:none;"></div>
+  </div>
+</section>
+
 <div class="wt-cta">
   <h3 data-i18n="wtCtaTitle">درست ریٹ کی تصدیق اور مکمل فائلنگ ہم کر دیں گے</h3>
   <p data-i18n="wtCtaSub">Vehicle، Property یا Contractor/Supplier Payments — ہر کیس مختلف ہوتا ہے۔ اپنی تفصیلات بھیجیں، ہماری ٹیم درست ریٹ کنفرم کر کے فائلنگ مکمل کر دے گی۔</p>
@@ -1658,7 +1741,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="taxRates2026_27-4.js"></script>
+<script src="taxRates2026_27.js"></script>
 <script>
 const SUPABASE_URL='https://ixgsartlktmgqfnzzatv.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8';
@@ -1703,13 +1786,18 @@ const I18N = {
     atcEyebrow:'ایڈوانس ٹیکس تخمینہ', atcTitle:'Advance Tax Calculator (گاڑی / پراپرٹی)',
     atcTabVehicle:'گاڑی', atcTabProperty:'پراپرٹی',
     atcTxnType:'ٹرانزیکشن کی قسم', atcVTxnReg:'رجسٹریشن/خریداری (231B-1)', atcVTxnTransfer:'ملکیت کی منتقلی (231B-2)', atcVTxnLease:'لیزنگ (231B-1A)',
-    atcEngine:'انجن کیپیسٹی', atcVehicleValue:'گاڑی کی مالیت (Rs)',
+    atcVAge:'گاڑی کتنے سال پرانی ہے؟ (پہلی رجسٹریشن سے)',
+    atcVTransferHint:'💡 ملکیت کی منتقلی (استعمال شدہ گاڑی) پر ٹیکس مالیت کے % کی بجائے ایک مقررہ (fixed) رقم ہوتا ہے جو ہر مکمل سال کے ساتھ 10% کم ہوتی ہے، اور 5 سال بعد صفر ہو جاتی ہے۔ 850cc تک کوئی ٹیکس نہیں۔',
+    atcEngine:'انجن کیپیسٹی', atcVehicleValue:'گاڑی کی مالیت (Rs)', atcEngineCc:'انجن کیپیسٹی (cc)',
     atcFilerStatus:'فائلر اسٹیٹس', atcFiler:'فائلر (Filer)', atcLateFiler:'لیٹ فائلر', atcNonFiler:'نان فائلر',
     atcEditableTag:'ایڈیٹ ایبل', atcSuggestedRate:'تخمینی ریٹ (%)', atcCalcBtn:'حساب کریں',
     atcPTxnType:'ٹرانزیکشن کی قسم', atcPurchase:'خریداری (Section 236K)', atcSale:'فروخت (Section 236C)', atcPropertyValue:'پراپرٹی کی مالیت — FBR/DC Value (Rs)',
     atcDcHelperLabel:'🔍 اپنے علاقے کا DC/FBR ریٹ چیک کریں', atcDcBtn:'🏛️ صوبائی DC ریٹ پورٹل کھولیں', atcFbrBtn:'🏛️ FBR Valuation ٹیبل کھولیں',
     atcDcHint:'💡 236K/236C کے لیے FBR کی نوٹیفائیڈ ویلیو استعمال ہوتی ہے (جو اکثر DC ریٹ سے مختلف ہوتی ہے) — جو بھی زیادہ ہو وہ لاگو ہوتی ہے۔ اوپر "پراپرٹی کی مالیت" میں وہی رقم درج کریں۔',
-    atcDisclaimer:'⚠️ یہ کیلکولیٹر پورے پاکستان (پنجاب، سندھ، KPK، بلوچستان، اسلام آباد) کے لیے ہے کیونکہ 231B, 236C, 236K وفاقی (FBR) ٹیکس ہیں اور ہر جگہ یکساں لاگو ہوتے ہیں۔ پراپرٹی کے فائلر ریٹس Budget 2026-27 (Finance Act 2026) کے مطابق اپڈیٹ ہیں: 236K = 1.5% (خریدار)، 236C = 2.75% (فروخت کنندہ)۔ نان فائلر اور گاڑی کے ریٹس عمومی تخمینہ ہیں — آپ اوپر ریٹ خود بھی تبدیل کر سکتے ہیں۔ صوبائی Stamp Duty اس میں شامل نہیں۔ ✅ Finance Act 2026-27 کی دیگر اہم تبدیلیاں: "لیٹ فائلر" کیٹیگری ختم (اب صرف Filer/Non-Filer)، Section 7E (Deemed Income Tax) ختم، پراپرٹی ٹرانسفر پر 7% FED ختم۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔',
+    atcRegistryToggle:'🧾 مکمل رجسٹری اخراجات بھی شامل کریں (Stamp Duty + Registration Fee + TMA Fee)',
+    atcRegistryHint:'💡 یہ تینوں شرحیں صوبے، ضلع اور جائیداد کی نوعیت کے حساب سے مختلف ہوتی ہیں اور اکثر تبدیل ہوتی رہتی ہیں — براہ کرم اپنے متعلقہ Sub-Registrar / Excise & Taxation / TMA دفتر یا ہم سے تصدیق شدہ ریٹ لے کر یہاں درج کریں۔',
+    atcStampDuty:'Stamp Duty (%)', atcRegFee:'Registration Fee (%)', atcTmaFee:'TMA Fee (%)',
+    atcDisclaimer:'⚠️ یہ کیلکولیٹر پورے پاکستان (پنجاب، سندھ، KPK، بلوچستان، اسلام آباد) کے لیے ہے کیونکہ 231B, 236C, 236K وفاقی (FBR) ٹیکس ہیں اور ہر جگہ یکساں لاگو ہوتے ہیں۔ پراپرٹی کے فائلر ریٹس Finance Act 2026 کے مطابق اپڈیٹ ہیں: 236K = 1.25% (خریدار)، 236C = 2.75% (فروخت کنندہ)۔ نان فائلر اور گاڑی کے ریٹس عمومی تخمینہ ہیں — آپ اوپر ریٹ خود بھی تبدیل کر سکتے ہیں۔ صوبائی Stamp Duty، Registration Fee اور TMA Fee "رجسٹری اخراجات" آپشن میں خود درج کر کے شامل کیے جا سکتے ہیں (یہ خودکار نہیں، کیونکہ یہ ضلع وار مختلف ہوتے ہیں)۔ ✅ Finance Act 2026-27 کی دیگر اہم تبدیلیاں: "لیٹ فائلر" کیٹیگری ختم (اب صرف Filer/Non-Filer)، Section 7E (Deemed Income Tax) ختم، پراپرٹی ٹرانسفر پر 7% FED ختم۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔',
     wtEyebrow:'Section 153 تخمینہ', wtTitle:'Withholding Tax Calculator (Contractor / Supplier / Retailer)',
     wtCategory:'ادائیگی کی قسم', wtGoods:'Goods/Supplies — بشمول Retailer, Wholesaler, Distributor',
     wtServicesGeneral:'Services — عام/غیر مخصوص (Legal, Consultancy, Medical وغیرہ)', wtServicesSpecified:'Services — مخصوص فہرست (Transport, Hospitality, Engineering وغیرہ)',
@@ -1751,12 +1839,20 @@ const I18N = {
     utEyebrow:'بجلی / موبائل / انٹرنیٹ', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'بجلی (Electricity)', utTabTelecom:'موبائل/انٹرنیٹ',
     utBillAmount:'ماہانہ بل کی رقم (Rs)', utElecHint:'💡 فائلر کے لیے گھریلو بجلی پر یہ ٹیکس مکمل معاف ہے۔ نان فائلر کے لیے، اگر ماہانہ بل Rs 25,000 سے زیادہ ہو تو پوری بل رقم پر 7.5% لاگو ہوتا ہے۔',
-    utTelAmount:'بل / پری پیڈ لوڈ کی رقم (Rs)', utTelHint:'💡 یہ موبائل بل، انٹرنیٹ بل اور پری پیڈ لوڈ/کارڈ تینوں پر لاگو ہوتا ہے (Section 236)۔',
+    utMeterType:'میٹر کی قسم', utMeterHome:'گھریلو (Home)', utMeterShop:'دکان/دفتر (Shop/Office)', utMeterFactory:'فیکٹری (Factory)',
+    utTelFbrNamedLabel:'FBR کی جانب سے باقاعدہ نامزد نان فائلر (75% کی خصوصی شرح)',
+    utTelAmount:'بل / پری پیڈ لوڈ کی رقم (Rs)', utTelHint:'💡 یہ 15% فلیٹ ریٹ فائلر اور نان فائلر دونوں پر یکساں لاگو ہوتا ہے (موبائل بل، انٹرنیٹ بل، پری پیڈ لوڈ/کارڈ — Section 236)۔ صرف وہ افراد جنہیں FBR نے باقاعدہ نوٹیفیکیشن کے ذریعے "نان فائلر" قرار دیا ہو، ان پر 75% کی خصوصی شرح لاگو ہوتی ہے۔',
     utDisclaimer:'⚠️ گیس بلز پر فی الحال بجلی جیسا کوئی advance tax نہیں ہے، اس لیے یہاں شامل نہیں کیا۔ یہ ریٹس وفاقی ہیں، پورے پاکستان میں یکساں۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔',
     vfEyebrow:'صوبائی گاڑی فیس', vfTitle:'Token Tax / Registration / Transfer Fee',
     vfProvince:'صوبہ منتخب کریں', vfPortalBtn:'آفیشل ٹوکن ٹیکس پورٹل کھولیں — درست رقم چیک کریں',
-    vfHint:'💡 یہ فیسیں صوبے، گاڑی کی قیمت/انجن کیپیسٹی اور سال بہ سال بدلتی رہتی ہیں — اس لیے یہاں کوئی رقم پہلے سے نہیں بھری گئی۔ اوپر پورٹل سے درست رقم چیک کر کے نیچے درج کریں اور کُل خودکار جمع ہو جائے گا۔',
+    vfHint:'💡 ٹوکن ٹیکس اور فیڈرل حصہ (Section 234) اوپر دی گئی تفصیل سے خودکار تجویز ہو جاتے ہیں (ایڈیٹ ایبل) — لیکن رجسٹریشن فیس، ٹرانسفر فیس، اسمارٹ کارڈ اور نمبر پلیٹ فیس صوبے اور سال بہ سال بدلتی رہتی ہیں، اس لیے وہ خود درج کریں۔ پورٹل سے حتمی تصدیق ضرور کر لیں۔',
+    vfFederal234:'فیڈرل حصہ — Section 234 (Rs)', vfEarlyPaymentLabel:'31 اگست تک پوری رقم ادا کر رہا ہوں (Punjab میں 10% رعایت)',
     vfTokenTax:'ٹوکن ٹیکس (Rs)', vfRegFee:'رجسٹریشن فیس (Rs)', vfTransferFee:'ٹرانسفر فیس (Rs)', vfSmartCard:'اسمارٹ کارڈ فیس (Rs)', vfPlateFee:'نمبر پلیٹ فیس (Rs)',
+    ptaEyebrow:'موبائل رجسٹریشن', ptaTitle:'PTA موبائل ٹیکس کیلکولیٹر',
+    ptaRoute:'رجسٹریشن کا طریقہ', ptaPassport:'پاسپورٹ (60 دن کے اندر)', ptaCnic:'CNIC',
+    ptaDeviceType:'فون کی قسم', ptaSmartphone:'اسمارٹ فون', ptaBasic:'بیسک فون',
+    ptaCfValue:'فون کی کسٹمز ویلیو (US$)', ptaExRate:'ڈالر ریٹ (Rs)',
+    ptaHint:'💡 یہ "کسٹمز ویلیو" وہی ہے جو PTA DIRBS پر آپ کے فون ماڈل کے لیے آفیشل شائع شدہ ہوتی ہے (دکان کی قیمت نہیں) — یہ عام طور پر مارکیٹ پرائس سے کم ہوتی ہے۔ اپنے فون کی درست ویلیو <a href="https://dirbs.pta.gov.pk/drs" target="_blank" style="color:var(--green);font-weight:600;">PTA DIRBS پورٹل</a> سے چیک کریں۔',
     process1t:'رابطہ کریں', process1d:'کال، WhatsApp یا فارم کے ذریعے ہم سے رابطہ کریں',
     process2t:'دستاویزات بھیجیں', process2d:'اپنی ضروری دستاویزات WhatsApp یا پورٹل پر شیئر کریں',
     process3t:'ہم کام کریں', process3d:'ہماری ٹیم آپ کا کام درست اور تیزی سے مکمل کرتی ہے',
@@ -1816,13 +1912,18 @@ const I18N = {
     atcEyebrow:'Advance Tax Estimate', atcTitle:'Advance Tax Calculator (Vehicle / Property)',
     atcTabVehicle:'Vehicle', atcTabProperty:'Property',
     atcTxnType:'Transaction Type', atcVTxnReg:'Registration/Purchase (231B-1)', atcVTxnTransfer:'Transfer of Ownership (231B-2)', atcVTxnLease:'Leasing (231B-1A)',
-    atcEngine:'Engine Capacity', atcVehicleValue:'Vehicle Value (Rs)',
+    atcVAge:'How old is the vehicle? (since first registration)',
+    atcVTransferHint:'💡 On transfer of a used vehicle, the tax is a fixed Rupee amount (not a % of value) that drops 10% for every full year, reaching zero after 5 years. No tax up to 850cc.',
+    atcEngine:'Engine Capacity', atcVehicleValue:'Vehicle Value (Rs)', atcEngineCc:'Engine Capacity (cc)',
     atcFilerStatus:'Filer Status', atcFiler:'Filer', atcLateFiler:'Late Filer', atcNonFiler:'Non-Filer',
     atcEditableTag:'Editable', atcSuggestedRate:'Suggested Rate (%)', atcCalcBtn:'Calculate',
     atcPTxnType:'Transaction Type', atcPurchase:'Purchase (Section 236K)', atcSale:'Sale (Section 236C)', atcPropertyValue:'Property Value — FBR/DC Value (Rs)',
     atcDcHelperLabel:'🔍 Check your area\'s DC/FBR rate', atcDcBtn:'🏛️ Open Provincial DC Rate Portal', atcFbrBtn:'🏛️ Open FBR Valuation Table',
     atcDcHint:'💡 236K/236C use the FBR-notified value (often different from the DC rate) — whichever is higher applies. Enter that amount above as "Property Value".',
-    atcDisclaimer:'⚠️ This calculator applies across all of Pakistan (Punjab, Sindh, KPK, Balochistan, Islamabad) since Sections 231B, 236C, 236K are federal (FBR) taxes applied uniformly nationwide. Property filer rates are updated per Budget 2026-27 (Finance Act 2026): 236K = 1.5% (buyer), 236C = 2.75% (seller). Non-filer and vehicle rates are general estimates — you can edit the rate above. Provincial stamp duty is not included. ✅ Other key Finance Act 2026-27 changes: the "Late Filer" category is removed (only Filer/Non-Filer now apply), Section 7E (Deemed Income Tax) is abolished, and the 7% FED on property transfer is abolished. Contact us for accurate confirmation.',
+    atcRegistryToggle:'🧾 Also include full registry expenses (Stamp Duty + Registration Fee + TMA Fee)',
+    atcRegistryHint:'💡 These three rates vary by province, district, and property type, and change often — please confirm the current rate with your local Sub-Registrar / Excise & Taxation / TMA office, or with us, before entering it here.',
+    atcStampDuty:'Stamp Duty (%)', atcRegFee:'Registration Fee (%)', atcTmaFee:'TMA Fee (%)',
+    atcDisclaimer:'⚠️ This calculator applies across all of Pakistan (Punjab, Sindh, KPK, Balochistan, Islamabad) since Sections 231B, 236C, 236K are federal (FBR) taxes applied uniformly nationwide. Property filer rates are updated per Finance Act 2026: 236K = 1.25% (buyer), 236C = 2.75% (seller). Non-filer and vehicle rates are general estimates — you can edit the rate above. Provincial Stamp Duty, Registration Fee and TMA Fee can be added via the "Registry Expenses" option by entering them yourself (not automatic, since these vary by district). ✅ Other key Finance Act 2026-27 changes: the "Late Filer" category is removed (only Filer/Non-Filer now apply), Section 7E (Deemed Income Tax) is abolished, and the 7% FED on property transfer is abolished. Contact us for accurate confirmation.',
     wtEyebrow:'Section 153 Estimate', wtTitle:'Withholding Tax Calculator (Contractor / Supplier / Retailer)',
     wtCategory:'Payment Category', wtGoods:'Goods/Supplies — including Retailer, Wholesaler, Distributor',
     wtServicesGeneral:'Services — General/Unspecified (Legal, Consultancy, Medical, etc.)', wtServicesSpecified:'Services — Specified List (Transport, Hospitality, Engineering, etc.)',
@@ -1864,12 +1965,20 @@ const I18N = {
     utEyebrow:'Electricity / Mobile / Internet', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'Electricity', utTabTelecom:'Mobile/Internet',
     utBillAmount:'Monthly Bill Amount (Rs)', utElecHint:'💡 Filers are fully exempt from this tax on domestic electricity. For non-filers, if the monthly bill exceeds Rs 25,000, 7.5% applies to the entire bill amount.',
-    utTelAmount:'Bill / Prepaid Load Amount (Rs)', utTelHint:'💡 This applies to mobile bills, internet bills, and prepaid load/cards alike (Section 236).',
+    utMeterType:'Meter Type', utMeterHome:'Home', utMeterShop:'Shop/Office', utMeterFactory:'Factory',
+    utTelFbrNamedLabel:'Publicly named by FBR as a non-filer (special 75% rate)',
+    utTelAmount:'Bill / Prepaid Load Amount (Rs)', utTelHint:'💡 This flat 15% applies equally to filers and non-filers alike (mobile bills, internet bills, prepaid load/cards — Section 236). Only people the FBR has publicly named as a non-filer in a formal notification are charged the special 75% rate.',
     utDisclaimer:'⚠️ Gas bills currently have no advance tax similar to electricity, so it\'s not included here. These rates are federal, uniform across Pakistan. Contact us for accurate confirmation.',
     vfEyebrow:'Provincial Vehicle Fees', vfTitle:'Token Tax / Registration / Transfer Fee',
     vfProvince:'Select Province', vfPortalBtn:'Open Official Token Tax Portal — Check Exact Amount',
-    vfHint:'💡 These fees change by province, vehicle value/engine capacity, and year — so no amount is pre-filled. Check the exact figure on the portal above, enter it below, and the total adds up automatically.',
+    vfHint:'💡 Token Tax and the Federal share (Section 234) are auto-suggested from the details above (still editable) — but Registration Fee, Transfer Fee, Smart Card Fee and Number Plate Fee change by province and year, so enter those yourself. Always confirm the final figure on the portal.',
+    vfFederal234:'Federal Share — Section 234 (Rs)', vfEarlyPaymentLabel:'Paying in full by 31 August (10% discount in Punjab)',
     vfTokenTax:'Token Tax (Rs)', vfRegFee:'Registration Fee (Rs)', vfTransferFee:'Transfer Fee (Rs)', vfSmartCard:'Smart Card Fee (Rs)', vfPlateFee:'Number Plate Fee (Rs)',
+    ptaEyebrow:'Mobile Registration', ptaTitle:'PTA Mobile Tax Calculator',
+    ptaRoute:'Registration Route', ptaPassport:'Passport (within 60 days)', ptaCnic:'CNIC',
+    ptaDeviceType:'Device Type', ptaSmartphone:'Smartphone', ptaBasic:'Basic Phone',
+    ptaCfValue:"Phone's Customs Value (US$)", ptaExRate:'Exchange Rate (Rs)',
+    ptaHint:'💡 This "Customs Value" is the official value PTA DIRBS publishes for your phone model (not the shop price) — it\'s usually lower than market price. Check the exact value for your phone on the <a href="https://dirbs.pta.gov.pk/drs" target="_blank" style="color:var(--green);font-weight:600;">PTA DIRBS portal</a>.',
     process1t:'Get In Touch', process1d:'Contact us via call, WhatsApp, or the form',
     process2t:'Send Documents', process2d:'Share your required documents via WhatsApp or the portal',
     process3t:'We Handle It', process3d:'Our team completes your work accurately and quickly',
@@ -2430,23 +2539,72 @@ function atcSwitchTab(tab){
   document.getElementById('atcVehicleForm').style.display = tab==='vehicle' ? 'block' : 'none';
   document.getElementById('atcPropertyForm').style.display = tab==='property' ? 'block' : 'none';
 }
-/* Vehicle: Section 231B — rate = % of vehicle value by engine bracket, from rate card. */
+/* Vehicle: Section 231B — new registration/leasing = % of vehicle value by engine bracket.
+   Used-vehicle TRANSFER = flat Rupee amount by bracket, reduced 10% per full year, zero after 5 years. */
 function atcSuggestVehicleRate(){
+  const txn=document.getElementById('atcVTxn').value;
   const engine=document.getElementById('atcEngine').value;
   const filerStatus=document.getElementById('atcVFiler').value;
   const unitEl=document.getElementById('atcVRateUnit');
+  const ageRow=document.getElementById('atcVAgeRow');
+  const transferHint=document.getElementById('atcVTransferHint');
+  const rateFieldWrap=document.getElementById('atcVRateFieldWrap');
   const R=TAX_RATES_2026_27.vehicle;
-  const base=R.brackets[engine]||1;
-  const rate=Math.round(base*(filerStatus==='filer'?1:R.nonFilerMultiplier)*10)/10;
-  document.getElementById('atcVRate').value=rate;
-  if(unitEl) unitEl.textContent=currentLang==='ur'?'(% — گاڑی کی مالیت کا)':'(% of vehicle value)';
+
+  if(txn==='transfer'){
+    ageRow.style.display='block';
+    transferHint.style.display='block';
+    rateFieldWrap.style.display='none';
+  } else {
+    ageRow.style.display='none';
+    transferHint.style.display='none';
+    rateFieldWrap.style.display='block';
+    const base=R.brackets[engine]||1;
+    const rate=Math.round(base*(filerStatus==='filer'?1:R.nonFilerMultiplier)*10)/10;
+    document.getElementById('atcVRate').value=rate;
+    if(unitEl) unitEl.textContent=currentLang==='ur'?'(% — گاڑی کی مالیت کا)':'(% of vehicle value)';
+  }
 }
 function atcCalcVehicle(){
   const ur=currentLang==='ur';
-  const value=parseFloat(document.getElementById('atcVehicleValue').value)||0;
-  const rate=parseFloat(document.getElementById('atcVRate').value)||0;
+  const txn=document.getElementById('atcVTxn').value;
   const resultEl=document.getElementById('atcVResult');
   const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+
+  if(txn==='transfer'){
+    const engine=document.getElementById('atcEngine').value;
+    const filerStatus=document.getElementById('atcVFiler').value;
+    const age=parseFloat(document.getElementById('atcVAge').value)||0;
+    const R=TAX_RATES_2026_27.vehicle;
+    if(age>=R.usedTransferMaxAgeYears){
+      resultEl.style.display='block';
+      resultEl.innerHTML=`
+        <div class="tax-est-result-box">
+          <div class="tax-est-result-row"><span>${ur?'گاڑی کی عمر':'Vehicle Age'}</span><strong>${age} ${ur?'سال':'yrs'}</strong></div>
+          <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#16A34A;">Rs 0 (${ur?'5 سال سے زیادہ پرانی — کوئی ٹیکس نہیں':'over 5 years old — no tax'})</strong></div>
+          <button class="print-result-btn" onclick="printResult('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+        </div>`;
+      trackEvent('advance_tax_vehicle_transfer_calculated', engine+'|'+filerStatus+'|'+age+'|0');
+      return;
+    }
+    const baseAmt=R.usedTransferFlatFee[engine]||0;
+    const withFiler=baseAmt*(filerStatus==='filer'?1:R.usedTransferNonFilerMultiplier);
+    const reduction=Math.min(age,R.usedTransferMaxAgeYears)*R.usedTransferAgeReductionPerYear;
+    const tax=withFiler*(1-reduction/100);
+    resultEl.style.display='block';
+    resultEl.innerHTML=`
+      <div class="tax-est-result-box">
+        <div class="tax-est-result-row"><span>${ur?'بنیادی مقررہ رقم':'Base Flat Fee'}</span><strong>${fmt(withFiler)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'عمر کی رعایت':'Age Reduction'}</span><strong>${reduction}%</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+        <button class="print-result-btn" onclick="printResult('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      </div>`;
+    trackEvent('advance_tax_vehicle_transfer_calculated', engine+'|'+filerStatus+'|'+age+'|'+Math.round(tax));
+    return;
+  }
+
+  const value=parseFloat(document.getElementById('atcVehicleValue').value)||0;
+  const rate=parseFloat(document.getElementById('atcVRate').value)||0;
   if(value<=0){
     resultEl.style.display='block';
     resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم گاڑی کی مالیت درج کریں':'⚠ Please enter the vehicle value'}</div>`;
@@ -2480,6 +2638,10 @@ function atcSuggestPropertyRate(){
   }
   document.getElementById('atcPRate').value=rate;
 }
+function atcToggleRegistryFields(){
+  const on=document.getElementById('atcRegistryToggle').checked;
+  document.getElementById('atcRegistryFields').style.display=on?'block':'none';
+}
 function atcCalcProperty(){
   const ur=currentLang==='ur';
   const value=parseFloat(document.getElementById('atcPropertyValue').value)||0;
@@ -2492,12 +2654,31 @@ function atcCalcProperty(){
     return;
   }
   const tax=value*rate/100;
+  const includeRegistry=document.getElementById('atcRegistryToggle').checked;
+  let registryRowsHtml='';
+  let grandTotal=tax;
+  if(includeRegistry){
+    const stampRate=parseFloat(document.getElementById('atcStampDuty').value)||0;
+    const regRate=parseFloat(document.getElementById('atcRegFee').value)||0;
+    const tmaRate=parseFloat(document.getElementById('atcTmaFee').value)||0;
+    const stampAmt=value*stampRate/100;
+    const regAmt=value*regRate/100;
+    const tmaAmt=value*tmaRate/100;
+    grandTotal+=stampAmt+regAmt+tmaAmt;
+    registryRowsHtml=`
+      <div class="tax-est-result-row"><span>${ur?'Stamp Duty':'Stamp Duty'} (${stampRate}%)</span><strong>${fmt(stampAmt)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'Registration Fee':'Registration Fee'} (${regRate}%)</span><strong>${fmt(regAmt)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'TMA Fee':'TMA Fee'} (${tmaRate}%)</span><strong>${fmt(tmaAmt)}</strong></div>
+      <div class="tax-est-result-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px;"><span>${ur?'مجموعی تخمینی رجسٹری اخراجات':'Total Estimated Registry Cost'}</span><strong style="color:#DC2626;">${fmt(grandTotal)}</strong></div>`;
+  }
   resultEl.style.display='block';
   resultEl.innerHTML=`
     <div class="tax-est-result-box">
       <div class="tax-est-result-row"><span>${ur?'پراپرٹی کی مالیت (FBR/DC Value)':'Property Value (FBR/DC Value)'}</span><strong>${fmt(value)}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      ${registryRowsHtml}
+      <div class="wt-hint" style="margin-top:8px;">${ur?'⚠️ Stamp Duty، Registration Fee اور TMA Fee کی شرحیں آپ کے درج کردہ اعداد پر مبنی ہیں — حتمی رقم کے لیے متعلقہ دفتر سے تصدیق کریں۔':'⚠️ Stamp Duty, Registration Fee and TMA Fee are based on the rates you entered — confirm the final amount with the relevant office.'}</div>
       <button class="print-result-btn" onclick="printResult('atcPResult','${ur?'ایڈوانس ٹیکس — پراپرٹی':'Advance Tax — Property'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
     </div>`;
   trackEvent('advance_tax_property_calculated', Math.round(value)+'|'+rate);
@@ -2792,39 +2973,83 @@ function utSwitchTab(tab){
   document.getElementById('utElecForm').style.display = tab==='elec' ? 'block' : 'none';
   document.getElementById('utTelecomForm').style.display = tab==='telecom' ? 'block' : 'none';
 }
+function utToggleMeterType(){
+  const type=document.getElementById('utMeterType').value;
+  const isHome=type==='home';
+  document.getElementById('utElecFilerRow').style.display = isHome?'flex':'none';
+  document.getElementById('utElecAmountOnlyRow').style.display = isHome?'none':'block';
+  const ur=currentLang==='ur';
+  const hintBox=document.getElementById('utElecHintBox');
+  if(isHome){
+    hintBox.textContent = ur?'💡 فائلر کے لیے گھریلو بجلی پر یہ ٹیکس مکمل معاف ہے۔ نان فائلر کے لیے، اگر ماہانہ بل Rs 25,000 سے زیادہ ہو تو پوری بل رقم پر 7.5% لاگو ہوتا ہے۔':'💡 Filers are fully exempt from this tax on domestic electricity. For non-filers, if the monthly bill exceeds Rs 25,000, 7.5% applies to the entire bill amount.';
+  } else {
+    hintBox.textContent = ur?'💡 دکان/دفتر/فیکٹری میٹرز پر یہ ٹیکس فائلر اور نان فائلر دونوں پر یکساں لاگو ہوتا ہے — فائلر اسٹیٹس سے کوئی فرق نہیں پڑتا۔':'💡 On shop/office/factory meters this tax applies the same to filers and non-filers alike — filer status makes no difference.';
+  }
+}
 function utCalcElec(){
   const ur=currentLang==='ur';
-  const filerStatus=document.getElementById('utElecFiler').value;
-  const amount=parseFloat(document.getElementById('utElecAmount').value)||0;
+  const meterType=document.getElementById('utMeterType').value;
   const resultEl=document.getElementById('utElecResult');
   const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
-  if(amount<=0){
+
+  if(meterType==='home'){
+    const filerStatus=document.getElementById('utElecFiler').value;
+    const amount=parseFloat(document.getElementById('utElecAmount').value)||0;
+    if(amount<=0){
+      resultEl.style.display='block';
+      resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم بل کی رقم درج کریں':'⚠ Please enter the bill amount'}</div>`;
+      return;
+    }
+    const R=TAX_RATES_2026_27.utilityTax.electricityDomestic;
+    let tax=0, note='';
+    if(filerStatus==='nonfiler' && amount>R.monthlyThreshold){
+      tax=amount*R.nonFilerRate/100;
+    } else if(filerStatus==='nonfiler'){
+      note=ur?'(حد سے کم — ٹیکس لاگو نہیں)':'(below threshold — no tax applies)';
+    } else {
+      note=ur?'(فائلر — مکمل معاف)':'(filer — fully exempt)';
+    }
     resultEl.style.display='block';
-    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم بل کی رقم درج کریں':'⚠ Please enter the bill amount'}</div>`;
-    return;
-  }
-  const R=TAX_RATES_2026_27.utilityTax.electricityDomestic;
-  let tax=0, note='';
-  if(filerStatus==='nonfiler' && amount>R.monthlyThreshold){
-    tax=amount*R.nonFilerRate/100;
-  } else if(filerStatus==='nonfiler'){
-    note=ur?'(حد سے کم — ٹیکس لاگو نہیں)':'(below threshold — no tax applies)';
+    resultEl.innerHTML=`
+      <div class="tax-est-result-box">
+        <div class="tax-est-result-row"><span>${ur?'بل کی رقم':'Bill Amount'}</span><strong>${fmt(amount)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)} ${note}</strong></div>
+        <button class="print-result-btn" onclick="printResult('utElecResult','Electricity Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      </div>`;
+    trackEvent('utility_electricity_calculated', 'home|'+filerStatus+'|'+Math.round(amount));
   } else {
-    note=ur?'(فائلر — مکمل معاف)':'(filer — fully exempt)';
+    const amount=parseFloat(document.getElementById('utElecAmount2').value)||0;
+    if(amount<=0){
+      resultEl.style.display='block';
+      resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم بل کی رقم درج کریں':'⚠ Please enter the bill amount'}</div>`;
+      return;
+    }
+    const R=TAX_RATES_2026_27.utilityTax.electricityCommercial;
+    let tax=0;
+    if(amount<=R.exemptUpTo){
+      tax=0;
+    } else if(amount<=R.slab1UpTo){
+      tax=amount*R.slab1Rate/100;
+    } else {
+      const rate = meterType==='factory' ? R.aboveRateFactory : R.aboveRateShopOffice;
+      tax = R.aboveBase + (amount-R.slab1UpTo)*rate/100;
+    }
+    const meterLabel = meterType==='factory' ? (ur?'فیکٹری':'Factory') : (ur?'دکان/دفتر':'Shop/Office');
+    resultEl.style.display='block';
+    resultEl.innerHTML=`
+      <div class="tax-est-result-box">
+        <div class="tax-est-result-row"><span>${ur?'میٹر کی قسم':'Meter Type'}</span><strong>${meterLabel}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'بل کی رقم':'Bill Amount'}</span><strong>${fmt(amount)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+        <button class="print-result-btn" onclick="printResult('utElecResult','Electricity Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      </div>`;
+    trackEvent('utility_electricity_calculated', meterType+'|'+Math.round(amount));
   }
-  resultEl.style.display='block';
-  resultEl.innerHTML=`
-    <div class="tax-est-result-box">
-      <div class="tax-est-result-row"><span>${ur?'بل کی رقم':'Bill Amount'}</span><strong>${fmt(amount)}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)} ${note}</strong></div>
-      <button class="print-result-btn" onclick="printResult('utElecResult','Electricity Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
-    </div>`;
-  trackEvent('utility_electricity_calculated', filerStatus+'|'+Math.round(amount));
 }
 function utCalcTelecom(){
   const ur=currentLang==='ur';
-  const filerStatus=document.getElementById('utTelFiler').value;
   const amount=parseFloat(document.getElementById('utTelAmount').value)||0;
+  const fbrNamed=document.getElementById('utTelFbrNamed').checked;
   const resultEl=document.getElementById('utTelResult');
   const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
   if(amount<=0){
@@ -2833,7 +3058,7 @@ function utCalcTelecom(){
     return;
   }
   const R=TAX_RATES_2026_27.utilityTax.telecom;
-  const rate=filerStatus==='filer'?R.filerRate:R.nonFilerRate;
+  const rate=fbrNamed?R.fbrNamedNonFilerRate:R.flatRate;
   const tax=amount*rate/100;
   resultEl.style.display='block';
   resultEl.innerHTML=`
@@ -2843,7 +3068,56 @@ function utCalcTelecom(){
       <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <button class="print-result-btn" onclick="printResult('utTelResult','Telecom Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
     </div>`;
-  trackEvent('utility_telecom_calculated', filerStatus+'|'+Math.round(amount));
+  trackEvent('utility_telecom_calculated', (fbrNamed?'fbrnamed':'flat')+'|'+Math.round(amount));
+}
+
+/* ═══════════════ PTA MOBILE REGISTRATION TAX ═══════════════ */
+function ptaBandFor(bands, usdValue){
+  for(const b of bands){ if(usdValue<=b.upTo) return b; }
+  return bands[bands.length-1];
+}
+function ptaCalc(){
+  const ur=currentLang==='ur';
+  const route=document.getElementById('ptaRoute').value;
+  const deviceType=document.getElementById('ptaDeviceType').value;
+  const usdValue=parseFloat(document.getElementById('ptaCfValue').value)||0;
+  const exRate=parseFloat(document.getElementById('ptaExRate').value)||280;
+  const resultEl=document.getElementById('ptaResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(usdValue<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم فون کی کسٹمز ویلیو (US$) درج کریں':'⚠ Please enter the phone Customs value (US$)'}</div>`;
+    return;
+  }
+  const R=TAX_RATES_2026_27.ptaTax;
+  const band=ptaBandFor(R.bands, usdValue);
+  const customsValuePkr=usdValue*exRate;
+
+  const customsDuty = deviceType==='smartphone' ? 0 : R.basicPhoneCustomsDuty;
+  const addlCustomsDuty = 0; // exempt — personal baggage / smartphone
+  const regDuty = band.regDuty;
+  const salesTax = customsValuePkr*band.salesTaxPct/100;
+  const incomeTax = route==='cnic' ? band.incomeTax : 0;
+  const levy = band.levy;
+  const total = customsDuty+addlCustomsDuty+regDuty+salesTax+incomeTax+levy;
+
+  const fineNote = route==='cnic' ? `<div class="wt-hint" style="margin-top:8px;">${ur?'⚠️ CNIC روٹ پر ایک اضافی جرمانہ بھی لگتا ہے جو FBR نے کہیں شائع نہیں کیا — اس لیے یہ رقم کم از کم (minimum) سمجھیں، حتمی نہیں۔':'⚠️ The CNIC route also adds a fine that FBR has not published anywhere — treat this as a minimum, not a final figure.'}</div>` : '';
+
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'کسٹمز ویلیو':'Customs Value'}</span><strong>US$ ${usdValue.toLocaleString('en-US')} = ${fmt(customsValuePkr)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کسٹمز ڈیوٹی':'Customs Duty'}</span><strong>${customsDuty===0?(ur?'معاف':'Exempt'):fmt(customsDuty)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'اضافی کسٹمز ڈیوٹی':'Additional Customs Duty'}</span><strong>${ur?'معاف':'Exempt'}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'ریگولیٹری ڈیوٹی':'Regulatory Duty'}</span><strong>${fmt(regDuty)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'سیلز ٹیکس':'Sales Tax'} (${band.salesTaxPct}%)</span><strong>${fmt(salesTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'انکم ٹیکس (Section 148)':'Income Tax (Section 148)'}</span><strong>${route==='cnic'?fmt(incomeTax):(ur?'معاف (پاسپورٹ روٹ)':'Exempt (Passport route)')}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'موبائل ہینڈ سیٹ لیوی':'Mobile Handset Levy'}</span><strong>${fmt(levy)}</strong></div>
+      <div class="tax-est-result-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px;"><span>${ur?'مجموعی تخمینی ٹیکس':'Total Estimated Tax'}</span><strong style="color:#DC2626;">${fmt(total)}${route==='cnic'?' + '+(ur?'جرمانہ':'fine'):''}</strong></div>
+      ${fineNote}
+      <button class="print-result-btn" onclick="printResult('ptaResult','PTA Mobile Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+    </div>`;
+  trackEvent('pta_tax_calculated', route+'|'+deviceType+'|'+usdValue);
 }
 
 /* ═══════════════ VEHICLE TOKEN TAX / FEES (Provincial) ═══════════════ */
@@ -2853,10 +3127,53 @@ function vfOpenPortal(){
   window.open(links[prov]||links.punjab,'_blank');
   trackEvent('vehicle_fee_portal_opened', prov);
 }
+function vfBandLookup(bands, cc, key){
+  for(const b of bands){ if(cc<=b.upTo) return b[key]!==undefined?b[key]:b; }
+  return bands[bands.length-1][key]!==undefined?bands[bands.length-1][key]:bands[bands.length-1];
+}
+function vfSuggestToken(){
+  const prov=document.getElementById('vfProvince').value;
+  const cc=parseFloat(document.getElementById('vfEngineCc').value)||0;
+  const value=parseFloat(document.getElementById('vfInvoiceValue').value)||0;
+  const filerStatus=document.getElementById('vfFiler').value;
+  const age=parseFloat(document.getElementById('vfVehicleAge').value)||0;
+  const earlyPay=document.getElementById('vfEarlyPayment').checked;
+  if(cc<=0) return;
+  const T=TAX_RATES_2026_27.vehicleTokenTax[prov];
+  const F=TAX_RATES_2026_27.section234Federal;
+  let tokenAmt=0;
+
+  if(prov==='punjab' || prov==='islamabad'){
+    if(cc<=1000){
+      tokenAmt=T.lifetimeUpTo1000cc;
+    } else {
+      const pct=vfBandLookup(T.yearlyPctBands, cc, 'pct');
+      tokenAmt=value*pct/100;
+      if(prov==='punjab' && earlyPay) tokenAmt=tokenAmt*(1-T.earlyPaymentDiscountPct/100);
+    }
+  } else if(prov==='sindh' || prov==='kpk'){
+    tokenAmt=vfBandLookup(T.yearlyFlatBands, cc, 'amt');
+  } else if(prov==='balochistan'){
+    if(cc<=1000 && age<5){
+      tokenAmt=vfBandLookup(T.lifetimeUnder5yrsBands, cc, 'amt');
+    } else {
+      tokenAmt=vfBandLookup(T.yearlyFlatBands, cc, 'amt');
+    }
+  }
+  document.getElementById('vfToken').value=Math.round(tokenAmt);
+
+  // Federal Section 234 — exempt after 10 years
+  let fedAmt=0;
+  if(age<F.exemptAfterYears){
+    fedAmt=vfBandLookup(F.yearlyBands, cc, filerStatus==='filer'?'filer':'nonfiler');
+  }
+  document.getElementById('vfFederal234').value=Math.round(fedAmt);
+  vfCalcTotal();
+}
 function vfCalcTotal(){
   const ur=currentLang==='ur';
   const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
-  const vals=['vfToken','vfReg','vfTransfer','vfSmartCard','vfPlate'].map(id=>parseFloat(document.getElementById(id).value)||0);
+  const vals=['vfToken','vfFederal234','vfReg','vfTransfer','vfSmartCard','vfPlate'].map(id=>parseFloat(document.getElementById(id).value)||0);
   const total=vals.reduce((a,b)=>a+b,0);
   const resultEl=document.getElementById('vfResult');
   if(total<=0){ resultEl.style.display='none'; resultEl.innerHTML=''; return; }

@@ -240,6 +240,15 @@ const TAX_RATES_2026_27 = {
       { upTo: 500, regDuty: 12000, salesTaxPct: 18, incomeTax: 5000,  levy: 4000  },
       { upTo: 700, regDuty: 17600, salesTaxPct: 25, incomeTax: 11500, levy: 8000  },
       { upTo: Infinity, regDuty: 17600, salesTaxPct: 25, incomeTax: 11500, levy: 16000 }
+    ],
+    bands2025_26: [
+      { upTo: 30,  regDuty: 300,   salesTaxPct: 18, incomeTax: 100,   levy: 100   },
+      { upTo: 100, regDuty: 3000,  salesTaxPct: 18, incomeTax: 100,   levy: 200   },
+      { upTo: 200, regDuty: 7500,  salesTaxPct: 18, incomeTax: 930,   levy: 600   },
+      { upTo: 350, regDuty: 11000, salesTaxPct: 18, incomeTax: 970,   levy: 1800  },
+      { upTo: 500, regDuty: 15000, salesTaxPct: 18, incomeTax: 5000,  levy: 4000  },
+      { upTo: 700, regDuty: 22000, salesTaxPct: 25, incomeTax: 11500, levy: 8000  },
+      { upTo: Infinity, regDuty: 22000, salesTaxPct: 25, incomeTax: 11500, levy: 16000 }
     ]
   }
 

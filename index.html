@@ -233,20 +233,41 @@ body.dark-mode .skel{background:linear-gradient(90deg,#182536 25%,#213249 37%,#1
   .ticker-track{animation:none;}
 }
 
-/* FORM SUCCESS ANIMATION */
-.success-overlay{position:fixed;inset:0;z-index:200;background:rgba(11,21,32,.55);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;}
+/* PREMIUM SUCCESS ANIMATION (Payment / Review / Booking) */
+.success-overlay{position:fixed;inset:0;z-index:500;background:radial-gradient(circle at center,rgba(15,42,61,.78),rgba(8,15,22,.94));display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding:20px;}
 .success-overlay.show{opacity:1;visibility:visible;}
-.success-card{background:#fff;border-radius:20px;padding:40px 34px;text-align:center;max-width:320px;transform:scale(.85);transition:transform .3s ease;}
+.success-card{position:relative;background:#fff;border-radius:26px;padding:46px 34px 38px;text-align:center;max-width:360px;width:100%;transform:scale(.78);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:visible;}
 .success-overlay.show .success-card{transform:scale(1);}
-.success-check-circle{width:76px;height:76px;margin:0 auto 18px;}
-.success-check-circle circle{stroke:var(--green);stroke-width:3;fill:none;stroke-dasharray:166;stroke-dashoffset:166;}
-.success-check-circle path{stroke:var(--green);stroke-width:3;fill:none;stroke-dasharray:48;stroke-dashoffset:48;}
-.success-overlay.show .success-check-circle circle{animation:drawCircle .5s ease forwards;}
-.success-overlay.show .success-check-circle path{animation:drawCheck .3s .5s ease forwards;}
-@keyframes drawCircle{to{stroke-dashoffset:0;}}
-@keyframes drawCheck{to{stroke-dashoffset:0;}}
-.confetti-piece{position:fixed;top:-10px;width:8px;height:8px;z-index:199;animation:confettiFall linear forwards;}
-@keyframes confettiFall{to{transform:translateY(100vh) rotate(540deg);opacity:.3;}}
+.success-burst-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:3px solid var(--green);opacity:0;pointer-events:none;width:20px;height:20px;}
+.success-overlay.show .success-burst-ring.r1{animation:burstRing .9s ease-out forwards;}
+.success-overlay.show .success-burst-ring.r2{animation:burstRing .9s .12s ease-out forwards;border-color:var(--gold);}
+.success-overlay.show .success-burst-ring.r3{animation:burstRing .9s .24s ease-out forwards;border-color:var(--blue);}
+@keyframes burstRing{0%{width:20px;height:20px;opacity:.9;transform:translate(-50%,-50%) scale(0);}100%{width:360px;height:360px;opacity:0;transform:translate(-50%,-50%) scale(1);}}
+.success-logo-wrap{position:relative;width:96px;height:96px;margin:0 auto 20px;}
+.success-logo-glow{position:absolute;inset:-16px;border-radius:50%;background:radial-gradient(circle,rgba(15,138,95,.4),transparent 70%);opacity:0;}
+.success-overlay.show .success-logo-glow{animation:logoGlowPulse 1.7s ease-in-out .3s infinite;}
+@keyframes logoGlowPulse{0%,100%{opacity:.3;transform:scale(.9);}50%{opacity:.9;transform:scale(1.14);}}
+.success-logo{position:relative;width:100%;height:100%;border-radius:50%;background:#fff;background-image:var(--mfj-logo);background-size:72%;background-repeat:no-repeat;background-position:center;box-shadow:0 0 0 4px var(--green-light),0 12px 28px rgba(15,138,95,.38);transform:scale(0);}
+.success-overlay.show .success-logo{animation:logoPopIn .55s .15s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes logoPopIn{to{transform:scale(1);}}
+.success-thankyou{font-size:31px;font-weight:900;color:var(--navy);letter-spacing:.4px;margin-bottom:10px;opacity:0;transform:translateY(10px);}
+.success-overlay.show .success-thankyou{animation:successTextIn .5s .32s ease forwards;}
+@keyframes successTextIn{to{opacity:1;transform:translateY(0);}}
+.success-submsg{font-weight:600;color:#4b5a66;font-size:14.5px;line-height:1.65;opacity:0;transform:translateY(10px);}
+.success-overlay.show .success-submsg{animation:successTextIn .5s .46s ease forwards;}
+.success-checkmark{width:26px;height:26px;border-radius:50%;background:var(--green);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;opacity:0;transform:scale(0);}
+.success-overlay.show .success-checkmark{animation:checkPopIn .4s .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes checkPopIn{to{opacity:1;transform:scale(1);}}
+@media (max-width:480px){
+  .success-card{padding:38px 20px 30px;border-radius:22px;}
+  .success-thankyou{font-size:24px;}
+  .success-logo-wrap{width:78px;height:78px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .success-burst-ring,.success-logo-glow,.success-logo,.success-thankyou,.success-submsg,.success-checkmark{animation:none!important;opacity:1!important;transform:none!important;}
+}
+.confetti-piece{position:fixed;top:-10px;width:9px;height:9px;z-index:501;animation:confettiFall linear forwards;}
+@keyframes confettiFall{to{transform:translateY(100vh) rotate(620deg);opacity:.3;}}
 
 .hero-blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;will-change:transform;}
 .hero-blob.b1{width:420px;height:420px;top:-140px;right:-100px;background:radial-gradient(circle,rgba(15,138,95,.22),transparent 70%);animation:blobFloat1 9s ease-in-out infinite;}
@@ -381,6 +402,39 @@ section{padding:90px 5% 0;}
 }
 body.dark-mode .tax-est-card{background:var(--surface);}
 body.dark-mode .tax-est-field select,body.dark-mode .tax-est-field input{background:var(--bg);border-color:var(--border);color:var(--ink);}
+
+/* PTA CALCULATOR — comparison / explanation / rate-table / notes */
+.pta-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+.pta-compare-card{border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;background:#fff;}
+.pta-compare-card.selected{border-color:var(--green);background:var(--green-light);}
+.pta-compare-card h4{font-size:12px;color:var(--mute);margin:0 0 4px;font-weight:700;}
+.pta-compare-card .pta-compare-amt{font-size:18px;font-weight:800;color:var(--navy);display:block;}
+.pta-compare-card .pta-compare-tag{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;color:var(--green-dark);background:var(--green-light);border-radius:6px;padding:2px 8px;}
+.pta-compare-card ul{margin:10px 0 0;padding-inline-start:16px;font-size:11.5px;color:var(--mute);line-height:1.7;}
+@media(max-width:600px){.pta-compare-grid{grid-template-columns:1fr;}}
+
+.pta-explain-grid{max-width:680px;margin:26px auto 0;display:grid;gap:10px;padding:0 5%;}
+.pta-explain-item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;}
+.pta-explain-item .pei-l{font-size:13px;color:var(--ink);}
+.pta-explain-item .pei-l b{display:block;color:var(--navy);font-size:14px;margin-bottom:3px;}
+.pta-explain-item .pei-r{font-weight:800;color:var(--green-dark);white-space:nowrap;font-size:14px;}
+body.dark-mode .pta-explain-item,body.dark-mode .pta-compare-card,body.dark-mode .pta-note-card{background:var(--surface);}
+
+.pta-rate-wrap{max-width:820px;margin:30px auto 0;overflow-x:auto;padding:0 5%;}
+.pta-rate-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(15,42,61,.05);}
+.pta-rate-table th,.pta-rate-table td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;}
+.pta-rate-table th{background:var(--navy);color:#fff;font-weight:700;font-size:11px;}
+.pta-rate-table td:first-child,.pta-rate-table th:first-child{text-align:start;white-space:normal;}
+.pta-rate-table tr:last-child td{border-bottom:none;}
+.pta-rate-table tbody tr:nth-child(odd){background:var(--surface);}
+body.dark-mode .pta-rate-table{background:var(--surface);}
+body.dark-mode .pta-rate-table tbody tr:nth-child(odd){background:var(--bg);}
+
+.pta-note-grid{max-width:900px;margin:26px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 5%;}
+.pta-note-card{background:#fff;border:1.5px solid var(--border);border-inline-start:4px solid var(--gold);border-radius:12px;padding:14px 16px;}
+.pta-note-card b{display:block;color:var(--navy);font-size:13px;margin-bottom:4px;}
+.pta-note-card p{font-size:12px;color:var(--mute);line-height:1.75;margin:0;}
+@media(max-width:600px){.pta-note-grid{grid-template-columns:1fr;}}
 
 /* DEADLINE BANNER — full-width strip with cloth/flag flutter effect */
 .deadline-banner{position:relative;width:100%;background:linear-gradient(90deg,#B91C1C,#DC2626);color:#fff;display:flex;align-items:center;justify-content:center;gap:16px;padding:13px 16px 26px;font-size:13px;font-weight:700;flex-wrap:wrap;
@@ -1444,8 +1498,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <div class="sec-eyebrow" data-i18n="ptaEyebrow">موبائل رجسٹریشن</div>
     <h2 class="sec-title" data-i18n="ptaTitle">PTA موبائل ٹیکس کیلکولیٹر</h2>
     <div class="sec-title-bar"></div>
+    <p class="sec-sub" id="ptaIntro" style="max-width:620px;margin:10px auto 0;text-align:center;color:var(--mute);font-size:14px;line-height:1.8;"></p>
   </div>
-  <div class="tax-est-card reveal">
+
+  <div class="tax-est-card reveal" style="max-width:640px;">
     <div class="tax-est-row">
       <div class="tax-est-field">
         <label data-i18n="ptaRoute">رجسٹریشن کا طریقہ</label>
@@ -1463,12 +1519,38 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </div>
     </div>
     <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label id="ptaCondLabel">فون کی حالت</label>
+        <select id="ptaCondition" onchange="ptaCalc()">
+          <option value="new" id="ptaCondNewOpt">نیا (New)</option>
+          <option value="used" id="ptaCondUsedOpt">استعمال شدہ (Used)</option>
+        </select>
+      </div>
+      <div class="tax-est-field">
+        <label id="ptaYearLabel">ٹیکس سال</label>
+        <select id="ptaTaxYear" onchange="ptaCalc()">
+          <option value="2026-27">2026-2027</option>
+          <option value="2025-26">2025-2026</option>
+        </select>
+      </div>
+    </div>
+    <div class="tax-est-row">
       <div class="tax-est-field"><label data-i18n="ptaCfValue">فون کی کسٹمز ویلیو (US$)</label><input type="number" id="ptaCfValue" placeholder="مثلاً 666" oninput="ptaCalc()"></div>
       <div class="tax-est-field"><label data-i18n="ptaExRate">ڈالر ریٹ (Rs)</label><input type="number" id="ptaExRate" value="280" oninput="ptaCalc()"></div>
     </div>
     <div class="wt-hint" data-i18n="ptaHint">💡 یہ "کسٹمز ویلیو" وہی ہے جو PTA DIRBS پر آپ کے فون ماڈل کے لیے آفیشل شائع شدہ ہوتی ہے (دکان کی قیمت نہیں) — یہ عام طور پر مارکیٹ پرائس سے کم ہوتی ہے۔ اپنے فون کی درست ویلیو <a href="https://dirbs.pta.gov.pk/drs" target="_blank" style="color:var(--green);font-weight:600;">PTA DIRBS پورٹل</a> سے چیک کریں۔</div>
     <div id="ptaResult" style="display:none;"></div>
+    <div id="ptaCompare" style="display:none;"></div>
   </div>
+
+  <div class="pta-explain-grid reveal" id="ptaExplainGrid"></div>
+
+  <div class="pta-rate-wrap reveal" id="ptaRateWrap">
+    <h3 id="ptaRateHeading" style="text-align:center;color:var(--navy);font-size:17px;margin-bottom:12px;"></h3>
+    <table class="pta-rate-table" id="ptaRateTable"></table>
+  </div>
+
+  <div class="pta-note-grid reveal" id="ptaNoteGrid"></div>
 </section>
 
 <div class="wt-cta">
@@ -1693,11 +1775,18 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   </div>
 </div>
 
-<!-- SUCCESS ANIMATION OVERLAY -->
+<!-- PREMIUM SUCCESS ANIMATION OVERLAY (Payment / Review / Booking) -->
 <div class="success-overlay" id="successOverlay" onclick="this.classList.remove('show')">
   <div class="success-card" onclick="event.stopPropagation()">
-    <svg class="success-check-circle" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-16"/></svg>
-    <div id="successMsg" style="font-weight:700;color:var(--navy);font-size:16px;"></div>
+    <div class="success-burst-ring r1"></div>
+    <div class="success-burst-ring r2"></div>
+    <div class="success-burst-ring r3"></div>
+    <div class="success-logo-wrap">
+      <div class="success-logo-glow"></div>
+      <div class="success-logo"></div>
+    </div>
+    <div class="success-thankyou" id="successThankYou">THANK YOU!</div>
+    <div id="successMsg" class="success-submsg"></div>
   </div>
 </div>
 
@@ -2027,6 +2116,7 @@ function toggleLang(){
   if(typeof _allReviews!=='undefined' && _allReviews.length) renderReviews();
   initTypewriter();
   renderTicker();
+  if(typeof ptaRenderExtras==='function'){ ptaRenderExtras(); ptaCalc(); }
 }
 
 /* ═══════════════ DARK MODE ═══════════════ */
@@ -2140,9 +2230,9 @@ async function submitReview(){
   try{
     await _supa.from('reviews').insert({name,city,rating,review_text:text,approved:false});
   }catch(e){ console.warn(e); }
-  showToast(currentLang==='ur'?'✅ شکریہ! آپ کی رائے جلد شائع ہوگی':'✅ Thanks! Your review will be published soon');
   document.getElementById('reviewModal').classList.remove('show');
   ['rName','rCity','rText'].forEach(id=>document.getElementById(id).value='');
+  showReviewSuccess();
 }
 
 /* ═══════════════ BLOG (unlimited, with search + category filter) ═══════════════ */
@@ -3071,53 +3161,161 @@ function utCalcTelecom(){
   trackEvent('utility_telecom_calculated', (fbrNamed?'fbrnamed':'flat')+'|'+Math.round(amount));
 }
 
-/* ═══════════════ PTA MOBILE REGISTRATION TAX ═══════════════ */
+/* ═══════════════ PTA MOBILE REGISTRATION TAX (detailed) ═══════════════ */
 function ptaBandFor(bands, usdValue){
   for(const b of bands){ if(usdValue<=b.upTo) return b; }
   return bands[bands.length-1];
 }
-function ptaCalc(){
-  const ur=currentLang==='ur';
-  const route=document.getElementById('ptaRoute').value;
-  const deviceType=document.getElementById('ptaDeviceType').value;
-  const usdValue=parseFloat(document.getElementById('ptaCfValue').value)||0;
-  const exRate=parseFloat(document.getElementById('ptaExRate').value)||280;
-  const resultEl=document.getElementById('ptaResult');
-  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
-  if(usdValue<=0){
-    resultEl.style.display='block';
-    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم فون کی کسٹمز ویلیو (US$) درج کریں':'⚠ Please enter the phone Customs value (US$)'}</div>`;
-    return;
-  }
+function ptaBandsForYear(year){
   const R=TAX_RATES_2026_27.ptaTax;
-  const band=ptaBandFor(R.bands, usdValue);
+  return year==='2025-26' ? R.bands2025_26 : R.bands;
+}
+/* one route's full 6-charge breakdown */
+function ptaComputeRoute(route, deviceType, usdValue, exRate, bands){
+  const R=TAX_RATES_2026_27.ptaTax;
+  const band=ptaBandFor(bands, usdValue);
   const customsValuePkr=usdValue*exRate;
-
   const customsDuty = deviceType==='smartphone' ? 0 : R.basicPhoneCustomsDuty;
-  const addlCustomsDuty = 0; // exempt — personal baggage / smartphone
+  const addlCustomsDuty = 0; // exempt — personal baggage / smartphone, both routes
   const regDuty = band.regDuty;
   const salesTax = customsValuePkr*band.salesTaxPct/100;
   const incomeTax = route==='cnic' ? band.incomeTax : 0;
   const levy = band.levy;
   const total = customsDuty+addlCustomsDuty+regDuty+salesTax+incomeTax+levy;
+  return {band, customsValuePkr, customsDuty, addlCustomsDuty, regDuty, salesTax, incomeTax, levy, total};
+}
+function ptaCalc(){
+  const ur=currentLang==='ur';
+  const route=document.getElementById('ptaRoute').value;
+  const deviceType=document.getElementById('ptaDeviceType').value;
+  const condition=document.getElementById('ptaCondition')?document.getElementById('ptaCondition').value:'new';
+  const taxYear=document.getElementById('ptaTaxYear')?document.getElementById('ptaTaxYear').value:'2026-27';
+  const usdValue=parseFloat(document.getElementById('ptaCfValue').value)||0;
+  const exRate=parseFloat(document.getElementById('ptaExRate').value)||280;
+  const resultEl=document.getElementById('ptaResult');
+  const compareEl=document.getElementById('ptaCompare');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(usdValue<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم فون کی کسٹمز ویلیو (US$) درج کریں':'⚠ Please enter the phone Customs value (US$)'}</div>`;
+    if(compareEl) compareEl.style.display='none';
+    return;
+  }
+  const bands=ptaBandsForYear(taxYear);
+  const r=ptaComputeRoute(route, deviceType, usdValue, exRate, bands);
 
+  const usedNote = condition==='used' ? `<div class="wt-hint" style="margin-top:8px;">${ur?'ℹ️ اپنے سامان میں لائے گئے استعمال شدہ فون کی ویلیو بھی نئے فون والی آفیشل لسٹ سے دیکھی جاتی ہے (اس میں پہلے ہی عمر کا فرق شامل ہوتا ہے) — الگ سے کوئی رعایت نہیں ملتی۔':'ℹ️ A used phone you carry in yourself is still valued from the same official list as a new one (age is already priced in) — there is no extra reduction for it.'}</div>` : '';
   const fineNote = route==='cnic' ? `<div class="wt-hint" style="margin-top:8px;">${ur?'⚠️ CNIC روٹ پر ایک اضافی جرمانہ بھی لگتا ہے جو FBR نے کہیں شائع نہیں کیا — اس لیے یہ رقم کم از کم (minimum) سمجھیں، حتمی نہیں۔':'⚠️ The CNIC route also adds a fine that FBR has not published anywhere — treat this as a minimum, not a final figure.'}</div>` : '';
 
   resultEl.style.display='block';
   resultEl.innerHTML=`
     <div class="tax-est-result-box">
-      <div class="tax-est-result-row"><span>${ur?'کسٹمز ویلیو':'Customs Value'}</span><strong>US$ ${usdValue.toLocaleString('en-US')} = ${fmt(customsValuePkr)}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'کسٹمز ڈیوٹی':'Customs Duty'}</span><strong>${customsDuty===0?(ur?'معاف':'Exempt'):fmt(customsDuty)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کسٹمز ویلیو':'Customs Value'}</span><strong>US$ ${usdValue.toLocaleString('en-US')} = ${fmt(r.customsValuePkr)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کسٹمز ڈیوٹی':'Customs Duty'}</span><strong>${r.customsDuty===0?(ur?'معاف':'Exempt'):fmt(r.customsDuty)}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'اضافی کسٹمز ڈیوٹی':'Additional Customs Duty'}</span><strong>${ur?'معاف':'Exempt'}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'ریگولیٹری ڈیوٹی':'Regulatory Duty'}</span><strong>${fmt(regDuty)}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'سیلز ٹیکس':'Sales Tax'} (${band.salesTaxPct}%)</span><strong>${fmt(salesTax)}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'انکم ٹیکس (Section 148)':'Income Tax (Section 148)'}</span><strong>${route==='cnic'?fmt(incomeTax):(ur?'معاف (پاسپورٹ روٹ)':'Exempt (Passport route)')}</strong></div>
-      <div class="tax-est-result-row"><span>${ur?'موبائل ہینڈ سیٹ لیوی':'Mobile Handset Levy'}</span><strong>${fmt(levy)}</strong></div>
-      <div class="tax-est-result-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px;"><span>${ur?'مجموعی تخمینی ٹیکس':'Total Estimated Tax'}</span><strong style="color:#DC2626;">${fmt(total)}${route==='cnic'?' + '+(ur?'جرمانہ':'fine'):''}</strong></div>
-      ${fineNote}
+      <div class="tax-est-result-row"><span>${ur?'ریگولیٹری ڈیوٹی':'Regulatory Duty'}</span><strong>${fmt(r.regDuty)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'سیلز ٹیکس':'Sales Tax'} (${r.band.salesTaxPct}%)</span><strong>${fmt(r.salesTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'انکم ٹیکس (Section 148)':'Income Tax (Section 148)'}</span><strong>${route==='cnic'?fmt(r.incomeTax):(ur?'معاف (پاسپورٹ روٹ)':'Exempt (Passport route)')}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'موبائل ہینڈ سیٹ لیوی':'Mobile Handset Levy'}</span><strong>${fmt(r.levy)}</strong></div>
+      <div class="tax-est-result-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px;"><span>${ur?'مجموعی تخمینی ٹیکس':'Total Estimated Tax'}</span><strong style="color:#DC2626;">${fmt(r.total)}${route==='cnic'?' + '+(ur?'جرمانہ':'fine'):''}</strong></div>
+      ${fineNote}${usedNote}
       <button class="print-result-btn" onclick="printResult('ptaResult','PTA Mobile Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
     </div>`;
-  trackEvent('pta_tax_calculated', route+'|'+deviceType+'|'+usdValue);
+
+  /* side-by-side Passport vs CNIC comparison, like the reference calculator */
+  if(compareEl){
+    const rp=ptaComputeRoute('passport', deviceType, usdValue, exRate, bands);
+    const rc=ptaComputeRoute('cnic', deviceType, usdValue, exRate, bands);
+    compareEl.style.display='block';
+    compareEl.innerHTML=`
+      <div class="pta-compare-grid">
+        <div class="pta-compare-card ${route==='passport'?'selected':''}">
+          <h4>${ur?'پاسپورٹ روٹ':'Passport route'}</h4>
+          <span class="pta-compare-amt">${fmt(rp.total)}</span>
+          ${route==='passport'?`<span class="pta-compare-tag">${ur?'منتخب شدہ':'Selected'}</span>`:''}
+          <ul>
+            <li>${ur?'فون اپنے سامان میں لائے':'Phone came in your own luggage'}</li>
+            <li>${ur?'60 دن کے اندر رجسٹریشن':'Registered within 60 days of arrival'}</li>
+            <li>${ur?'انکم ٹیکس معاف':'Income tax under section 148 is exempt'}</li>
+            <li>${ur?'کوئی جرمانہ نہیں':'No fine'}</li>
+          </ul>
+        </div>
+        <div class="pta-compare-card ${route==='cnic'?'selected':''}">
+          <h4>CNIC</h4>
+          <span class="pta-compare-amt">${fmt(rc.total)} + ${ur?'جرمانہ':'fine'}</span>
+          ${route==='cnic'?`<span class="pta-compare-tag">${ur?'منتخب شدہ':'Selected'}</span>`:''}
+          <ul>
+            <li>${ur?'یہاں خریدا گیا یا 60 دن گزر چکے':'Bought locally, or past the 60 days'}</li>
+            <li>${ur?'انکم ٹیکس ادا کرنا ہوگا':'Income tax under section 148 is payable'}</li>
+            <li>${ur?'ایک جرمانہ بھی لگتا ہے':'A fine also applies'}</li>
+            <li>${ur?'جرمانے کی رقم کہیں شائع نہیں':'The fine amount is not published anywhere'}</li>
+          </ul>
+        </div>
+      </div>`;
+  }
+  trackEvent('pta_tax_calculated', route+'|'+deviceType+'|'+taxYear+'|'+usdValue);
+}
+/* static bilingual explanatory blocks — intro, "where each figure comes from",
+   the rate table, and the important-notes grid. Re-rendered on language toggle. */
+function ptaRenderExtras(){
+  const ur=currentLang==='ur';
+  const introEl=document.getElementById('ptaIntro');
+  if(introEl) introEl.textContent = ur
+    ? 'باہر سے فون منگوایا ہے یا ساتھ لائے ہیں؟ نیچے تفصیل درج کریں تاکہ چھ الگ الگ ٹیکس/ڈیوٹی کی مکمل بریک ڈاؤن اور پاسپورٹ بمقابلہ CNIC کا موازنہ دیکھ سکیں۔'
+    : 'Bringing a phone into Pakistan? Fill in the details below to see a full breakdown of all six charges, plus a side-by-side Passport vs CNIC comparison.';
+
+  const condLabel=document.getElementById('ptaCondLabel'); if(condLabel) condLabel.textContent = ur?'فون کی حالت':'Device condition';
+  const condNew=document.getElementById('ptaCondNewOpt'); if(condNew) condNew.textContent = ur?'نیا (New)':'New';
+  const condUsed=document.getElementById('ptaCondUsedOpt'); if(condUsed) condUsed.textContent = ur?'استعمال شدہ (Used)':'Used';
+  const yearLabel=document.getElementById('ptaYearLabel'); if(yearLabel) yearLabel.textContent = ur?'ٹیکس سال':'Tax year';
+
+  const explainItems = [
+    { t: ur?'کسٹمز ڈیوٹی':'Customs Duty', d: ur?'اسمارٹ فونز پر بالکل معاف، چاہے فون کی قیمت کچھ بھی ہو۔':'Fully exempt on smartphones, whatever the handset is worth.', v: ur?'معاف':'Exempt' },
+    { t: ur?'اضافی کسٹمز ڈیوٹی':'Additional Customs Duty', d: ur?'زیادہ تر امپورٹس پر لگتی ہے، مگر ذاتی سامان میں لائے گئے فون پر معاف ہے۔':'Charged on most imports, but not on a handset arriving in personal baggage.', v: ur?'معاف':'Exempt' },
+    { t: ur?'ریگولیٹری ڈیوٹی':'Regulatory Duty', d: ur?'فون کی C&F ویلیو کے bracket کے مطابق مقررہ رقم — ایک ہی bracket کے تمام فون ایک جیسی ادا کرتے ہیں۔':'A fixed amount set by the price bracket your phone falls in — every phone in that bracket pays the same.', v: ur?'Bracket کے مطابق':'By price bracket' },
+    { t: ur?'سیلز ٹیکس':'Sales Tax', d: ur?'کسٹمز ویلیو کا 18% (US$500 سے زیادہ پر 25%) — یہ واحد چارج ہے جو فیصد میں ہے، اس لیے ڈالر ریٹ سے متاثر ہوتا ہے۔':'18% of the customs value (25% above US$ 500) — the only percentage-based charge, so the only one that moves with the exchange rate.', v: '18% / 25%' },
+    { t: ur?'انکم ٹیکس (Section 148)':'Income Tax (Section 148)', d: ur?'صرف CNIC روٹ پر لاگو ہوتا ہے۔ اپنے سامان میں لائے گئے فون پر یہ چارج نہیں ہوتا — یہی دونوں طریقوں کی قیمت میں فرق کی اصل وجہ ہے۔':'Applies only on the CNIC route. Not charged on a phone in your own baggage — the whole reason the two routes cost differently.', v: ur?'صرف CNIC پر':'CNIC only' },
+    { t: ur?'موبائل ہینڈ سیٹ لیوی':'Mobile Handset Levy', d: ur?'کسی بھی فون کو نیٹ ورک پر رجسٹر کرنے پر ایک بار وصول ہونے والا چارج، قیمت کے bracket کے مطابق۔':'A one-off charge for putting any handset on the networks, fixed by price bracket.', v: ur?'ایک بار':'One-off' },
+  ];
+  const explainGrid=document.getElementById('ptaExplainGrid');
+  if(explainGrid){
+    explainGrid.innerHTML = `<h3 style="text-align:center;color:var(--navy);font-size:17px;margin-bottom:6px;">${ur?'ہر چارج کہاں سے آتا ہے':'Where each charge comes from'}</h3>` +
+      explainItems.map(it=>`<div class="pta-explain-item"><div class="pei-l"><b>${it.t}</b>${it.d}</div><div class="pei-r">${it.v}</div></div>`).join('');
+  }
+
+  const yearSel=document.getElementById('ptaTaxYear');
+  const year = yearSel ? yearSel.value : '2026-27';
+  const bands=ptaBandsForYear(year);
+  const labels = ['up to US$30','US$31–100','US$101–200','US$201–350','US$351–500','US$501–700','above US$700'];
+  const rateHeading=document.getElementById('ptaRateHeading');
+  if(rateHeading) rateHeading.textContent = ur ? `PTA ٹیکس ریٹ بینڈز — ٹیکس سال ${year}` : `PTA tax rate bands — Tax Year ${year}`;
+  const rateTable=document.getElementById('ptaRateTable');
+  if(rateTable){
+    const fmt=n=>'Rs '+n.toLocaleString('en-US');
+    rateTable.innerHTML = `
+      <thead><tr>
+        <th>${ur?'C&F ویلیو':'C&F value'}</th>
+        <th>${ur?'ریگولیٹری ڈیوٹی':'Reg. duty'}</th>
+        <th>${ur?'سیلز ٹیکس':'Sales tax'}</th>
+        <th>${ur?'انکم ٹیکس (CNIC)':'Income tax (CNIC)'}</th>
+        <th>${ur?'ہینڈ سیٹ لیوی':'Handset levy'}</th>
+      </tr></thead>
+      <tbody>${bands.map((b,i)=>`<tr><td>${labels[i]}</td><td>${fmt(b.regDuty)}</td><td>${b.salesTaxPct}%</td><td>${fmt(b.incomeTax)}</td><td>${fmt(b.levy)}</td></tr>`).join('')}</tbody>`;
+  }
+
+  const notes = [
+    { t: ur?'صرف چند ماہ کے لیے آئے ہیں؟':'Just visiting for a few months?', d: ur?'اگر آپ بیرون ملک مقیم ہیں یا غیر ملکی شہری ہیں تو ایک فون 120 دن کے لیے مفت عارضی رجسٹریشن کروا سکتے ہیں — یہ صرف ایک SIM سے منسلک ہوتا ہے، مدت ختم ہونے پر فون بلاک ہو جاتا ہے۔':'If you live abroad or are a foreign national, one phone can be registered temporarily for free for 120 days — tied to one nominated SIM; it is blocked once that period ends.' },
+    { t: ur?'یہاں کوئی فائلر رعایت نہیں':'No filer discount here', d: ur?'فون رجسٹریشن پر فائلر اور نان فائلر ایک جیسی رقم ادا کرتے ہیں — کسی بھی آفیشل شیڈول میں الگ نان فائلر ریٹ شائع نہیں ہوا۔':'Filers and non-filers pay the same amount to register a phone — no official schedule publishes a separate non-filer rate for this.' },
+    { t: ur?'US$ 500 ایک "cliff" ہے':'US$ 500 is a cliff, not a step', d: ur?'US$500 سے تجاوز کرتے ہی سیلز ٹیکس 18% سے 25% ہو جاتا ہے — اور یہ زیادہ ریٹ پوری ویلیو پر لاگو ہوتا ہے، صرف اضافی حصے پر نہیں۔':'Cross US$ 500 and sales tax jumps from 18% to 25% — applied to the whole value, not just the amount above the threshold.' },
+    { t: ur?'CNIC رقم کم از کم ہے':'A CNIC figure is a minimum', d: ur?'CNIC پر رجسٹریشن میں ایک جرمانہ بھی شامل ہوتا ہے جس کی کوئی آفیشل شیڈول شائع نہیں ہوئی — اس لیے CNIC کی رقم کو حتمی نہیں، کم از کم سمجھیں۔':'Registering with a CNIC adds a fine for which no official schedule exists — treat the CNIC figure as a minimum, not a final total.' },
+    { t: ur?'7 دن میں ادائیگی ضروری':'Pay within 7 days or start again', d: ur?'پیمنٹ سلپ 7 دن بعد ختم ہو جاتی ہے، پھر پوری ایپلیکیشن دوبارہ فائل کرنا پڑتی ہے۔ فون خود 60 دن میں رجسٹر ہونا ضروری ہے۔':'Your payment slip expires after 7 days and the application has to be re-filed. The phone itself must be registered within 60 days of first use.' },
+    { t: ur?'بہت نئے فون لسٹ میں نہیں ہوتے':'Very new phones may not be listed', d: ur?'اگر آپ کے فون کی سرکاری ویلیو ابھی شائع نہیں ہوئی تو دکان کی قیمت کی بجائے اپنی کسٹمز اسیسمنٹ سلپ کی اصل ڈالر ویلیو استعمال کریں۔':'If your exact model has no published official value yet, use the real dollar figure from your own customs assessment rather than the shop price.' },
+  ];
+  const noteGrid=document.getElementById('ptaNoteGrid');
+  if(noteGrid){
+    noteGrid.innerHTML = `<h3 style="grid-column:1/-1;text-align:center;color:var(--navy);font-size:17px;margin-bottom:2px;">${ur?'کیلکولیٹ کرنے سے پہلے ضروری نکات':'Important before you calculate'}</h3>` +
+      notes.map(n=>`<div class="pta-note-card"><b>${n.t}</b><p>${n.d}</p></div>`).join('');
+  }
 }
 
 /* ═══════════════ VEHICLE TOKEN TAX / FEES (Provincial) ═══════════════ */
@@ -3396,26 +3594,40 @@ function renderTicker(){
   track.innerHTML = html + html;
 }
 
-/* ═══════════════ SUCCESS ANIMATION + CONFETTI ═══════════════ */
-function showSuccessAnimation(msg){
+/* ═══════════════ PREMIUM SUCCESS ANIMATION + BLAST/CONFETTI ═══════════════ */
+/* type: 'payment' | 'review' | 'generic' — controls the sub-message shown under THANK YOU! */
+function showSuccessAnimation(msg, type){
   const overlay = document.getElementById('successOverlay');
   if(!overlay) return;
-  document.getElementById('successMsg').textContent = msg;
+  let finalMsg = msg;
+  if(type === 'payment'){
+    finalMsg = currentLang==='ur' ? 'آپ کی ادائیگی کامیابی سے موصول ہو گئی ہے۔' : 'Your payment has been received successfully.';
+  } else if(type === 'review'){
+    finalMsg = currentLang==='ur' ? 'آپ کی رائے کامیابی سے جمع ہو گئی ہے۔' : 'Your review has been submitted successfully.';
+  }
+  document.getElementById('successMsg').textContent = finalMsg;
+  // restart CSS animations reliably even if triggered twice in a row
+  overlay.classList.remove('show');
+  void overlay.offsetWidth;
   overlay.classList.add('show');
   launchConfetti();
-  setTimeout(()=>overlay.classList.remove('show'), 2600);
+  clearTimeout(window._successCloseTimer);
+  window._successCloseTimer = setTimeout(()=>overlay.classList.remove('show'), 2800);
 }
+function showPaymentSuccess(){ showSuccessAnimation('', 'payment'); }
+function showReviewSuccess(){ showSuccessAnimation('', 'review'); }
 function launchConfetti(){
   const colors = ['#0F8A5F','#F5A623','#3B82F6','#8B5CF6','#F87171'];
-  for(let i=0;i<26;i++){
+  for(let i=0;i<34;i++){
     const el = document.createElement('div');
     el.className = 'confetti-piece';
     el.style.left = Math.random()*100+'vw';
     el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.animationDuration = (1.8+Math.random()*1.2)+'s';
+    el.style.animationDuration = (1.6+Math.random()*1.3)+'s';
+    el.style.animationDelay = (Math.random()*.25)+'s';
     el.style.borderRadius = Math.random()>0.5 ? '50%':'2px';
     document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 3200);
+    setTimeout(()=>el.remove(), 3400);
   }
 }
 
@@ -3480,6 +3692,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   safe(renderTicker, 'renderTicker');
   safe(initMagneticButtons, 'initMagneticButtons');
   safe(initHeroScrollFade, 'initHeroScrollFade');
+  safe(ptaRenderExtras, 'ptaRenderExtras');
   try{ await loadSiteContent(); }catch(e){ console.warn('Init failed: loadSiteContent', e); }
   safe(initHeroCinematic, 'initHeroCinematic');
 });

@@ -89,7 +89,8 @@ body.dark-mode .svc-card,body.dark-mode .testi-card,body.dark-mode .blog-card,
 body.dark-mode .contact-form-box,body.dark-mode .c-card,body.dark-mode .faq-item,
 body.dark-mode .stats-bar,body.dark-mode .trust-badge,body.dark-mode .theme-toggle,
 body.dark-mode .lang-toggle,body.dark-mode .btn-outline,body.dark-mode .testi-arrow,
-body.dark-mode .blog-view-all,body.dark-mode .wa-popup,body.dark-mode .cat-pill{
+body.dark-mode .blog-view-all,body.dark-mode .wa-popup,body.dark-mode .cat-pill,
+body.dark-mode .calc-dropdown-panel{
   background:var(--surface);border-color:var(--border);color:var(--ink);
 }
 body.dark-mode .hero,body.dark-mode #faq{background:var(--bg);}
@@ -135,6 +136,23 @@ body.dark-mode .skel{background:linear-gradient(90deg,#182536 25%,#213249 37%,#1
 .nav-links{display:flex;align-items:center;gap:6px;}
 .nav-links a{padding:11px 18px;border-radius:8px;font-size:15.5px;font-weight:600;color:var(--ink);transition:all .2s;}
 .nav-links a:hover, .nav-links a.active{color:var(--green);background:var(--green-light);}
+.calc-dropdown-wrap{position:relative;}
+.calc-dropdown-trigger{display:flex;align-items:center;gap:5px;cursor:pointer;}
+.calc-dropdown-trigger svg{width:13px;height:13px;transition:transform .2s;}
+.calc-dropdown-wrap.open .calc-dropdown-trigger svg{transform:rotate(180deg);}
+.calc-dropdown-panel{position:absolute;top:calc(100% + 10px);inset-inline-start:0;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 40px rgba(15,42,61,.16);padding:10px;min-width:290px;display:grid;grid-template-columns:1fr 1fr;gap:2px;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .18s ease;z-index:200;}
+.calc-dropdown-wrap.open .calc-dropdown-panel{opacity:1;visibility:visible;transform:translateY(0);}
+.calc-dropdown-panel a{padding:10px 12px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;}
+.calc-dropdown-panel a:hover{background:var(--green-light);color:var(--green-dark);}
+@media (max-width:1024px){
+  .calc-dropdown-panel{grid-template-columns:1fr;min-width:230px;}
+}
+.mobile-calc-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.mobile-calc-toggle svg{width:14px;height:14px;transition:transform .2s;flex-shrink:0;}
+.mobile-calc-toggle.open svg{transform:rotate(180deg);}
+.mobile-calc-list{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+.mobile-calc-list.open{max-height:600px;}
+.mobile-calc-list a{padding:12px 0 12px 14px;font-size:14.5px;font-weight:600;border-bottom:1px solid var(--border);color:var(--mute);}
 .nav-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
 .lang-toggle{
   display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;
@@ -397,6 +415,8 @@ section{padding:90px 5% 0;}
 @media(max-width:520px){.wt-rate-row{grid-template-columns:1fr;}}
 .print-result-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--border);color:var(--mute);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;}
 .print-result-btn:hover{border-color:var(--green);color:var(--green-dark);}
+.whatsapp-share-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid #25D366;color:#128C4A;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;margin-inline-start:8px;}
+.whatsapp-share-btn:hover{background:#25D366;color:#fff;}
 @media(max-width:600px){
   .tax-est-row{grid-template-columns:1fr;}
 }
@@ -716,6 +736,22 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <a href="#home" class="active" data-i18n="navHome">ہوم</a>
     <a href="#why" data-i18n="navAbout">تعارف</a>
     <a href="#services" data-i18n="navServices">خدمات</a>
+    <div class="calc-dropdown-wrap" id="calcDropdownWrap">
+      <a href="#tax-estimate" class="calc-dropdown-trigger" onclick="return toggleCalcDropdown(event)"><span data-i18n="navCalculators">کیلکولیٹرز</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+      <div class="calc-dropdown-panel" id="calcDropdownPanel">
+        <a href="#tax-estimate" onclick="closeCalcDropdown()" data-i18n="navCalcTaxEst">ٹیکس تخمینہ</a>
+        <a href="#annual-tax-summary" onclick="closeCalcDropdown()" data-i18n="navCalcAts">سالانہ تنخواہ و ٹیکس</a>
+        <a href="#advance-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcAdvance">ایڈوانس ٹیکس (گاڑی/پراپرٹی)</a>
+        <a href="#withholding-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcWithholding">ودہولڈنگ ٹیکس</a>
+        <a href="#sales-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcSales">سیلز ٹیکس</a>
+        <a href="#atl-verification" onclick="closeCalcDropdown()" data-i18n="navCalcAtl">ATL اسٹیٹس تصدیق</a>
+        <a href="#rent-cash-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcRentCash">کرایہ / کیش نکلوانے کا ٹیکس</a>
+        <a href="#capital-gains-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcCapitalGains">کیپیٹل گینز ٹیکس</a>
+        <a href="#utility-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcUtility">یوٹیلیٹی ٹیکس</a>
+        <a href="#vehicle-fees-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcVehicle">گاڑی ٹوکن / رجسٹریشن فیس</a>
+        <a href="#pta-tax-calculator" onclick="closeCalcDropdown()" data-i18n="navCalcPta">PTA موبائل ٹیکس</a>
+      </div>
+    </div>
     <a href="#blog" data-i18n="navBlog">بلاگ</a>
     <a href="#testimonials" data-i18n="navTestimonials">آراء</a>
     <a href="#contact" data-i18n="navContact">رابطہ</a>
@@ -744,6 +780,23 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   <a href="#home" onclick="toggleMobileMenu()" data-i18n="navHome">ہوم</a>
   <a href="#why" onclick="toggleMobileMenu()" data-i18n="navAbout">تعارف</a>
   <a href="#services" onclick="toggleMobileMenu()" data-i18n="navServices">خدمات</a>
+  <div class="mobile-calc-toggle" onclick="toggleMobileCalcList()" id="mobileCalcToggle">
+    <span data-i18n="navCalculators">کیلکولیٹرز</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="mobile-calc-list" id="mobileCalcList">
+    <a href="#tax-estimate" onclick="toggleMobileMenu()" data-i18n="navCalcTaxEst">ٹیکس تخمینہ</a>
+    <a href="#annual-tax-summary" onclick="toggleMobileMenu()" data-i18n="navCalcAts">سالانہ تنخواہ و ٹیکس</a>
+    <a href="#advance-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcAdvance">ایڈوانس ٹیکس (گاڑی/پراپرٹی)</a>
+    <a href="#withholding-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcWithholding">ودہولڈنگ ٹیکس</a>
+    <a href="#sales-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcSales">سیلز ٹیکس</a>
+    <a href="#atl-verification" onclick="toggleMobileMenu()" data-i18n="navCalcAtl">ATL اسٹیٹس تصدیق</a>
+    <a href="#rent-cash-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcRentCash">کرایہ / کیش نکلوانے کا ٹیکس</a>
+    <a href="#capital-gains-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcCapitalGains">کیپیٹل گینز ٹیکس</a>
+    <a href="#utility-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcUtility">یوٹیلیٹی ٹیکس</a>
+    <a href="#vehicle-fees-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcVehicle">گاڑی ٹوکن / رجسٹریشن فیس</a>
+    <a href="#pta-tax-calculator" onclick="toggleMobileMenu()" data-i18n="navCalcPta">PTA موبائل ٹیکس</a>
+  </div>
   <a href="#blog" onclick="toggleMobileMenu()" data-i18n="navBlog">بلاگ</a>
   <a href="#testimonials" onclick="toggleMobileMenu()" data-i18n="navTestimonials">آراء</a>
   <a href="#contact" onclick="toggleMobileMenu()" data-i18n="navContact">رابطہ</a>
@@ -901,6 +954,13 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <div class="sec-title-bar"></div>
   </div>
   <div class="tax-est-card reveal">
+    <div class="tax-est-field">
+      <label data-i18n="taxEstMode">کیلکولیشن کی قسم</label>
+      <select id="taxEstMode" onchange="toggleTaxEstMode()">
+        <option value="income" data-i18n="taxEstModeIncomeToTax">آمدنی سے ٹیکس نکالیں</option>
+        <option value="tax" data-i18n="taxEstModeTaxToIncome">ٹیکس سے آمدنی نکالیں</option>
+      </select>
+    </div>
     <div class="tax-est-row">
       <div class="tax-est-field">
         <label data-i18n="taxEstType">آمدنی کی قسم</label>
@@ -919,7 +979,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </div>
     </div>
     <div class="tax-est-field">
-      <label data-i18n="taxEstIncomeAmt">آمدنی (Rs میں لکھیں)</label>
+      <label id="taxEstAmountLabel" data-i18n="taxEstIncomeAmt">آمدنی (Rs میں لکھیں)</label>
       <input type="number" id="taxEstAmount" placeholder="مثلاً 150000" min="0" step="1000">
     </div>
     <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:16px;" onclick="calculateTaxEstimate()"><span data-i18n="taxEstBtn">📊 ٹیکس کیلکولیٹ کریں</span></button>
@@ -1863,7 +1923,10 @@ const I18N = {
     taxEstEyebrow:'مفت تخمینہ', taxEstTitle:'اپنا Tax تخمینہ حاصل کریں',
     taxEstType:'آمدنی کی قسم', taxEstSalaried:'تنخواہ دار (Salaried)', taxEstBusiness:'کاروبار کا منافع (Business Profit)', taxEstFreelancer:'فری لانسر آمدنی',
     taxEstPeriod:'مدت', taxEstMonthly:'ماہانہ آمدنی', taxEstAnnual:'سالانہ آمدنی', taxEstIncomeAmt:'آمدنی (Rs میں لکھیں)',
+    taxEstMode:'کیلکولیشن کی قسم', taxEstModeIncomeToTax:'آمدنی سے ٹیکس نکالیں', taxEstModeTaxToIncome:'ٹیکس سے آمدنی نکالیں',
+    taxEstTaxAmt:'ٹیکس کی رقم (Rs میں لکھیں)', taxEstMonthlyTax:'ماہانہ ٹیکس', taxEstAnnualTax:'سالانہ ٹیکس',
     taxEstBtn:'📊 ٹیکس کیلکولیٹ کریں', taxEstNote:'💡 یہ تخمینہ Tax Year 2026-27 کے FBR سلیب کے مطابق ہے۔ حتمی رقم آپ کی مخصوص صورتحال (چھوٹ، deductions وغیرہ) کے مطابق مختلف ہو سکتی ہے — درست فائلنگ کے لیے ہم سے رابطہ کریں۔',
+    navCalculators:'کیلکولیٹرز', navCalcTaxEst:'ٹیکس تخمینہ', navCalcAts:'سالانہ تنخواہ و ٹیکس', navCalcAdvance:'ایڈوانس ٹیکس (گاڑی/پراپرٹی)', navCalcWithholding:'ودہولڈنگ ٹیکس', navCalcSales:'سیلز ٹیکس', navCalcAtl:'ATL اسٹیٹس تصدیق', navCalcRentCash:'کرایہ / کیش نکلوانے کا ٹیکس', navCalcCapitalGains:'کیپیٹل گینز ٹیکس', navCalcUtility:'یوٹیلیٹی ٹیکس', navCalcVehicle:'گاڑی ٹوکن / رجسٹریشن فیس', navCalcPta:'PTA موبائل ٹیکس',
     atsEyebrow:'ٹیکس ریٹرن میں مدد', atsTitle:'Annual Salary &amp; Tax Summary',
     atsDisclaimer:'⚠️ یہ خلاصہ آپ کی فراہم کردہ معلومات پر مبنی ہے — یہ آفیشل Employer یا FBR کا تصدیق شدہ Tax Certificate نہیں۔ Return فائل کرنے سے پہلے تصدیق کر لیں۔',
     atsName:'ملازم کا نام', atsCnic:'CNIC', atsNtn:'NTN (اگر ہو)', atsEmployer:'آجر کا نام (Employer)', atsTaxYear:'ٹیکس سال (Tax Year)',
@@ -1989,7 +2052,10 @@ const I18N = {
     taxEstEyebrow:'Free Estimate', taxEstTitle:'Get Your Tax Estimate',
     taxEstType:'Income Type', taxEstSalaried:'Salaried', taxEstBusiness:'Business Profit', taxEstFreelancer:'Freelancer Income',
     taxEstPeriod:'Period', taxEstMonthly:'Monthly Income', taxEstAnnual:'Annual Income', taxEstIncomeAmt:'Income (in Rs)',
+    taxEstMode:'Calculation Type', taxEstModeIncomeToTax:'Income → Tax', taxEstModeTaxToIncome:'Tax → Income',
+    taxEstTaxAmt:'Tax Amount (in Rs)', taxEstMonthlyTax:'Monthly Tax', taxEstAnnualTax:'Annual Tax',
     taxEstBtn:'📊 Calculate Tax', taxEstNote:'💡 This estimate is based on Tax Year 2026-27 FBR slabs. Your final tax may differ based on your specific situation (exemptions, deductions, etc.) — contact us for accurate filing.',
+    navCalculators:'Calculators', navCalcTaxEst:'Tax Estimate', navCalcAts:'Annual Salary & Tax', navCalcAdvance:'Advance Tax (Vehicle/Property)', navCalcWithholding:'Withholding Tax', navCalcSales:'Sales Tax', navCalcAtl:'ATL Status Check', navCalcRentCash:'Rent / Cash Withdrawal Tax', navCalcCapitalGains:'Capital Gains Tax', navCalcUtility:'Utility Tax', navCalcVehicle:'Vehicle Token / Registration Fee', navCalcPta:'PTA Mobile Tax',
     atsEyebrow:'Tax Return Help', atsTitle:'Annual Salary &amp; Tax Summary',
     atsDisclaimer:'⚠️ This summary is based on the information you provide — it is not an official Employer or FBR-verified Tax Certificate. Please verify before filing your return.',
     atsName:'Employee Name', atsCnic:'CNIC', atsNtn:'NTN (if any)', atsEmployer:'Employer Name', atsTaxYear:'Tax Year',
@@ -2136,6 +2202,26 @@ applyTheme(localStorage.getItem('mfj_theme') || 'light');
 
 /* ═══════════════ NAV ═══════════════ */
 function toggleMobileMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
+
+/* ═══════════════ CALCULATORS NAV DROPDOWN ═══════════════ */
+function toggleCalcDropdown(e){
+  e.preventDefault();
+  document.getElementById('calcDropdownWrap').classList.toggle('open');
+  return false;
+}
+function closeCalcDropdown(){
+  document.getElementById('calcDropdownWrap').classList.remove('open');
+}
+document.addEventListener('click', (e)=>{
+  const wrap = document.getElementById('calcDropdownWrap');
+  if(wrap && wrap.classList.contains('open') && !wrap.contains(e.target)){
+    wrap.classList.remove('open');
+  }
+});
+function toggleMobileCalcList(){
+  document.getElementById('mobileCalcList').classList.toggle('open');
+  document.getElementById('mobileCalcToggle').classList.toggle('open');
+}
 
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click', function(e){
@@ -2449,7 +2535,41 @@ function calcBusinessTax(annual){
   if(annual > 10000000) tax *= 1.10; // 10% surcharge on tax payable (non-salaried/AOP)
   return tax;
 }
+function calcTaxFn(type){
+  return type === 'salaried' ? calcSalariedTax : calcBusinessTax;
+}
+// Inverse: given a target annual tax amount, find the annual income that produces it.
+// Both slab functions are monotonically non-decreasing in income, so binary search works.
+function estimateAnnualIncomeFromTax(targetAnnualTax, type){
+  const calc = calcTaxFn(type);
+  if(targetAnnualTax <= 0) return 0;
+  let lo = 0, hi = 500000000; // Rs 500 million ceiling — comfortably above any realistic input
+  // Make sure hi actually produces >= targetAnnualTax; expand if needed
+  while(calc(hi) < targetAnnualTax && hi < 1e13){ hi *= 2; }
+  for(let i=0; i<80; i++){
+    const mid = (lo+hi)/2;
+    if(calc(mid) < targetAnnualTax) lo = mid; else hi = mid;
+  }
+  return (lo+hi)/2;
+}
+function toggleTaxEstMode(){
+  const mode = document.getElementById('taxEstMode').value;
+  const ur = currentLang==='ur';
+  const labelEl = document.getElementById('taxEstAmountLabel');
+  const inputEl = document.getElementById('taxEstAmount');
+  if(mode === 'tax'){
+    labelEl.textContent = ur ? 'ٹیکس کی رقم (Rs میں لکھیں)' : 'Tax Amount (in Rs)';
+    inputEl.placeholder = ur ? 'مثلاً 15000' : 'e.g. 15000';
+  } else {
+    labelEl.textContent = ur ? 'آمدنی (Rs میں لکھیں)' : 'Income (in Rs)';
+    inputEl.placeholder = ur ? 'مثلاً 150000' : 'e.g. 150000';
+  }
+  const resultEl = document.getElementById('taxEstResult');
+  resultEl.style.display = 'none';
+  resultEl.innerHTML = '';
+}
 function calculateTaxEstimate(){
+  const mode = document.getElementById('taxEstMode').value;
   const type = document.getElementById('taxEstType').value;
   const period = document.getElementById('taxEstPeriod').value;
   const raw = parseFloat(document.getElementById('taxEstAmount').value);
@@ -2458,17 +2578,46 @@ function calculateTaxEstimate(){
 
   if(!raw || raw <= 0){
     resultEl.style.display = 'block';
-    resultEl.innerHTML = `<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم درست آمدنی درج کریں':'⚠ Please enter a valid income amount'}</div>`;
+    const errMsg = mode === 'tax'
+      ? (ur?'⚠ براہ کرم درست ٹیکس رقم درج کریں':'⚠ Please enter a valid tax amount')
+      : (ur?'⚠ براہ کرم درست آمدنی درج کریں':'⚠ Please enter a valid income amount');
+    resultEl.innerHTML = `<div class="tax-est-result-box tax-est-error">${errMsg}</div>`;
     return;
   }
 
-  const annual = period === 'monthly' ? raw*12 : raw;
-  const tax = type === 'salaried' ? calcSalariedTax(annual) : calcBusinessTax(annual);
-  const monthlyTax = tax/12;
-  const effRate = annual>0 ? (tax/annual*100) : 0;
-  const netAnnual = annual - tax;
-
   const fmt = n => 'Rs ' + Math.round(n).toLocaleString('en-US');
+  let annual, tax, monthlyTax, effRate, netAnnual;
+
+  if(mode === 'tax'){
+    // User gave the tax amount — work backwards to find the income
+    const annualTax = period === 'monthly' ? raw*12 : raw;
+    annual = estimateAnnualIncomeFromTax(annualTax, type);
+    tax = calcTaxFn(type)(annual);
+    monthlyTax = tax/12;
+    effRate = annual>0 ? (tax/annual*100) : 0;
+    netAnnual = annual - tax;
+
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <div class="tax-est-result-box">
+        <div class="tax-est-result-row"><span>${ur?'درج کردہ ٹیکس':'Tax Entered'}</span><strong>${fmt(annualTax)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'تخمینی سالانہ آمدنی':'Estimated Annual Income'}</span><strong style="color:var(--green-dark);">${fmt(annual)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'تخمینی ماہانہ آمدنی':'Estimated Monthly Income'}</span><strong>${fmt(annual/12)}</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'مؤثر ٹیکس ریٹ':'Effective Tax Rate'}</span><strong>${effRate.toFixed(1)}%</strong></div>
+        <div class="tax-est-result-row"><span>${ur?'ٹیکس کے بعد سالانہ آمدنی':'Annual Income After Tax'}</span><strong>${fmt(netAnnual)}</strong></div>
+        <button class="print-result-btn" onclick="printResult('taxEstResult','${ur?'آمدنی تخمینہ':'Income Estimate'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('taxEstResult','${ur?'آمدنی تخمینہ':'Income Estimate'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
+      </div>`;
+
+    trackEvent('tax_estimate_reverse_calculated', type+'|'+period+'|'+Math.round(annualTax));
+    return;
+  }
+
+  annual = period === 'monthly' ? raw*12 : raw;
+  tax = calcTaxFn(type)(annual);
+  monthlyTax = tax/12;
+  effRate = annual>0 ? (tax/annual*100) : 0;
+  netAnnual = annual - tax;
 
   resultEl.style.display = 'block';
   resultEl.innerHTML = `
@@ -2479,6 +2628,7 @@ function calculateTaxEstimate(){
       <div class="tax-est-result-row"><span>${ur?'مؤثر ٹیکس ریٹ':'Effective Tax Rate'}</span><strong>${effRate.toFixed(1)}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'ٹیکس کے بعد سالانہ آمدنی':'Annual Income After Tax'}</span><strong style="color:var(--green-dark);">${fmt(netAnnual)}</strong></div>
       <button class="print-result-btn" onclick="printResult('taxEstResult','${ur?'ٹیکس تخمینہ':'Tax Estimate'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('taxEstResult','${ur?'ٹیکس تخمینہ':'Tax Estimate'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
 
   trackEvent('tax_estimate_calculated', type+'|'+period+'|'+Math.round(annual));
@@ -2487,7 +2637,7 @@ function printResult(resultElId, titleText){
   const el=document.getElementById(resultElId);
   if(!el || el.style.display==='none') return;
   const clone=el.cloneNode(true);
-  clone.querySelectorAll('.print-result-btn').forEach(b=>b.remove());
+  clone.querySelectorAll('.print-result-btn, .whatsapp-share-btn').forEach(b=>b.remove());
   const w=window.open('','_blank');
   w.document.write(`<html><head><title>${titleText}</title><meta charset="UTF-8"><style>
     body{font-family:'Segoe UI',Arial,sans-serif;padding:36px;color:#152238;}
@@ -2500,6 +2650,26 @@ function printResult(resultElId, titleText){
   w.document.close();
   w.focus();
   setTimeout(()=>{ w.print(); },350);
+}
+function shareResultWhatsApp(resultElId, titleText){
+  const el=document.getElementById(resultElId);
+  if(!el || el.style.display==='none') return;
+  const ur = currentLang==='ur';
+  const rows = el.querySelectorAll('.tax-est-result-row');
+  const lines = [];
+  rows.forEach(r=>{
+    const spans = r.querySelectorAll('span, strong');
+    if(spans.length>=2){
+      const label = spans[0].textContent.trim();
+      const value = spans[1].textContent.trim();
+      if(label && value) lines.push(`${label}: ${value}`);
+    }
+  });
+  const footer = ur ? 'MFJ Services — Tax Consultancy 📊' : 'MFJ Services — Tax Consultancy 📊';
+  const text = `*${titleText}*\n\n${lines.join('\n')}\n\n${footer}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+  trackEvent('result_shared_whatsapp', resultElId);
 }
 
 /* ═══════════════ ANNUAL SALARY & TAX SUMMARY ═══════════════ */
@@ -2673,6 +2843,7 @@ function atcCalcVehicle(){
           <div class="tax-est-result-row"><span>${ur?'گاڑی کی عمر':'Vehicle Age'}</span><strong>${age} ${ur?'سال':'yrs'}</strong></div>
           <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#16A34A;">Rs 0 (${ur?'5 سال سے زیادہ پرانی — کوئی ٹیکس نہیں':'over 5 years old — no tax'})</strong></div>
           <button class="print-result-btn" onclick="printResult('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
         </div>`;
       trackEvent('advance_tax_vehicle_transfer_calculated', engine+'|'+filerStatus+'|'+age+'|0');
       return;
@@ -2688,6 +2859,7 @@ function atcCalcVehicle(){
         <div class="tax-est-result-row"><span>${ur?'عمر کی رعایت':'Age Reduction'}</span><strong>${reduction}%</strong></div>
         <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
         <button class="print-result-btn" onclick="printResult('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
       </div>`;
     trackEvent('advance_tax_vehicle_transfer_calculated', engine+'|'+filerStatus+'|'+age+'|'+Math.round(tax));
     return;
@@ -2708,6 +2880,7 @@ function atcCalcVehicle(){
       <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'تخمینی ایڈوانس ٹیکس':'Estimated Advance Tax'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <button class="print-result-btn" onclick="printResult('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('atcVResult','${ur?'ایڈوانس ٹیکس — گاڑی':'Advance Tax — Vehicle'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('advance_tax_vehicle_calculated', Math.round(value)+'|'+rate);
 }
@@ -2770,6 +2943,7 @@ function atcCalcProperty(){
       ${registryRowsHtml}
       <div class="wt-hint" style="margin-top:8px;">${ur?'⚠️ Stamp Duty، Registration Fee اور TMA Fee کی شرحیں آپ کے درج کردہ اعداد پر مبنی ہیں — حتمی رقم کے لیے متعلقہ دفتر سے تصدیق کریں۔':'⚠️ Stamp Duty, Registration Fee and TMA Fee are based on the rates you entered — confirm the final amount with the relevant office.'}</div>
       <button class="print-result-btn" onclick="printResult('atcPResult','${ur?'ایڈوانس ٹیکس — پراپرٹی':'Advance Tax — Property'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('atcPResult','${ur?'ایڈوانس ٹیکس — پراپرٹی':'Advance Tax — Property'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('advance_tax_property_calculated', Math.round(value)+'|'+rate);
 }
@@ -2814,6 +2988,7 @@ function wtCalculate(){
       <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax to be Withheld'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'ادائیگی کے بعد رقم':'Net Payment After Tax'}</span><strong style="color:var(--green-dark);">${fmt(net)}</strong></div>
       <button class="print-result-btn" onclick="printResult('wtResult','${ur?'Withholding Tax':'Withholding Tax'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('wtResult','${ur?'Withholding Tax':'Withholding Tax'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('withholding_tax_calculated', document.getElementById('wtCategory').value+'|'+Math.round(amount)+'|'+rate);
 }
@@ -2870,6 +3045,7 @@ function stCalcGoods(){
       ${furtherTaxOn?`<div class="tax-est-result-row"><span>${ur?'فرتھر ٹیکس (4%)':'Further Tax (4%)'}</span><strong style="color:#DC2626;">${fmt(furtherTaxAmt)}</strong></div>`:''}
       <div class="tax-est-result-row"><span>${ur?'کُل رقم (Invoice)':'Total (Invoice Value)'}</span><strong style="color:var(--green-dark);">${fmt(total)}</strong></div>
       <button class="print-result-btn" onclick="printResult('stGoodsResult','${ur?'Sales Tax — اشیاء':'Sales Tax — Goods'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('stGoodsResult','${ur?'Sales Tax — اشیاء':'Sales Tax — Goods'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('sales_tax_goods_calculated', document.getElementById('stGoodsType').value+'|'+Math.round(amount)+'|'+rate);
 }
@@ -2900,6 +3076,7 @@ function stCalcServices(){
       <div class="tax-est-result-row"><span>${ur?'سیلز ٹیکس (خدمات)':'Sales Tax (Services)'}</span><strong style="color:#DC2626;">${fmt(b.tax)}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'کُل رقم (Invoice)':'Total (Invoice Value)'}</span><strong style="color:var(--green-dark);">${fmt(b.total)}</strong></div>
       <button class="print-result-btn" onclick="printResult('stServicesResult','${ur?'Sales Tax — خدمات':'Sales Tax — Services'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('stServicesResult','${ur?'Sales Tax — خدمات':'Sales Tax — Services'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('sales_tax_services_calculated', document.getElementById('stProvince').value+'|'+Math.round(amount)+'|'+rate);
 }
@@ -2953,6 +3130,7 @@ function rcCalcRent(){
       <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax to be Withheld'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'کرایہ کے بعد رقم':'Net Rent After Tax'}</span><strong style="color:var(--green-dark);">${fmt(net)}</strong></div>
       <button class="print-result-btn" onclick="printResult('rcRentResult','${ur?'Rent Tax (155)':'Rent Tax (155)'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('rcRentResult','${ur?'Rent Tax (155)':'Rent Tax (155)'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('rent_tax_calculated', landlordType+'|'+filerStatus+'|'+Math.round(amount));
 }
@@ -2984,6 +3162,7 @@ function rcCalcCash(){
       <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)} ${note}</strong></div>
       <div class="tax-est-result-row"><span>${ur?'ہاتھ میں آنے والی رقم':'Net Cash Received'}</span><strong style="color:var(--green-dark);">${fmt(net)}</strong></div>
       <button class="print-result-btn" onclick="printResult('rcCashResult','${ur?'Cash Withdrawal Tax (231AB)':'Cash Withdrawal Tax (231AB)'}')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('rcCashResult','${ur?'Cash Withdrawal Tax (231AB)':'Cash Withdrawal Tax (231AB)'}')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('cash_withdrawal_tax_calculated', filerStatus+'|'+Math.round(amount));
 }
@@ -3020,6 +3199,7 @@ function cgCalcPost(){
       <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'تخمینی CGT':'Estimated CGT'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <button class="print-result-btn" onclick="printResult('cgPostResult','Capital Gains Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('cgPostResult','Capital Gains Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('cgt_property_post_calculated', Math.round(gain)+'|'+rate);
 }
@@ -3051,6 +3231,7 @@ function cgCalcPre(){
       <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ (Holding Period)':'Applied Rate (Holding Period)'}</span><strong>${rate}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'تخمینی CGT':'Estimated CGT'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <button class="print-result-btn" onclick="printResult('cgPreResult','Capital Gains Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('cgPreResult','Capital Gains Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('cgt_property_pre_calculated', Math.round(gain)+'|'+rate);
 }
@@ -3105,6 +3286,7 @@ function utCalcElec(){
         <div class="tax-est-result-row"><span>${ur?'بل کی رقم':'Bill Amount'}</span><strong>${fmt(amount)}</strong></div>
         <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)} ${note}</strong></div>
         <button class="print-result-btn" onclick="printResult('utElecResult','Electricity Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('utElecResult','Electricity Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
       </div>`;
     trackEvent('utility_electricity_calculated', 'home|'+filerStatus+'|'+Math.round(amount));
   } else {
@@ -3132,6 +3314,7 @@ function utCalcElec(){
         <div class="tax-est-result-row"><span>${ur?'بل کی رقم':'Bill Amount'}</span><strong>${fmt(amount)}</strong></div>
         <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
         <button class="print-result-btn" onclick="printResult('utElecResult','Electricity Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('utElecResult','Electricity Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
       </div>`;
     trackEvent('utility_electricity_calculated', meterType+'|'+Math.round(amount));
   }
@@ -3157,6 +3340,7 @@ function utCalcTelecom(){
       <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
       <div class="tax-est-result-row"><span>${ur?'کاٹا جانے والا ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
       <button class="print-result-btn" onclick="printResult('utTelResult','Telecom Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('utTelResult','Telecom Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
   trackEvent('utility_telecom_calculated', (fbrNamed?'fbrnamed':'flat')+'|'+Math.round(amount));
 }
@@ -3220,6 +3404,7 @@ function ptaCalc(){
       <div class="tax-est-result-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px;"><span>${ur?'مجموعی تخمینی ٹیکس':'Total Estimated Tax'}</span><strong style="color:#DC2626;">${fmt(r.total)}${route==='cnic'?' + '+(ur?'جرمانہ':'fine'):''}</strong></div>
       ${fineNote}${usedNote}
       <button class="print-result-btn" onclick="printResult('ptaResult','PTA Mobile Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('ptaResult','PTA Mobile Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
 
   /* side-by-side Passport vs CNIC comparison, like the reference calculator */
@@ -3380,6 +3565,7 @@ function vfCalcTotal(){
     <div class="tax-est-result-box">
       <div class="tax-est-result-row"><span>${ur?'کُل رقم':'Total Amount'}</span><strong style="color:var(--green-dark);">${fmt(total)}</strong></div>
       <button class="print-result-btn" onclick="printResult('vfResult','Vehicle Fees Total')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('vfResult','Vehicle Fees Total')">💬 ${ur?'شیئر کریں':'Share'}</button>
     </div>`;
 }
 

@@ -1328,14 +1328,30 @@ tbody tr:hover td{background:var(--primary-ultra);}
           </select>
           <select id="filterCategory" onchange="renderTable()">
             <option value="">تمام اقسام</option>
-            <option value="income_tax">Income Tax</option>
-            <option value="ntn">NTN</option>
-            <option value="sales_tax">Sales Tax</option>
-            <option value="business_reg">Business Reg</option>
-            <option value="company_reg">Company Reg</option>
-            <option value="pvt_ltd">Pvt Ltd</option>
-            <option value="import_export">Import/Export</option>
-            <option value="other">دیگر</option>
+            <optgroup label="💰 Income Tax">
+              <option value="income_tax">Income Tax (عمومی)</option>
+              <option value="it_salaried">Income Tax — Salaried</option>
+              <option value="it_business_individual">Income Tax — Business Individual</option>
+              <option value="it_aop">Income Tax — AOP</option>
+              <option value="it_company">Income Tax — Company</option>
+            </optgroup>
+            <optgroup label="🏢 Business Tax / Registration">
+              <option value="sales_tax">Sales Tax</option>
+              <option value="business_reg">Business Reg</option>
+              <option value="company_reg">Company Reg</option>
+              <option value="pvt_ltd">Pvt Ltd</option>
+              <option value="import_export">Import/Export</option>
+            </optgroup>
+            <optgroup label="📄 دیگر خدمات">
+              <option value="ntn">NTN</option>
+              <option value="other">دیگر</option>
+            </optgroup>
+          </select>
+          <select id="filterEngagement" onchange="renderTable()">
+            <option value="">تمام کلائنٹس</option>
+            <option value="new">🆕 نیا</option>
+            <option value="repeat">🔁 پرانا/دہرایا</option>
+            <option value="free">🎁 مفت</option>
           </select>
           <select id="filterClientType" onchange="renderTable()">
             <option value="">تمام اقسام</option>
@@ -1467,14 +1483,31 @@ tbody tr:hover td{background:var(--primary-ultra);}
           <div class="row">
             <div class="field"><label>خدمت کی قسم *</label>
               <select id="category">
-                <option value="income_tax">Income Tax Return</option>
-                <option value="ntn">NTN Registration</option>
-                <option value="sales_tax">Sales Tax</option>
-                <option value="business_reg">Business Registration</option>
-                <option value="company_reg">Company Registration</option>
-                <option value="pvt_ltd">Pvt Ltd Company</option>
-                <option value="import_export">Import/Export License</option>
-                <option value="other">دیگر</option>
+                <optgroup label="💰 Income Tax">
+                  <option value="income_tax">Income Tax Return (عمومی)</option>
+                  <option value="it_salaried">Income Tax — تنخواہ دار (Salaried)</option>
+                  <option value="it_business_individual">Income Tax — کاروباری فرد (Business Individual)</option>
+                  <option value="it_aop">Income Tax — AOP / پارٹنرشپ</option>
+                  <option value="it_company">Income Tax — کمپنی (Company)</option>
+                </optgroup>
+                <optgroup label="🏢 Business Tax / Registration">
+                  <option value="sales_tax">Sales Tax</option>
+                  <option value="business_reg">Business Registration</option>
+                  <option value="company_reg">Company Registration</option>
+                  <option value="pvt_ltd">Pvt Ltd Company</option>
+                  <option value="import_export">Import/Export License</option>
+                </optgroup>
+                <optgroup label="📄 دیگر خدمات">
+                  <option value="ntn">NTN Registration</option>
+                  <option value="other">دیگر</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="field"><label>کلائنٹ کی نوعیت *</label>
+              <select id="engagementType">
+                <option value="new">🆕 نیا کلائنٹ (پہلی بار)</option>
+                <option value="repeat">🔁 پرانا/دہرایا کلائنٹ (Repeat)</option>
+                <option value="free">🎁 مفت خدمت (Free)</option>
               </select>
             </div>
             <div class="field"><label>ذریعہ</label>
@@ -2141,6 +2174,7 @@ tbody tr:hover td{background:var(--primary-ultra);}
           <button class="btn btn-primary btn-sm" id="wt-content" onclick="switchWebTab('content')">✏️ ویب سائٹ Content</button>
           <button class="btn btn-secondary btn-sm" id="wt-reviews" onclick="switchWebTab('reviews')">⭐ آراء</button>
           <button class="btn btn-secondary btn-sm" id="wt-blog" onclick="switchWebTab('blog')">📝 بلاگ</button>
+          <button class="btn btn-secondary btn-sm" id="wt-team" onclick="switchWebTab('team')">👥 ٹیم</button>
         </div>
 
         <!-- CONTENT EDITOR -->
@@ -2255,6 +2289,47 @@ tbody tr:hover td{background:var(--primary-ultra);}
             </div>
           </div>
         </div>
+
+        <!-- TEAM -->
+        <div id="wtab-team" style="display:none;">
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-header">
+              <span class="card-title">👥 ٹیم ممبرز — یہ ویب سائٹ کے "ٹیم" سیکشن میں دکھتے ہیں</span>
+              <button class="btn btn-primary btn-sm" onclick="resetTeamForm();document.getElementById('teamFormCard').style.display='block'">+ نیا ممبر</button>
+            </div>
+            <div id="teamAdminList"><div class="empty"><p>لوڈ ہو رہا ہے...</p></div></div>
+          </div>
+          <div class="card" id="teamFormCard" style="display:none;">
+            <div class="card-header"><span class="card-title" id="teamFormTitle">✍️ نیا ٹیم ممبر</span></div>
+            <input type="hidden" id="tmId">
+            <div class="field"><label>نام *</label><input type="text" id="tmName" placeholder="مثلاً Sohail"></div>
+            <div class="field"><label>عہدہ (اردو) *</label><input type="text" id="tmRoleUr" placeholder="مثلاً بانی و ٹیکس کنسلٹنٹ"></div>
+            <div class="field"><label>Role (English) *</label><input type="text" id="tmRoleEn" placeholder="e.g. Founder & Tax Consultant"></div>
+            <div class="field"><label>مختصر تعارف (اردو)</label><textarea id="tmBioUr" style="height:70px;" placeholder="تجربہ اور مہارت کے بارے میں مختصر تعارف..."></textarea></div>
+            <div class="field"><label>Bio (English)</label><textarea id="tmBioEn" style="height:70px;" placeholder="Short bio about experience and expertise..."></textarea></div>
+            <div class="field"><label>ترتیب نمبر (Display Order)</label><input type="number" id="tmOrder" value="1" min="1" style="width:100px;"></div>
+
+            <div class="field">
+              <label>📷 تصویر</label>
+              <input type="file" id="tmPhoto" accept="image/*" onchange="previewTeamPhoto(event)" style="padding:9px;border:1.5px dashed var(--border);border-radius:8px;width:100%;font-family:inherit;font-size:12.5px;">
+              <div id="tmPhotoPreview" style="margin-top:10px;display:none;">
+                <img id="tmPhotoPreviewImg" style="width:90px;height:90px;border-radius:50%;object-fit:cover;">
+                <button class="btn btn-sm btn-secondary" style="margin-top:6px;" onclick="removeTeamPhoto()">🗑 ہٹائیں</button>
+              </div>
+              <div id="tmPhotoUploadStatus" style="font-size:11.5px;color:var(--text-mute);margin-top:6px;"></div>
+            </div>
+
+            <div class="field" style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="tmActive" checked style="width:auto;">
+              <label style="margin:0;">فعال (ویب سائٹ پر دکھائیں)</label>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-primary" onclick="saveTeamMember()">💾 محفوظ کریں</button>
+              <button class="btn btn-secondary" onclick="document.getElementById('teamFormCard').style.display='none'">منسوخ</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 🤖 AI ASSISTANT TAB -->
@@ -2348,7 +2423,8 @@ const DATA_KEY = 'mfj_clients';
 const THEME_KEY = 'mfj_theme';
 
 const STATUS_LABEL = {pending:'زیرِ التواء',progress:'جاری',documents:'دستاویزات',submitted:'جمع شدہ',done:'مکمل',paid:'ادا شدہ'};
-const CATEGORY_LABEL = {income_tax:'Income Tax',ntn:'NTN',sales_tax:'Sales Tax',business_reg:'Business Reg',company_reg:'Company Reg',pvt_ltd:'Pvt Ltd',import_export:'Import/Export',other:'دیگر'};
+const CATEGORY_LABEL = {income_tax:'Income Tax',it_salaried:'Income Tax — Salaried',it_business_individual:'Income Tax — Business Individual',it_aop:'Income Tax — AOP',it_company:'Income Tax — Company',ntn:'NTN',sales_tax:'Sales Tax',business_reg:'Business Reg',company_reg:'Company Reg',pvt_ltd:'Pvt Ltd',import_export:'Import/Export',other:'دیگر'};
+const ENGAGEMENT_LABEL = {new:'🆕 نیا کلائنٹ',repeat:'🔁 پرانا/دہرایا کلائنٹ',free:'🎁 مفت خدمت'};
 const SOURCE_LABEL = {direct:'Direct',whatsapp:'WhatsApp',facebook:'Facebook',google:'Google',referral:'Referral',friend:'دوست',family:'خاندان',existing_client:'موجودہ کلائنٹ',business_ref:'Business Ref',other:'دیگر'};
 
 const DOC_LISTS = {
@@ -2536,6 +2612,7 @@ async function load(){
           houseNo:row.house_no||'', street:row.street||'', area:row.area||'',
           city:row.city||'', district:row.district||'', province:row.province||'',
           fullAddress:row.full_address||'', category:row.category||'',
+          engagementType:row.engagement_type||'new',
           source:row.source||'', referenceName:row.reference_name||'',
           fee:row.fee||'', status:row.status||'pending',
           followUpDate:row.follow_up_date||'', followUpNote:row.follow_up_note||'',
@@ -2570,6 +2647,7 @@ async function _supaUpsert(c){
       house_no:c.houseNo||'', street:c.street||'', area:c.area||'',
       city:c.city||'', district:c.district||'', province:c.province||'',
       full_address:c.fullAddress||'', category:c.category||'',
+      engagement_type:c.engagementType||'new',
       source:c.source||'', reference_name:c.referenceName||'',
       fee:c.fee||'', status:c.status||'pending',
       follow_up_date:c.followUpDate||null, follow_up_note:c.followUpNote||'',
@@ -2594,6 +2672,7 @@ async function _supaDelete(id){
 function migrateClient(c){
   if(!c.clientType) c.clientType = 'main';
   if(!c.referredBy) c.referredBy = '';
+  if(!c.engagementType) c.engagementType = 'new';
   if(!c.id) c.id = Date.now() + Math.random().toString(36).slice(2);
   return c;
 }
@@ -2701,11 +2780,13 @@ function renderTable(){
   const fs = (document.getElementById('filterStatus')||{value:''}).value;
   const fc = (document.getElementById('filterCategory')||{value:''}).value;
   const ft = (document.getElementById('filterClientType')||{value:''}).value;
+  const fe = (document.getElementById('filterEngagement')||{value:''}).value;
 
   let list = clients.filter(c=>{
     if(fs && c.status!==fs) return false;
     if(fc && c.category!==fc) return false;
     if(ft && c.clientType!==ft) return false;
+    if(fe && c.engagementType!==fe) return false;
     if(!q) return true;
     return [c.name,c.mobile,c.whatsapp,c.cnic,c.ntn,c.email,c.referenceName,c.fatherName,c.city]
       .filter(Boolean).some(v=>v.toLowerCase().includes(q));
@@ -2860,6 +2941,7 @@ async function saveClient(){
     province: document.getElementById('province').value,
     fullAddress: document.getElementById('fullAddress').value.trim(),
     category: document.getElementById('category').value,
+    engagementType: document.getElementById('engagementType').value,
     source: document.getElementById('source').value,
     referenceName: document.getElementById('referenceName').value.trim(),
     fee: document.getElementById('fee').value,
@@ -2897,7 +2979,7 @@ function resetForm(){
    'followUpDate','followUpNote','birthday','irisPass','emailPass','note'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
-  ['province','category','source','status','clientType'].forEach(id=>{
+  ['province','category','engagementType','source','status','clientType'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.selectedIndex=0;
   });
   document.getElementById('referredByField').style.display='none';
@@ -2918,7 +3000,7 @@ function editClient(id){
   setVal('ntn',c.ntn); setVal('taxYear',c.taxYear); setVal('houseNo',c.houseNo);
   setVal('street',c.street); setVal('area',c.area); setVal('city',c.city);
   setVal('district',c.district); setVal('province',c.province); setVal('fullAddress',c.fullAddress);
-  setVal('category',c.category); setVal('source',c.source); setVal('referenceName',c.referenceName);
+  setVal('category',c.category); setVal('engagementType',c.engagementType||'new'); setVal('source',c.source); setVal('referenceName',c.referenceName);
   setVal('fee',c.fee); setVal('status',c.status); setVal('followUpDate',c.followUpDate);
   setVal('followUpNote',c.followUpNote); setVal('birthday',c.birthday); setVal('gender',c.gender);
   setVal('irisPass',c.irisPass); setVal('emailPass',c.emailPass);
@@ -3537,10 +3619,19 @@ function renderReports(){
   const catReport={};
   clients.forEach(c=>{ catReport[CATEGORY_LABEL[c.category]||c.category]=(catReport[CATEGORY_LABEL[c.category]||c.category]||0)+1; });
 
+  const newCount=clients.filter(c=>(c.engagementType||'new')==='new').length;
+  const repeatCount=clients.filter(c=>c.engagementType==='repeat').length;
+  const freeCount=clients.filter(c=>c.engagementType==='free').length;
+  const pct=n=>total?Math.round(n/total*100)+'%':'0%';
+
   document.getElementById('reportsGrid').innerHTML = `
     <div class="report-card">
       <h4>📊 مجموعی خلاصہ</h4>
       ${row2('کل کلائنٹس',total)}${row2('مکمل',done)}${row2('ادا شدہ',paid)}${row2('کل آمدن','Rs '+totalRev.toLocaleString())}${row2('ادا شدہ آمدن','Rs '+paidRev.toLocaleString())}
+    </div>
+    <div class="report-card">
+      <h4>🔁 کلائنٹ کی نوعیت</h4>
+      ${row2('🆕 نئے کلائنٹس',newCount+' ('+pct(newCount)+')')}${row2('🔁 پرانے/دہرایا',repeatCount+' ('+pct(repeatCount)+')')}${row2('🎁 مفت خدمات',freeCount+' ('+pct(freeCount)+')')}
     </div>
     <div class="report-card">
       <h4>🌳 ریفرل رپورٹ</h4>
@@ -5819,6 +5910,164 @@ async function loadBlogAdminList(){
   } catch(e){}
 }
 
+/* ═══════════════ TEAM MEMBERS MANAGEMENT ═══════════════ */
+let _teamPhotoFile = null;
+
+async function loadTeamAdminList(){
+  const el=document.getElementById('teamAdminList');
+  if(!el||!_supa) return;
+  try{
+    const {data,error}=await _supa.from('team_members').select('*').order('display_order',{ascending:true});
+    if(error||!data||!data.length){ el.innerHTML='<div class="empty"><p>ابھی کوئی ٹیم ممبر شامل نہیں</p></div>'; return; }
+    el.innerHTML=data.map(m=>{
+      const thumb = m.photo_url
+        ? `<img src="${m.photo_url}" style="width:48px;height:48px;object-fit:cover;border-radius:50%;flex-shrink:0;">`
+        : `<span style="font-size:18px;">👤</span>`;
+      return `
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${thumb}
+          <div><strong>${m.name}</strong> <span style="font-size:12px;color:var(--text-mute);">— ${m.role_ur||m.role_en||''}</span> <span style="font-size:11px;color:${m.active?'#10B981':'#94A3B8'};">${m.active?'✅ فعال':'⏸ غیر فعال'}</span></div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm btn-secondary" onclick='editTeamMember(${JSON.stringify(m).replace(/'/g,"&#39;")})'>✏️</button>
+          <button class="btn btn-sm" style="background:${m.active?'#F59E0B':'#10B981'};color:#fff;border:none;" onclick="toggleTeamMemberActive('${m.id}',${!m.active})">${m.active?'Hide':'Show'}</button>
+          <button class="btn btn-sm btn-secondary" onclick="deleteTeamMember('${m.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){}
+}
+
+function resetTeamForm(){
+  document.getElementById('teamFormTitle').textContent='✍️ نیا ٹیم ممبر';
+  document.getElementById('tmId').value='';
+  document.getElementById('tmName').value='';
+  document.getElementById('tmRoleUr').value='';
+  document.getElementById('tmRoleEn').value='';
+  document.getElementById('tmBioUr').value='';
+  document.getElementById('tmBioEn').value='';
+  document.getElementById('tmOrder').value='1';
+  document.getElementById('tmActive').checked=true;
+  document.getElementById('tmPhoto').value='';
+  document.getElementById('tmPhotoPreview').style.display='none';
+  document.getElementById('tmPhotoUploadStatus').textContent='';
+  _teamPhotoFile=null;
+}
+
+function editTeamMember(m){
+  document.getElementById('teamFormTitle').textContent='✏️ ٹیم ممبر میں تبدیلی';
+  document.getElementById('tmId').value=m.id;
+  document.getElementById('tmName').value=m.name||'';
+  document.getElementById('tmRoleUr').value=m.role_ur||'';
+  document.getElementById('tmRoleEn').value=m.role_en||'';
+  document.getElementById('tmBioUr').value=m.bio_ur||'';
+  document.getElementById('tmBioEn').value=m.bio_en||'';
+  document.getElementById('tmOrder').value=m.display_order||1;
+  document.getElementById('tmActive').checked=m.active!==false;
+  _teamPhotoFile=null;
+  document.getElementById('tmPhoto').value='';
+  if(m.photo_url){
+    document.getElementById('tmPhotoPreviewImg').src=m.photo_url;
+    document.getElementById('tmPhotoPreview').style.display='block';
+  } else {
+    document.getElementById('tmPhotoPreview').style.display='none';
+  }
+  document.getElementById('teamFormCard').style.display='block';
+  document.getElementById('teamFormCard').scrollIntoView({behavior:'smooth'});
+}
+
+function previewTeamPhoto(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  _teamPhotoFile=file;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('tmPhotoPreviewImg').src=e.target.result;
+    document.getElementById('tmPhotoPreview').style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeTeamPhoto(){
+  _teamPhotoFile=null;
+  document.getElementById('tmPhoto').value='';
+  document.getElementById('tmPhotoPreview').style.display='none';
+}
+
+async function uploadTeamPhoto(file){
+  if(!_supa) return null;
+  const ext = file.name.split('.').pop();
+  const fileName = 'team_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  try{
+    const {data, error} = await _supa.storage.from('blog-media').upload(fileName, file, {cacheControl:'3600', upsert:false});
+    if(error){ console.error('Upload error:', error); return null; }
+    const {data: urlData} = _supa.storage.from('blog-media').getPublicUrl(fileName);
+    return urlData.publicUrl;
+  } catch(e){ console.error('Upload exception:', e); return null; }
+}
+
+async function saveTeamMember(){
+  const id=document.getElementById('tmId').value;
+  const name=document.getElementById('tmName').value.trim();
+  const role_ur=document.getElementById('tmRoleUr').value.trim();
+  const role_en=document.getElementById('tmRoleEn').value.trim();
+  const bio_ur=document.getElementById('tmBioUr').value.trim();
+  const bio_en=document.getElementById('tmBioEn').value.trim();
+  const display_order=parseInt(document.getElementById('tmOrder').value)||1;
+  const active=document.getElementById('tmActive').checked;
+  if(!name||!role_ur||!role_en){ showToast('⚠ نام اور عہدہ (دونوں زبانیں) ضروری ہیں'); return; }
+  if(!_supa){ showToast('⚠ Supabase connect نہیں'); return; }
+
+  let photo_url = document.getElementById('tmPhotoPreview').style.display==='block'
+    ? document.getElementById('tmPhotoPreviewImg').src
+    : null;
+  if(photo_url && photo_url.startsWith('data:')) photo_url = null; // not yet uploaded
+
+  if(_teamPhotoFile){
+    document.getElementById('tmPhotoUploadStatus').textContent='اپلوڈ ہو رہا ہے...';
+    const uploaded = await uploadTeamPhoto(_teamPhotoFile);
+    if(uploaded) photo_url = uploaded;
+    document.getElementById('tmPhotoUploadStatus').textContent='';
+  }
+
+  const payload = {name, role_ur, role_en, bio_ur, bio_en, display_order, active};
+  if(photo_url) payload.photo_url = photo_url;
+
+  try{
+    if(id){
+      const {error}=await _supa.from('team_members').update(payload).eq('id',id);
+      if(error){ showToast('⚠ محفوظ نہیں ہوا: '+error.message); return; }
+    } else {
+      const {error}=await _supa.from('team_members').insert(payload);
+      if(error){ showToast('⚠ محفوظ نہیں ہوا: '+error.message); return; }
+    }
+  }catch(e){ showToast('⚠ خرابی: '+e.message); return; }
+
+  showToast('✅ ٹیم ممبر محفوظ ہو گیا');
+  document.getElementById('teamFormCard').style.display='none';
+  resetTeamForm();
+  loadTeamAdminList();
+}
+
+async function toggleTeamMemberActive(id, newState){
+  if(!_supa) return;
+  try{
+    await _supa.from('team_members').update({active:newState}).eq('id',id);
+    loadTeamAdminList();
+  }catch(e){}
+}
+
+async function deleteTeamMember(id){
+  if(!confirm('کیا آپ واقعی اس ٹیم ممبر کو حذف کرنا چاہتے ہیں؟')) return;
+  if(!_supa) return;
+  try{
+    await _supa.from('team_members').delete().eq('id',id);
+    showToast('🗑 حذف ہو گیا');
+    loadTeamAdminList();
+  }catch(e){}
+}
+
 let _bMediaFile = null;
 
 function previewBlogMedia(evt){
@@ -6037,7 +6286,7 @@ function showTabByName(name){
    ════════════════════════════════════════════════════ */
 
 function switchWebTab(tab){
-  ['content','reviews','blog'].forEach(t=>{
+  ['content','reviews','blog','team'].forEach(t=>{
     const el = document.getElementById('wtab-'+t);
     const btn = document.getElementById('wt-'+t);
     if(el) el.style.display = t===tab ? 'block' : 'none';
@@ -6050,6 +6299,7 @@ function switchWebTab(tab){
   if(tab==='reviews') loadPendingReviews();
   if(tab==='blog') loadBlogAdminList();
   if(tab==='content') loadWebsiteContent();
+  if(tab==='team') loadTeamAdminList();
 }
 
 async function loadWebsiteContent(){

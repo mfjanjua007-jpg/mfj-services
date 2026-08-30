@@ -825,6 +825,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <a href="#home" class="active" data-i18n="navHome">ہوم</a>
     <a href="#why" data-i18n="navAbout">تعارف</a>
     <a href="#services" data-i18n="navServices">خدمات</a>
+    <a href="#team" data-i18n="navTeam">ٹیم</a>
+    <a href="#overseas-pakistanis" data-i18n="navOverseas">بیرونِ ملک پاکستانی</a>
     <div class="calc-dropdown-wrap" id="calcDropdownWrap">
       <a href="#dashboard" class="calc-dropdown-trigger" onclick="return toggleCalcDropdown(event)"><span data-i18n="navCalculators">کیلکولیٹرز</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
       <div class="calc-dropdown-panel" id="calcDropdownPanel">
@@ -836,9 +838,17 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('atl-verification');return false;" data-i18n="navCalcAtl">ATL اسٹیٹس تصدیق</a>
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('rent-cash-tax-calculator');return false;" data-i18n="navCalcRentCash">کرایہ / کیش نکلوانے کا ٹیکس</a>
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('capital-gains-calculator');return false;" data-i18n="navCalcCapitalGains">کیپیٹل گینز ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('gold-gains-calculator');return false;" data-i18n="navCalcGoldGains">گولڈ کیپیٹل گینز ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('aop-tax-calculator');return false;" data-i18n="navCalcAop">AOP انکم ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('property-valuation-calculator');return false;" data-i18n="navCalcPropVal">پراپرٹی ویلیویشن (FBR)</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('bank-profit-tax-calculator');return false;" data-i18n="navCalcBankProfit">بینک منافع ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('dividend-tax-calculator');return false;" data-i18n="navCalcDividend">ڈیویڈنڈ ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('freelancer-tax-calculator');return false;" data-i18n="navCalcFreelancer">فری لانسر/IT ایکسپورٹ ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('filer-vs-nonfiler-comparison');return false;" data-i18n="navCalcFvN">فائلر بمقابلہ نان فائلر</a>
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('utility-tax-calculator');return false;" data-i18n="navCalcUtility">یوٹیلیٹی ٹیکس</a>
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('vehicle-fees-calculator');return false;" data-i18n="navCalcVehicle">گاڑی ٹوکن / رجسٹریشن فیس</a>
         <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('pta-tax-calculator');return false;" data-i18n="navCalcPta">PTA موبائل ٹیکس</a>
+        <a href="#dashboard" onclick="closeCalcDropdown();navToDashCalc('document-checklist-calculator');return false;" data-i18n="navCalcDocChecklist">دستاویزات چیک لسٹ</a>
       </div>
     </div>
     <a href="#blog" data-i18n="navBlog">بلاگ</a>
@@ -869,6 +879,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   <a href="#home" onclick="toggleMobileMenu()" data-i18n="navHome">ہوم</a>
   <a href="#why" onclick="toggleMobileMenu()" data-i18n="navAbout">تعارف</a>
   <a href="#services" onclick="toggleMobileMenu()" data-i18n="navServices">خدمات</a>
+  <a href="#team" onclick="toggleMobileMenu()" data-i18n="navTeam">ٹیم</a>
+  <a href="#overseas-pakistanis" onclick="toggleMobileMenu()" data-i18n="navOverseas">بیرونِ ملک پاکستانی</a>
   <div class="mobile-calc-toggle" onclick="toggleMobileCalcList()" id="mobileCalcToggle">
     <span data-i18n="navCalculators">کیلکولیٹرز</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -882,9 +894,17 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('atl-verification');return false;" data-i18n="navCalcAtl">ATL اسٹیٹس تصدیق</a>
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('rent-cash-tax-calculator');return false;" data-i18n="navCalcRentCash">کرایہ / کیش نکلوانے کا ٹیکس</a>
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('capital-gains-calculator');return false;" data-i18n="navCalcCapitalGains">کیپیٹل گینز ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('gold-gains-calculator');return false;" data-i18n="navCalcGoldGains">گولڈ کیپیٹل گینز ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('aop-tax-calculator');return false;" data-i18n="navCalcAop">AOP انکم ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('property-valuation-calculator');return false;" data-i18n="navCalcPropVal">پراپرٹی ویلیویشن (FBR)</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('bank-profit-tax-calculator');return false;" data-i18n="navCalcBankProfit">بینک منافع ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('dividend-tax-calculator');return false;" data-i18n="navCalcDividend">ڈیویڈنڈ ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('freelancer-tax-calculator');return false;" data-i18n="navCalcFreelancer">فری لانسر/IT ایکسپورٹ ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('filer-vs-nonfiler-comparison');return false;" data-i18n="navCalcFvN">فائلر بمقابلہ نان فائلر</a>
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('utility-tax-calculator');return false;" data-i18n="navCalcUtility">یوٹیلیٹی ٹیکس</a>
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('vehicle-fees-calculator');return false;" data-i18n="navCalcVehicle">گاڑی ٹوکن / رجسٹریشن فیس</a>
     <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('pta-tax-calculator');return false;" data-i18n="navCalcPta">PTA موبائل ٹیکس</a>
+    <a href="#dashboard" onclick="toggleMobileMenu();navToDashCalc('document-checklist-calculator');return false;" data-i18n="navCalcDocChecklist">دستاویزات چیک لسٹ</a>
   </div>
   <a href="#blog" onclick="toggleMobileMenu()" data-i18n="navBlog">بلاگ</a>
   <a href="#testimonials" onclick="toggleMobileMenu()" data-i18n="navTestimonials">آراء</a>
@@ -999,6 +1019,41 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       <div class="dash-tile-title" data-i18n="navCalcCapitalGains">کیپیٹل گینز ٹیکس</div>
       <div class="dash-tile-desc" data-i18n="dashD8">پراپرٹی کی خرید و فروخت پر منافع کا ٹیکس</div>
     </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#B8860B;--tile-bg:#FFF7E0;" role="button" tabindex="0" data-calc-id="gold-gains-calculator" onclick="openDashCalc('gold-gains-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('gold-gains-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h4a2 2 0 0 1 0 4H9v-4zm0 4h4"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcGoldGains">گولڈ کیپیٹل گینز ٹیکس</div>
+      <div class="dash-tile-desc" data-i18n="dashD12">سونا/زیورات فروخت کرنے پر منافع کا ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#1E7145;--tile-bg:#E4F5EA;" role="button" tabindex="0" data-calc-id="aop-tax-calculator" onclick="openDashCalc('aop-tax-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('aop-tax-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcAop">AOP انکم ٹیکس</div>
+      <div class="dash-tile-desc" data-i18n="dashD13">پارٹنرشپ/AOP کے منافع پر انکم ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#8B5E34;--tile-bg:#F5EDE4;" role="button" tabindex="0" data-calc-id="property-valuation-calculator" onclick="openDashCalc('property-valuation-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('property-valuation-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcPropVal">پراپرٹی ویلیویشن (FBR)</div>
+      <div class="dash-tile-desc" data-i18n="dashD14">FBR ویلیویشن ٹیبل کے مطابق پراپرٹی کی مالیت</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#0F766E;--tile-bg:#E1F5F2;" role="button" tabindex="0" data-calc-id="bank-profit-tax-calculator" onclick="openDashCalc('bank-profit-tax-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('bank-profit-tax-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="10" rx="1"/><path d="M3 10 12 3l9 7M7 14v3M12 14v3M17 14v3"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcBankProfit">بینک منافع ٹیکس</div>
+      <div class="dash-tile-desc" data-i18n="dashD15">بچت اکاؤنٹ/ٹرم ڈپازٹ کے منافع پر ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#7C3AED;--tile-bg:#EFE6FE;" role="button" tabindex="0" data-calc-id="dividend-tax-calculator" onclick="openDashCalc('dividend-tax-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('dividend-tax-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1.1-3 2.5 1.3 2 3 2.5 3 1.1 3 2.5-1.3 2.5-3 2.5-3-1.1-3-2.5"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcDividend">ڈیویڈنڈ ٹیکس</div>
+      <div class="dash-tile-desc" data-i18n="dashD16">شیئرز/میوچل فنڈ ڈیویڈنڈ پر ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#1D4ED8;--tile-bg:#E5EDFC;" role="button" tabindex="0" data-calc-id="freelancer-tax-calculator" onclick="openDashCalc('freelancer-tax-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('freelancer-tax-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcFreelancer">فری لانسر/IT ایکسپورٹ ٹیکس</div>
+      <div class="dash-tile-desc" data-i18n="dashD17">فری لانس/IT ایکسپورٹ آمدنی پر ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#B91C1C;--tile-bg:#FCE8E6;" role="button" tabindex="0" data-calc-id="filer-vs-nonfiler-comparison" onclick="openDashCalc('filer-vs-nonfiler-comparison', this)" onkeypress="if(event.key==='Enter')openDashCalc('filer-vs-nonfiler-comparison', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-3 6a4 4 0 0 0 6 0l-3-6zM19 7l-3 6a4 4 0 0 0 6 0l-3-6zM5 7h14M8 21h8"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcFvN">فائلر بمقابلہ نان فائلر</div>
+      <div class="dash-tile-desc" data-i18n="dashD18">تمام اہم کیٹیگریز میں فائلر بننے کی مکمل بچت</div>
+    </div>
     <div class="dash-tile reveal-child" style="--tile-c:var(--blue);--tile-bg:#E8F0FE;" role="button" tabindex="0" data-calc-id="utility-tax-calculator" onclick="openDashCalc('utility-tax-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('utility-tax-calculator', this)">
       <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h8l-1 8 10-12h-8z"/></svg></div>
       <div class="dash-tile-title" data-i18n="navCalcUtility">یوٹیلیٹی ٹیکس</div>
@@ -1013,6 +1068,11 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
       <div class="dash-tile-title" data-i18n="navCalcPta">PTA موبائل ٹیکس</div>
       <div class="dash-tile-desc" data-i18n="dashD11">باہر سے موبائل منگوانے پر ٹیکس</div>
+    </div>
+    <div class="dash-tile reveal-child" style="--tile-c:#0D9488;--tile-bg:#E6F7F5;" role="button" tabindex="0" data-calc-id="document-checklist-calculator" onclick="openDashCalc('document-checklist-calculator', this)" onkeypress="if(event.key==='Enter')openDashCalc('document-checklist-calculator', this)">
+      <div class="dash-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+      <div class="dash-tile-title" data-i18n="navCalcDocChecklist">دستاویزات چیک لسٹ</div>
+      <div class="dash-tile-desc" data-i18n="dashD19">اپنی کیٹیگری کے مطابق ضروری دستاویزات کی فہرست</div>
     </div>
   </div>
   <div class="dash-inline-panel" id="dashInlinePanel"></div>
@@ -1398,6 +1458,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <div class="atc-tabs">
       <button class="atc-tab active" id="stTabGoods" onclick="stSwitchTab('goods')">📦 <span data-i18n="stTabGoods">اشیاء (Goods)</span></button>
       <button class="atc-tab" id="stTabServices" onclick="stSwitchTab('services')">🧑‍💼 <span data-i18n="stTabServices">خدمات (Services)</span></button>
+      <button class="atc-tab" id="stTabProduct" onclick="stSwitchTab('product')">📋 <span data-i18n="stTabProduct">پروڈکٹ لُک اپ (HS Code)</span></button>
     </div>
 
     <!-- GOODS FORM -->
@@ -1472,6 +1533,49 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </div>
       <div class="wt-hint" data-i18n="stServiceHint">💡 ریٹ اس صوبے کے مطابق لاگو ہوتا ہے جہاں خدمت فراہم/موصول ہو رہی ہے، نہ کہ جہاں فراہم کنندہ کا دفتر ہے۔ اگر کیٹیگری کا reduced/higher ریٹ لاگو نہ ہو تو Standard ہی رکھیں۔</div>
       <div id="stServicesResult" style="display:none;"></div>
+    </div>
+
+    <!-- PRODUCT / HS-CODE LOOKUP FORM -->
+    <div id="stProductForm" style="display:none;">
+      <div class="tax-est-field">
+        <label data-i18n="stTxnType">ٹرانزیکشن کی قسم</label>
+        <select id="stTxnType" onchange="stProductFilterChanged()">
+          <option value="purchase" data-i18n="stTxnPurchase">خریداری (Purchase)</option>
+          <option value="sale" data-i18n="stTxnSale">فروخت (Sale)</option>
+          <option value="import" data-i18n="stTxnImport">درآمد (Import)</option>
+        </select>
+      </div>
+      <div class="tax-est-row">
+        <div class="tax-est-field">
+          <label data-i18n="stCategory">کیٹیگری</label>
+          <select id="stCategory" onchange="stPopulateProducts()"></select>
+        </div>
+        <div class="tax-est-field">
+          <label data-i18n="stProduct">پروڈکٹ منتخب کریں</label>
+          <select id="stProduct" onchange="stProductSelected()"></select>
+        </div>
+      </div>
+      <div class="tax-est-field" id="stHsCodeRow" style="font-size:12.5px;color:var(--mute);"></div>
+
+      <div class="tax-est-row">
+        <div class="tax-est-field"><label data-i18n="stQuantity">مقدار (Quantity)</label><input type="number" id="stQuantity" placeholder="مثلاً 100" min="0" step="0.01" oninput="stComputeTaxableValue()"></div>
+        <div class="tax-est-field"><label data-i18n="stUnitPrice">فی یونٹ قیمت (Rs)</label><input type="number" id="stUnitPrice" placeholder="مثلاً 1000" min="0" step="0.01" oninput="stComputeTaxableValue()"></div>
+      </div>
+      <div class="tax-est-field"><label data-i18n="stTaxableValue">قابلِ ٹیکس مالیت (Rs)</label><input type="number" id="stTaxableValue" readonly style="background:#F5F6F8;"></div>
+      <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="stProductRate" step="0.1"></div>
+
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:4px;font-size:14px;">
+        <input type="checkbox" id="stCompareMode" style="width:18px;height:18px;accent-color:var(--green);" onchange="stToggleCompare()">
+        <span data-i18n="stCompareLabel">Purchase اور Sale دونوں کا موازنہ کریں (Input vs Output Tax)</span>
+      </label>
+      <div class="tax-est-field" id="stCompareSaleRow" style="display:none;margin-top:10px;">
+        <label data-i18n="stCompareSalePrice">فروخت کی فی یونٹ قیمت (Rs)</label>
+        <input type="number" id="stCompareSaleUnitPrice" placeholder="مثلاً 1500" min="0" step="0.01">
+      </div>
+
+      <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="stCalcProduct()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+      <div id="stProductResult" style="display:none;"></div>
+      <div class="wt-hint" data-i18n="stProductHint">💡 Applicable tax rate is based on the selected product/HS-PCT Code and current tax treatment.</div>
     </div>
 
     <div class="wt-disclaimer" data-i18n="stDisclaimer">⚠️ اشیاء پر Sales Tax وفاقی (FBR) ہے اور پورے پاکستان میں یکساں ہے۔ خدمات پر Sales Tax صوبائی ہے (PRA/SRB/KPRA/BRA/ICT) اور صوبے کے مطابق مختلف ہو سکتی ہے — بہت سی مخصوص کیٹیگریز کے اپنے reduced/higher ریٹس بھی ہیں جو یہاں شامل نہیں۔ آپ ریٹ خود تبدیل کر سکتے ہیں۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔</div>
@@ -1602,6 +1706,277 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     </div>
 
     <div class="wt-disclaimer" data-i18n="cgDisclaimer">⚠️ 1 جولائی 2024 سے پہلے خریدی گئی پراپرٹی پر پرانا Holding Period Taper لاگو ہوتا ہے (زیادہ عرصہ رکھنے پر ٹیکس کم/صفر)۔ بعد میں خریدی گئی پراپرٹی پر فائلر کے لیے فلیٹ 15%، نان فائلر کے لیے 15%-45%۔ یہ عمومی تخمینہ ہے — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- CAPITAL GAINS TAX ON GOLD / JEWELLERY -->
+<section id="gold-gains-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="ggEyebrow">سونا / زیورات منافع ٹیکس</div>
+    <h2 class="sec-title" data-i18n="ggTitle">Gold / Jewellery Capital Gains Tax Calculator (Section 37)</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-row">
+      <div class="tax-est-field"><label data-i18n="ggSalePrice">فروخت کی قیمت (Rs)</label><input type="number" id="ggSalePrice" placeholder="مثلاً 3000000"></div>
+      <div class="tax-est-field"><label data-i18n="ggPurchasePrice">خریداری کی قیمت (Rs)</label><input type="number" id="ggPurchasePrice" placeholder="مثلاً 2000000"></div>
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:4px;font-size:14px;">
+      <input type="checkbox" id="ggIncludeMaking" style="width:18px;height:18px;accent-color:var(--green);" onchange="ggToggleMaking()">
+      <span data-i18n="ggIncludeMakingLabel">بنوائی / رسید کے اخراجات کو خریداری کی لاگت میں شامل کریں</span>
+    </label>
+    <div class="tax-est-field" id="ggMakingRow" style="display:none;margin-top:10px;">
+      <label data-i18n="ggMakingCharges">بنوائی / دیگر اخراجات کی رقم (Rs)</label>
+      <input type="number" id="ggMakingCharges" placeholder="مثلاً 50000">
+    </div>
+
+    <div class="tax-est-row" style="margin-top:6px;">
+      <div class="tax-est-field">
+        <label data-i18n="ggHoldingYears">ملکیت کے سال (Holding Period)</label>
+        <input type="number" id="ggHoldingYears" min="0" step="1" placeholder="مثلاً 2" onchange="ggSuggestRate()">
+      </div>
+      <div class="tax-est-field">
+        <label data-i18n="ggIncomeSlab">آپ کی کُل سالانہ آمدنی کا تخمینی سلیب</label>
+        <select id="ggIncomeSlab" onchange="ggSuggestRate()">
+          <option value="0" data-i18n="ggSlab0">Rs 6,00,000 تک — 0%</option>
+          <option value="1" data-i18n="ggSlab1">Rs 6,00,000 – 12,00,000 — 1%</option>
+          <option value="11" data-i18n="ggSlab11">Rs 12,00,000 – 22,00,000 — 11%</option>
+          <option value="20" data-i18n="ggSlab20">Rs 22,00,000 – 32,00,000 — 20%</option>
+          <option value="25" data-i18n="ggSlab25">Rs 32,00,000 – 41,00,000 — 25%</option>
+          <option value="29" data-i18n="ggSlab29">Rs 41,00,000 – 56,00,000 — 29%</option>
+          <option value="32" data-i18n="ggSlab32">Rs 56,00,000 – 70,00,000 — 32%</option>
+          <option value="35" selected data-i18n="ggSlab35">Rs 70,00,000 سے زائد — 35%</option>
+        </select>
+      </div>
+    </div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="ggRate" step="0.1" value="35"></div>
+
+    <div class="wt-hint" id="ggHoldingHint" style="display:none;" data-i18n="ggHoldingHint">💡 چونکہ ملکیت 1 سال سے زیادہ عرصے کی ہے، Section 37(3) کے تحت صرف 75% منافع قابلِ ٹیکس ہے (25% چھوٹ)۔</div>
+    <div class="wt-hint" data-i18n="ggSlabHint">💡 سونا/زیورات پراپرٹی یا سیکیورٹیز کی طرح فلیٹ ریٹ پر ٹیکس نہیں دیتے — منافع آپ کی باقی سالانہ آمدنی میں شامل ہو کر عام انکم ٹیکس سلیب کے مطابق ٹیکس ہوتا ہے۔ یہ سیلری والے افراد کے سلیب ہیں — نان سیلری/بزنس افراد کا سلیب قدرے مختلف ہو سکتا ہے، اپنی صورتحال کے مطابق ریٹ خود تبدیل کر لیں۔</div>
+
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="ggCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="ggResult" style="display:none;"></div>
+
+    <div class="wt-disclaimer" data-i18n="ggDisclaimer">⚠️ سونا/زیورات Section 37(5) کے تحت قابلِ ٹیکس کیپیٹل ایسٹ ہیں (ذاتی استعمال کی چھوٹ لاگو نہیں ہوتی)۔ منافع = فروخت کی قیمت − (خریداری کی قیمت + منتخب کردہ بنوائی کے اخراجات)۔ 1 سال سے زیادہ ملکیت پر صرف 75% منافع ٹیکس کے تابع ہے (Section 37(3))۔ حتمی ٹیکس آپ کی مکمل سالانہ آمدنی اور فائل کردہ ریٹرن پر منحصر ہے — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- AOP (ASSOCIATION OF PERSONS) INCOME TAX -->
+<section id="aop-tax-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="aopEyebrow">پارٹنرشپ / فرم انکم ٹیکس</div>
+    <h2 class="sec-title" data-i18n="aopTitle">AOP (Association of Persons) Income Tax Calculator</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-field">
+      <label data-i18n="aopIncome">AOP کی سالانہ خالص آمدنی/منافع (Rs)</label>
+      <input type="number" id="aopIncome" placeholder="مثلاً 4000000" min="0" step="1000">
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:4px;font-size:14px;">
+      <input type="checkbox" id="aopProfFirm" style="width:18px;height:18px;accent-color:var(--green);">
+      <span data-i18n="aopProfFirmLabel">پروفیشنل فرم AOP ہے (کمپنی نہیں بن سکتی — زیادہ سے زیادہ ریٹ 40%)</span>
+    </label>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:16px;" onclick="aopCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="aopResult" style="display:none;"></div>
+    <div class="wt-hint" data-i18n="aopHint">💡 Tax Year 2025-26 اور 2026-27 دونوں کے لیے AOP/نان سیلری سلیب ریٹس ایک جیسے ہیں (Finance Act 2026 نے کوئی تبدیلی نہیں کی) — اس لیے ایک ہی کیلکولیٹر دونوں سالوں کے لیے درست ہے۔</div>
+    <div class="wt-disclaimer" data-i18n="aopDisclaimer">⚠️ AOP اپنی خالص آمدنی پر بطور ایک الگ ادارہ ٹیکس ادا کرتا ہے (اراکین کو منافع کی تقسیم پر دوبارہ ٹیکس نہیں لگتا)۔ Rs 1 کروڑ سے زائد قابلِ ٹیکس آمدنی پر 10% سرچارج بھی شامل کیا گیا ہے۔ پروفیشنل فرم AOP (جو کمپنی نہیں بن سکتی) کے لیے زیادہ سے زیادہ ریٹ 40% ہے۔ یہ عمومی تخمینہ ہے — WHT ایڈجسٹمنٹس اور دیگر چھوٹ شامل نہیں — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- FBR PROPERTY VALUATION CALCULATOR -->
+<section id="property-valuation-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="pvEyebrow">FBR ویلیویشن ٹیبل</div>
+    <h2 class="sec-title" data-i18n="pvTitle">Property Valuation Calculator (FBR Rates)</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-row">
+      <div class="tax-est-field">
+        <label data-i18n="pvUnit">یونٹ کی قسم</label>
+        <select id="pvUnit">
+          <option value="Marla" data-i18n="pvUnitMarla">مرلہ (Marla)</option>
+          <option value="Kanal" data-i18n="pvUnitKanal">کنال (Kanal)</option>
+          <option value="SqYd" data-i18n="pvUnitSqYd">مربع گز (Sq. Yard)</option>
+          <option value="SqFt" data-i18n="pvUnitSqFt">مربع فٹ (Sq. Ft)</option>
+        </select>
+      </div>
+      <div class="tax-est-field"><label data-i18n="pvSize">کُل رقبہ (Size)</label><input type="number" id="pvSize" placeholder="مثلاً 10" min="0" step="0.01"></div>
+    </div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="pvFbrRate">FBR ویلیویشن ریٹ فی یونٹ (Rs)</span></label><input type="number" id="pvFbrRate" placeholder="مثلاً 4500000"></div>
+    <div class="tax-est-row">
+      <div class="tax-est-field"><label data-i18n="pvDcRate">DC ریٹ فی یونٹ (Rs) — اختیاری</label><input type="number" id="pvDcRate" placeholder="مثلاً 2000000"></div>
+      <div class="tax-est-field"><label data-i18n="pvActualRate">رجسٹری/اصل قیمت فی یونٹ (Rs) — اختیاری</label><input type="number" id="pvActualRate" placeholder="مثلاً 5000000"></div>
+    </div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="pvCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="pvResult" style="display:none;"></div>
+    <div class="wt-hint" data-i18n="pvHint">💡 FBR ویلیویشن ریٹ ہر شہر/سیکٹر کے لیے الگ ہوتا ہے۔ یہ ریٹ FBR کی ویب سائٹ (Immovable Property Valuation Tables) سے اپنے علاقے کے مطابق خود درج کریں — ہم سے بھی معلوم کیا جا سکتا ہے۔</div>
+    <div class="wt-disclaimer" data-i18n="pvDisclaimer">⚠️ ٹیکس مقاصد (236C, 236K, کیپیٹل گینز وغیرہ) کے لیے قانونی طور پر جو قیمت زیادہ ہو — FBR ویلیویشن، DC ریٹ، یا رجسٹری میں لکھی قیمت — وہی "Fair Market Value" تصور ہو کر ٹیکس کی بنیاد بنتی ہے۔ یہ ایک عمومی تخمینہ ہے — درست ویلیویشن اور ٹیکس حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- BANK PROFIT / PROFIT ON DEBT TAX (SECTION 151) -->
+<section id="bank-profit-tax-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="bpEyebrow">پروفٹ آن ڈیبٹ ٹیکس</div>
+    <h2 class="sec-title" data-i18n="bpTitle">Bank Profit / Profit on Debt Tax Calculator (Section 151)</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-field"><label data-i18n="bpAmount">سالانہ منافع کی رقم (Rs)</label><input type="number" id="bpAmount" placeholder="مثلاً 200000" min="0"></div>
+    <div class="tax-est-field">
+      <label data-i18n="bpType">منافع کی قسم</label>
+      <select id="bpType" onchange="bpSuggestRate()">
+        <option value="bank" data-i18n="bpTypeBank">بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS (20% / 40%)</option>
+        <option value="govtsec" data-i18n="bpTypeGovt">گورنمنٹ سیکیورٹیز (کمپنی/AOP کو) (20% / 40%)</option>
+        <option value="sukukco" data-i18n="bpTypeSukukCo">سکوک — ہولڈر کمپنی ہو (25% / 50%)</option>
+        <option value="other" data-i18n="bpTypeOther">دیگر تمام صورتیں (15% / 30%)</option>
+      </select>
+    </div>
+    <div class="tax-est-field">
+      <label data-i18n="atcFilerStatus">فائلر اسٹیٹس</label>
+      <select id="bpFiler" onchange="bpSuggestRate()">
+        <option value="filer" data-i18n="atcFiler">فائلر (ATL)</option>
+        <option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option>
+      </select>
+    </div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="bpRate" step="0.1" value="20"></div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="bpCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="bpResult" style="display:none;"></div>
+    <div class="wt-hint" data-i18n="bpHint">💡 یہ عام طور پر انفرادی/AOP کے لیے فائنل ٹیکس ہے (Rs 5 ملین تک کے منافع پر)۔ Behbood Savings Certificate پر کوئی ودہولڈنگ ٹیکس نہیں کاٹا جاتا۔</div>
+    <div class="wt-disclaimer" data-i18n="bpDisclaimer">⚠️ ماخذ: FBR Withholding Income Tax Rate Card، Section 151۔ یہ عمومی تخمینہ ہے — آپ کے مخصوص انسٹرومنٹ (National Savings سرٹیفکیٹس وغیرہ) پر ریٹ مختلف ہو سکتا ہے — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- DIVIDEND TAX (SECTION 150) -->
+<section id="dividend-tax-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="dvEyebrow">ڈیویڈنڈ انکم ٹیکس</div>
+    <h2 class="sec-title" data-i18n="dvTitle">Dividend Tax Calculator (Section 150)</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-field"><label data-i18n="dvAmount">ڈیویڈنڈ کی رقم (Rs)</label><input type="number" id="dvAmount" placeholder="مثلاً 200000" min="0"></div>
+    <div class="tax-est-field">
+      <label data-i18n="dvType">ڈیویڈنڈ کی قسم</label>
+      <select id="dvType" onchange="dvSuggestRate()">
+        <option value="listed" data-i18n="dvTypeListed">لسٹڈ کمپنی (عام) (15% / 30%)</option>
+        <option value="unlisted" data-i18n="dvTypeUnlisted">غیر لسٹڈ / پرائیویٹ کمپنی (25% / 50%)</option>
+        <option value="exempt" data-i18n="dvTypeExempt">کمپنی جس نے ٹیکس ادا نہیں کیا (چھوٹ/نقصان/ٹیکس کریڈٹ) (25% / 50%)</option>
+        <option value="mfstock" data-i18n="dvTypeMfStock">میوچل فنڈ — اسٹاک فنڈ (15% / 30%)</option>
+        <option value="mfdebt" data-i18n="dvTypeMfDebt">میوچل فنڈ — منی مارکیٹ/انکم فنڈ (25% / 50%)</option>
+        <option value="ipp" data-i18n="dvTypeIpp">IPP پاس-تھرو (CPPA-G سے واپسی) (7.5% / 15%)</option>
+      </select>
+    </div>
+    <div class="tax-est-field">
+      <label data-i18n="atcFilerStatus">فائلر اسٹیٹس</label>
+      <select id="dvFiler" onchange="dvSuggestRate()">
+        <option value="filer" data-i18n="atcFiler">فائلر (ATL)</option>
+        <option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option>
+      </select>
+    </div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="dvRate" step="0.1" value="15"></div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="dvCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="dvResult" style="display:none;"></div>
+    <div class="wt-disclaimer" data-i18n="dvDisclaimer">⚠️ یہ فائنل ٹیکس ہے (انفرادی شیئر ہولڈرز کے لیے، Section 150 کے تحت)۔ ماخذ: FBR Withholding Income Tax Rate Card۔ یہ عمومی تخمینہ ہے — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- FREELANCER / IT EXPORT INCOME TAX -->
+<section id="freelancer-tax-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="flEyebrow">فری لانسر / IT ایکسپورٹ</div>
+    <h2 class="sec-title" data-i18n="flTitle">Freelancer / IT Export Income Tax Calculator</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-field"><label data-i18n="flAmount">آمدنی کی رقم (Rs)</label><input type="number" id="flAmount" placeholder="مثلاً 500000" min="0"></div>
+    <div class="tax-est-field">
+      <label data-i18n="flType">آمدنی کی نوعیت</label>
+      <select id="flType" onchange="flSuggestRate()">
+        <option value="export_pseb" data-i18n="flTypeExportPseb">IT/ITeS ایکسپورٹ — PSEB رجسٹرڈ + سیلز ٹیکس ریٹرن فائلر (0.25% فائنل)</option>
+        <option value="export_other" data-i18n="flTypeExportOther">دیگر سروسز ایکسپورٹ (غیر PSEB) (1% فائنل)</option>
+        <option value="local_filer" data-i18n="flTypeLocalFiler">لوکل IT/ITeS کلائنٹ — فائلر (4% منیمم ٹیکس)</option>
+        <option value="local_nonfiler" data-i18n="flTypeLocalNonfiler">لوکل IT/ITeS کلائنٹ — نان فائلر (8% منیمم ٹیکس)</option>
+      </select>
+    </div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="flRate" step="0.01" value="0.25"></div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="flCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="flResult" style="display:none;"></div>
+    <div class="wt-hint" data-i18n="flHint">💡 ایکسپورٹ آمدنی کی صورت میں رقم بینکنگ چینل (SBP رجسٹرڈ) کے ذریعے موصول ہونا لازمی ہے تاکہ Final Tax Regime کا فائدہ مل سکے۔ PSEB رجسٹریشن اور باقاعدہ سیلز ٹیکس ریٹرن فائلنگ 0.25% ریٹ کی شرط ہے۔</div>
+    <div class="wt-disclaimer" data-i18n="flDisclaimer">⚠️ ماخذ: FBR Withholding Tax Rate Card اور Section 154A (سروسز ایکسپورٹ)، Section 153 (لوکل IT/ITeS)۔ لوکل کلائنٹ والا ٹیکس عام طور پر منیمم ٹیکس ہوتا ہے (ایڈجسٹ ایبل)، جبکہ ایکسپورٹ والا فائنل ٹیکس ہے۔ یہ عمومی تخمینہ ہے — آپ کی مخصوص صورتحال کے مطابق شرائط مختلف ہو سکتی ہیں — درست حساب کے لیے ہم سے رابطہ کریں۔</div>
+  </div>
+</section>
+
+<!-- FILER VS NON-FILER DEEP COMPARISON -->
+<section id="filer-vs-nonfiler-comparison" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="fvEyebrow">فائلر بمقابلہ نان فائلر</div>
+    <h2 class="sec-title" data-i18n="fvTitle">Filer vs Non-Filer — Deep Comparison</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <p style="font-size:14.5px;line-height:1.9;margin:0 0 16px;" data-i18n="fvIntro">Finance Act 2026 کے بعد اب صرف دو کیٹیگریز ہیں — Filer (FBR کی Active Taxpayer List یعنی ATL پر موجود) اور Non-Filer (ATL پر نہ ہونا)۔ نیچے دی گئی ٹیبل آپ کی اپنی ویب سائٹ کے calculators سے live اعداد اٹھا کر دکھاتی ہے — یہ ہمیشہ آپ کے دوسرے calculators کے ساتھ ہم آہنگ (consistent) رہے گی۔</p>
+
+    <div style="overflow-x:auto;">
+      <table id="fvTable" style="width:100%;border-collapse:collapse;font-size:13.5px;">
+        <thead>
+          <tr style="background:var(--green);color:#fff;">
+            <th style="padding:10px 8px;text-align:right;" data-i18n="fvColCategory">کیٹیگری</th>
+            <th style="padding:10px 8px;text-align:center;" data-i18n="fvColFiler">فائلر</th>
+            <th style="padding:10px 8px;text-align:center;" data-i18n="fvColNonFiler">نان فائلر</th>
+          </tr>
+        </thead>
+        <tbody id="fvTableBody" style="background:#fff;"></tbody>
+      </table>
+    </div>
+
+    <div class="sec-title-bar" style="margin-top:26px;"></div>
+    <h3 style="font-size:17px;margin:6px 0 12px;" data-i18n="fvSnapshotTitle">Quick Savings Snapshot — اپنی بچت خود دیکھیں</h3>
+
+    <div class="tax-est-field">
+      <label data-i18n="fvCategory">کیٹیگری منتخب کریں</label>
+      <select id="fvCategory" onchange="fvSnapshotCategoryChanged()">
+        <option value="property_purchase" data-i18n="fvCatPropPurchase">پراپرٹی خریداری (236K)</option>
+        <option value="property_sale" data-i18n="fvCatPropSale">پراپرٹی فروخت (236C)</option>
+        <option value="vehicle" data-i18n="fvCatVehicle">گاڑی رجسٹریشن (231B)</option>
+        <option value="bank_profit" data-i18n="fvCatBank">بینک منافع (151)</option>
+        <option value="dividend" data-i18n="fvCatDividend">ڈیویڈنڈ (150)</option>
+        <option value="cash_withdrawal" data-i18n="fvCatCash">کیش نکلوانا (231AB)</option>
+      </select>
+    </div>
+    <div class="tax-est-field" id="fvEngineRow" style="display:none;">
+      <label data-i18n="atcEngine">انجن کیپیسٹی</label>
+      <select id="fvEngine">
+        <option value="850">Up to 850cc</option>
+        <option value="1000">851 - 1000cc</option>
+        <option value="1300" selected>1001 - 1300cc</option>
+        <option value="1600">1301 - 1600cc</option>
+        <option value="1800">1601 - 1800cc</option>
+        <option value="2000">1801 - 2000cc</option>
+        <option value="2500">2001 - 2500cc</option>
+        <option value="3000">2501 - 3000cc</option>
+        <option value="9999">Above 3000cc</option>
+      </select>
+    </div>
+    <div class="tax-est-field"><label id="fvAmountLabel" data-i18n="fvAmount">رقم (Rs)</label><input type="number" id="fvAmount" placeholder="مثلاً 5000000" min="0"></div>
+    <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="fvCalcSnapshot()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
+    <div id="fvSnapshotResult" style="display:none;"></div>
+
+    <div class="sec-title-bar" style="margin-top:26px;"></div>
+    <h3 style="font-size:17px;margin:6px 0 12px;" data-i18n="fvBeyondTitle">صرف ٹیکس ریٹ نہیں — دیگر اہم فرق</h3>
+    <ul style="font-size:14px;line-height:2;padding-inline-start:22px;margin:0;">
+      <li data-i18n="fvBeyond1">🏦 بینک لون/کریڈٹ کارڈ حاصل کرنے میں فائلر کو آسانی ہوتی ہے</li>
+      <li data-i18n="fvBeyond2">🏛️ سرکاری ٹینڈرز اور کنٹریکٹس صرف فائلرز کے لیے کھلے ہوتے ہیں</li>
+      <li data-i18n="fvBeyond3">✈️ ویزا اور امیگریشن کے عمل میں ٹیکس ریٹرن اکثر مانگی جاتی ہے</li>
+      <li data-i18n="fvBeyond4">🔍 نان فائلرز پر FBR کی نگرانی اور آڈٹ کا امکان زیادہ ہوتا ہے</li>
+      <li data-i18n="fvBeyond5">📈 اسٹاک/میوچل فنڈ منافع اور ڈیویڈنڈ پر بھی فائلر کو کم ٹیکس</li>
+      <li data-i18n="fvBeyond6">🤝 بینکوں، سپلائرز اور بڑے کلائنٹس کے ساتھ ساکھ (credibility) بہتر ہوتی ہے</li>
+    </ul>
+
+    <div class="wt-disclaimer" style="margin-top:18px;" data-i18n="fvDisclaimer">⚠️ یہ عمومی موازنہ ہے اور آپ کی اپنی سائٹ کے calculators سے live ریٹس اٹھاتا ہے۔ کچھ ریٹس (بینک منافع، ڈیویڈنڈ، فری لانسر) ہمارے اپنے تصدیق شدہ ڈیٹا پر مبنی ہیں۔ AOP/انفرادی انکم ٹیکس سلیب فائلر/نان فائلر سے متاثر نہیں ہوتا (صرف ودہولڈنگ ٹیکس ریٹس مختلف ہوتے ہیں)۔ درست اور مکمل حساب کے لیے ہم سے رابطہ کریں۔</div>
   </div>
 </section>
 
@@ -1770,6 +2145,33 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   <div class="pta-note-grid reveal" id="ptaNoteGrid"></div>
 </section>
 
+<!-- DOCUMENT CHECKLIST TOOL -->
+<section id="document-checklist-calculator" class="calc-collapsible">
+  <div class="sec-head">
+    <div class="sec-eyebrow" data-i18n="dcEyebrow">دستاویزات چیک لسٹ</div>
+    <h2 class="sec-title" data-i18n="dcTitle">Document Checklist — اپنی ضروری دستاویزات جانیں</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="tax-est-card reveal">
+    <div class="tax-est-field">
+      <label data-i18n="dcProfile">اپنی کیٹیگری منتخب کریں</label>
+      <select id="dcProfile" onchange="dcRenderChecklist()">
+        <option value="salaried" data-i18n="dcProfSalaried">تنخواہ دار (Salaried)</option>
+        <option value="business" data-i18n="dcProfBusiness">کاروباری / سیلف ایمپلائیڈ</option>
+        <option value="freelancer" data-i18n="dcProfFreelancer">فری لانسر / IT ایکسپورٹ</option>
+        <option value="overseas" data-i18n="dcProfOverseas">بیرونِ ملک پاکستانی (Overseas)</option>
+        <option value="property" data-i18n="dcProfProperty">پراپرٹی خریدار/فروخت کنندہ</option>
+      </select>
+    </div>
+    <div id="dcChecklistBox" style="margin-top:14px;"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="print-result-btn" onclick="dcPrintChecklist()">🖨️ <span data-i18n="dcPrint">پرنٹ کریں</span></button>
+      <button class="whatsapp-share-btn" onclick="dcShareChecklist()">💬 <span data-i18n="dcShare">WhatsApp پر شیئر کریں</span></button>
+    </div>
+    <div class="wt-hint" style="margin-top:14px;" data-i18n="dcHint">💡 چیک باکس پر کلک کر کے وہ دستاویزات نشان زد کریں جو آپ کے پاس پہلے سے موجود ہیں۔</div>
+  </div>
+</section>
+
 <div class="wt-cta">
   <h3 data-i18n="wtCtaTitle">درست ریٹ کی تصدیق اور مکمل فائلنگ ہم کر دیں گے</h3>
   <p data-i18n="wtCtaSub">Vehicle، Property یا Contractor/Supplier Payments — ہر کیس مختلف ہوتا ہے۔ اپنی تفصیلات بھیجیں، ہماری ٹیم درست ریٹ کنفرم کر کے فائلنگ مکمل کر دے گی۔</p>
@@ -1795,6 +2197,40 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
         <div class="why-item"><span class="why-check">✓</span><span data-i18n="why4">مناسب اور شفاف فیس</span></div>
         <div class="why-item"><span class="why-check">✓</span><span data-i18n="why5">مفت ابتدائی مشاورت</span></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="sec-head reveal">
+    <div class="sec-eyebrow" data-i18n="teamEyebrow">ہماری ٹیم</div>
+    <h2 class="sec-title" data-i18n="teamTitle">آپ کے کیس کے پیچھے موجود لوگ</h2>
+    <div class="sec-title-bar"></div>
+  </div>
+  <div class="services-grid reveal-stagger" id="teamGrid"></div>
+</section>
+
+<!-- OVERSEAS PAKISTANIS -->
+<section id="overseas-pakistanis">
+  <div class="why-grid reveal" style="grid-template-columns:1fr 1fr;">
+    <div>
+      <div class="why-eyebrow" data-i18n="opEyebrow">بیرونِ ملک پاکستانی</div>
+      <h2 class="why-title" data-i18n="opTitle">بیرونِ ملک بیٹھے اپنا ٹیکس آسانی سے مکمل کروائیں</h2>
+      <p style="font-size:14.5px;line-height:1.9;margin:10px 0 16px;color:var(--mute);" data-i18n="opIntro">آپ کو پاکستان آنے کی ضرورت نہیں — پورا عمل WhatsApp اور ہمارے آن لائن پورٹل کے ذریعے مکمل ہو جاتا ہے۔ چاہے آپ Non-Resident ہوں یا پاکستان میں پراپرٹی/بینک اکاؤنٹ رکھتے ہوں، ہم آپ کی رہنمائی کریں گے۔</p>
+      <div class="why-list">
+        <div class="why-item"><span class="why-check">✓</span><span data-i18n="op1">2022 کی ترمیم کے بعد 183 دن سے کم پاکستان میں قیام پر آپ Non-Resident شمار ہوتے ہیں</span></div>
+        <div class="why-item"><span class="why-check">✓</span><span data-i18n="op2">Non-Resident ہونے کے باوجود فائلر بن کر پراپرٹی، گاڑی اور بینک ٹرانزیکشنز پر کم ٹیکس کا فائدہ لے سکتے ہیں</span></div>
+        <div class="why-item"><span class="why-check">✓</span><span data-i18n="op3">CNIC/NICOP اور پاسپورٹ کے ذریعے دور بیٹھے NTN رجسٹریشن ممکن ہے</span></div>
+        <div class="why-item"><span class="why-check">✓</span><span data-i18n="op4">پاکستان میں موجود پراپرٹی، بینک منافع یا کرایہ کی آمدنی پر مکمل مشاورت</span></div>
+        <div class="why-item"><span class="why-check">✓</span><span data-i18n="op5">دستاویزات WhatsApp پر بھیجیں — باقی کام ہم سنبھال لیتے ہیں</span></div>
+      </div>
+      <div class="services-cta" style="justify-content:flex-start;margin-top:20px;">
+        <a href="#appointment-strip" class="btn-solid" style="display:inline-flex;"><span data-i18n="opCta">مفت مشاورت بک کریں</span> →</a>
+      </div>
+    </div>
+    <div class="why-img">
+      <img src="https://picsum.photos/seed/mfjoverseas/700/500" alt="Overseas Pakistani Tax Services" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
     </div>
   </div>
 </section>
@@ -2057,7 +2493,7 @@ const _supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const I18N = {
   ur:{
     brand:'MFJ Services', brandSub:'ٹیکس کنسلٹنٹ',
-    navHome:'ہوم', navAbout:'تعارف', navServices:'خدمات', navBlog:'بلاگ', navTestimonials:'آراء', navContact:'رابطہ', navPortal:'👤 پورٹل', navBook:'اپائنٹمنٹ بک کریں →',
+    navHome:'ہوم', navAbout:'تعارف', navServices:'خدمات', navTeam:'ٹیم', navOverseas:'بیرونِ ملک پاکستانی', navBlog:'بلاگ', navTestimonials:'آراء', navContact:'رابطہ', navPortal:'👤 پورٹل', navBook:'اپائنٹمنٹ بک کریں →',
     heroEyebrow:'پاکستان کا قابل اعتماد', heroTitle1:'Tax اور Business', heroTitle2:'Solutions',
     heroSub:'ہم پورے پاکستان میں پیشہ ورانہ Tax، Accounting اور Business Consultancy خدمات فراہم کرتے ہیں — 100% کلائنٹ اطمینان کے ساتھ۔', typewriterLabel:'ہم ماہر ہیں:',
     chk1:'Income Tax', chk2:'NTN Registration', chk3:'Sales Tax', chk4:'Business Registration', chk5:'FBR Consultancy',
@@ -2075,6 +2511,16 @@ const I18N = {
     svc6t:'Tax Notices', svc6d:'FBR Tax notices کا ماہرانہ جواب',
     svc7t:'Business Consultancy', svc7d:'آپ کے کاروبار کی ترقی کے لیے پیشہ ورانہ مشورہ',
     svc8t:'Document Verification', svc8d:'FBR دستاویزات کی تصدیق اور متعلقہ خدمات',
+    teamEyebrow:'ہماری ٹیم', teamTitle:'آپ کے کیس کے پیچھے موجود لوگ',
+    teamFounderRole:'بانی و ٹیکس کنسلٹنٹ', teamFounderBio:'MFJ Service کے بانی — انکم ٹیکس، سیلز ٹیکس اور کاروباری رجسٹریشن میں تجربہ رکھتے ہیں۔',
+    teamAddMember:'نیا ممبر شامل کریں', teamAddMemberDesc:'اپنی ٹیم کے مزید افراد کا نام، عہدہ اور تصویر شامل کروائیں',
+    opEyebrow:'بیرونِ ملک پاکستانی', opTitle:'بیرونِ ملک بیٹھے اپنا ٹیکس آسانی سے مکمل کروائیں',
+    opIntro:'آپ کو پاکستان آنے کی ضرورت نہیں — پورا عمل WhatsApp اور ہمارے آن لائن پورٹل کے ذریعے مکمل ہو جاتا ہے۔ چاہے آپ Non-Resident ہوں یا پاکستان میں پراپرٹی/بینک اکاؤنٹ رکھتے ہوں، ہم آپ کی رہنمائی کریں گے۔',
+    op1:'2022 کی ترمیم کے بعد 183 دن سے کم پاکستان میں قیام پر آپ Non-Resident شمار ہوتے ہیں', op2:'Non-Resident ہونے کے باوجود فائلر بن کر پراپرٹی، گاڑی اور بینک ٹرانزیکشنز پر کم ٹیکس کا فائدہ لے سکتے ہیں', op3:'CNIC/NICOP اور پاسپورٹ کے ذریعے دور بیٹھے NTN رجسٹریشن ممکن ہے', op4:'پاکستان میں موجود پراپرٹی، بینک منافع یا کرایہ کی آمدنی پر مکمل مشاورت', op5:'دستاویزات WhatsApp پر بھیجیں — باقی کام ہم سنبھال لیتے ہیں',
+    opCta:'مفت مشاورت بک کریں',
+    dcEyebrow:'دستاویزات چیک لسٹ', dcTitle:'Document Checklist — اپنی ضروری دستاویزات جانیں',
+    dcProfile:'اپنی کیٹیگری منتخب کریں', dcProfSalaried:'تنخواہ دار (Salaried)', dcProfBusiness:'کاروباری / سیلف ایمپلائیڈ', dcProfFreelancer:'فری لانسر / IT ایکسپورٹ', dcProfOverseas:'بیرونِ ملک پاکستانی (Overseas)', dcProfProperty:'پراپرٹی خریدار/فروخت کنندہ',
+    dcPrint:'پرنٹ کریں', dcShare:'WhatsApp پر شیئر کریں', dcHint:'💡 چیک باکس پر کلک کر کے وہ دستاویزات نشان زد کریں جو آپ کے پاس پہلے سے موجود ہیں۔',
     svcCta:'تمام خدمات دیکھیں',
     processEyebrow:'ہمارا طریقہ کار', processTitle:'صرف 4 آسان مراحل میں',
     taxEstEyebrow:'مفت تخمینہ', taxEstTitle:'اپنا Tax تخمینہ حاصل کریں',
@@ -2083,9 +2529,9 @@ const I18N = {
     taxEstMode:'کیلکولیشن کی قسم', taxEstModeIncomeToTax:'آمدنی سے ٹیکس نکالیں', taxEstModeTaxToIncome:'ٹیکس سے آمدنی نکالیں',
     taxEstTaxAmt:'ٹیکس کی رقم (Rs میں لکھیں)', taxEstMonthlyTax:'ماہانہ ٹیکس', taxEstAnnualTax:'سالانہ ٹیکس',
     taxEstBtn:'📊 ٹیکس کیلکولیٹ کریں', taxEstNote:'💡 یہ تخمینہ Tax Year 2026-27 کے FBR سلیب کے مطابق ہے۔ حتمی رقم آپ کی مخصوص صورتحال (چھوٹ، deductions وغیرہ) کے مطابق مختلف ہو سکتی ہے — درست فائلنگ کے لیے ہم سے رابطہ کریں۔',
-    navCalculators:'کیلکولیٹرز', navCalcTaxEst:'ٹیکس تخمینہ', navCalcAts:'سالانہ تنخواہ و ٹیکس', navCalcAdvance:'ایڈوانس ٹیکس (گاڑی/پراپرٹی)', navCalcWithholding:'ودہولڈنگ ٹیکس', navCalcSales:'سیلز ٹیکس', navCalcAtl:'ATL اسٹیٹس تصدیق', navCalcRentCash:'کرایہ / کیش نکلوانے کا ٹیکس', navCalcCapitalGains:'کیپیٹل گینز ٹیکس', navCalcUtility:'یوٹیلیٹی ٹیکس', navCalcVehicle:'گاڑی ٹوکن / رجسٹریشن فیس', navCalcPta:'PTA موبائل ٹیکس',
+    navCalculators:'کیلکولیٹرز', navCalcTaxEst:'ٹیکس تخمینہ', navCalcAts:'سالانہ تنخواہ و ٹیکس', navCalcAdvance:'ایڈوانس ٹیکس (گاڑی/پراپرٹی)', navCalcWithholding:'ودہولڈنگ ٹیکس', navCalcSales:'سیلز ٹیکس', navCalcAtl:'ATL اسٹیٹس تصدیق', navCalcRentCash:'کرایہ / کیش نکلوانے کا ٹیکس', navCalcCapitalGains:'کیپیٹل گینز ٹیکس', navCalcGoldGains:'گولڈ کیپیٹل گینز ٹیکس', navCalcAop:'AOP انکم ٹیکس', navCalcPropVal:'پراپرٹی ویلیویشن (FBR)', navCalcBankProfit:'بینک منافع ٹیکس', navCalcDividend:'ڈیویڈنڈ ٹیکس', navCalcFreelancer:'فری لانسر/IT ایکسپورٹ ٹیکس', navCalcFvN:'فائلر بمقابلہ نان فائلر', navCalcUtility:'یوٹیلیٹی ٹیکس', navCalcVehicle:'گاڑی ٹوکن / رجسٹریشن فیس', navCalcPta:'PTA موبائل ٹیکس', navCalcDocChecklist:'دستاویزات چیک لسٹ',
     dashEyebrow:'فوری رسائی', dashTitle:'تمام کیلکولیٹرز ایک نظر میں', dashSub:'جس کیلکولیٹر پر کلک کریں، سیدھا وہاں پہنچ جائیں گے',
-    dashD1:'آمدنی سے ٹیکس یا ٹیکس سے آمدنی نکالیں', dashD2:'مہینہ وار مکمل تنخواہ اور ٹیکس کا خلاصہ', dashD3:'گاڑی / پراپرٹی خرید و فروخت پر ٹیکس', dashD4:'کنٹریکٹرز اور سپلائرز کے لیے', dashD5:'اشیاء اور خدمات پر سیلز ٹیکس کا حساب', dashD6:'NTN / STRN کا فائلر اسٹیٹس چیک کریں', dashD7:'کرائے کی آمدنی اور کیش نکلوانے کا ٹیکس', dashD8:'پراپرٹی کی خرید و فروخت پر منافع کا ٹیکس', dashD9:'بجلی، موبائل اور انٹرنیٹ بلوں کا ٹیکس', dashD10:'ٹوکن ٹیکس، رجسٹریشن اور ٹرانسفر فیس', dashD11:'باہر سے موبائل منگوانے پر ٹیکس',
+    dashD1:'آمدنی سے ٹیکس یا ٹیکس سے آمدنی نکالیں', dashD2:'مہینہ وار مکمل تنخواہ اور ٹیکس کا خلاصہ', dashD3:'گاڑی / پراپرٹی خرید و فروخت پر ٹیکس', dashD4:'کنٹریکٹرز اور سپلائرز کے لیے', dashD5:'اشیاء اور خدمات پر سیلز ٹیکس کا حساب', dashD6:'NTN / STRN کا فائلر اسٹیٹس چیک کریں', dashD7:'کرائے کی آمدنی اور کیش نکلوانے کا ٹیکس', dashD8:'پراپرٹی کی خرید و فروخت پر منافع کا ٹیکس', dashD9:'بجلی، موبائل اور انٹرنیٹ بلوں کا ٹیکس', dashD10:'ٹوکن ٹیکس، رجسٹریشن اور ٹرانسفر فیس', dashD11:'باہر سے موبائل منگوانے پر ٹیکس', dashD12:'سونا/زیورات فروخت کرنے پر منافع کا ٹیکس', dashD13:'پارٹنرشپ/AOP کے منافع پر انکم ٹیکس', dashD14:'FBR ویلیویشن ٹیبل کے مطابق پراپرٹی کی مالیت', dashD15:'بچت اکاؤنٹ/ٹرم ڈپازٹ کے منافع پر ٹیکس', dashD16:'شیئرز/میوچل فنڈ ڈیویڈنڈ پر ٹیکس', dashD17:'فری لانس/IT ایکسپورٹ آمدنی پر ٹیکس', dashD18:'تمام اہم کیٹیگریز میں فائلر بننے کی مکمل بچت', dashD19:'اپنی کیٹیگری کے مطابق ضروری دستاویزات کی فہرست',
     atsEyebrow:'ٹیکس ریٹرن میں مدد', atsTitle:'Annual Salary &amp; Tax Summary',
     atsDisclaimer:'⚠️ یہ خلاصہ آپ کی فراہم کردہ معلومات پر مبنی ہے — یہ آفیشل Employer یا FBR کا تصدیق شدہ Tax Certificate نہیں۔ Return فائل کرنے سے پہلے تصدیق کر لیں۔',
     atsName:'ملازم کا نام', atsCnic:'CNIC', atsNtn:'NTN (اگر ہو)', atsEmployer:'آجر کا نام (Employer)', atsTaxYear:'ٹیکس سال (Tax Year)',
@@ -2119,6 +2565,11 @@ const I18N = {
     wtCtaSub:'Vehicle، Property یا Contractor/Supplier Payments — ہر کیس مختلف ہوتا ہے۔ اپنی تفصیلات بھیجیں، ہماری ٹیم درست ریٹ کنفرم کر کے فائلنگ مکمل کر دے گی۔',
     wtCtaWa:'💬 WhatsApp پر تفصیل بھیجیں', wtCtaAppt:'📅 اپائنٹمنٹ بک کریں',
     stEyebrow:'Sales Tax / GST', stTitle:'Sales Tax Calculator (Goods / Services)',
+    stTabProduct:'پروڈکٹ لُک اپ (HS Code)',
+    stTxnType:'ٹرانزیکشن کی قسم', stTxnPurchase:'خریداری (Purchase)', stTxnSale:'فروخت (Sale)', stTxnImport:'درآمد (Import)',
+    stCategory:'کیٹیگری', stProduct:'پروڈکٹ منتخب کریں', stQuantity:'مقدار (Quantity)', stUnitPrice:'فی یونٹ قیمت (Rs)', stTaxableValue:'قابلِ ٹیکس مالیت (Rs)',
+    stCompareLabel:'Purchase اور Sale دونوں کا موازنہ کریں (Input vs Output Tax)', stCompareSalePrice:'فروخت کی فی یونٹ قیمت (Rs)',
+    stProductHint:'💡 لاگو ٹیکس ریٹ منتخب کردہ پروڈکٹ/HS-PCT Code اور موجودہ ٹیکس ٹریٹمنٹ پر مبنی ہے۔',
     stTabGoods:'اشیاء (Goods)', stTabServices:'خدمات (Services)',
     stSupplyType:'سپلائی کی قسم', stStandard:'اسٹینڈرڈ ریٹ (Standard — 18%)', stLuxury:'درآمدی لگژری اشیاء/گاڑیاں (25%)',
     stReduced:'ریڈیوسڈ ریٹ (5%)', stZeroRated:'زیرو ریٹڈ — برآمدات (0%)', stExempt:'مکمل مستثنیٰ (Exempt — 0%)',
@@ -2147,6 +2598,54 @@ const I18N = {
     cgPropertyType:'پراپرٹی کی قسم', cgOpenPlot:'اوپن پلاٹ', cgConstructed:'تعمیر شدہ (گھر/دکان)', cgFlat:'فلیٹ / اپارٹمنٹ',
     cgHoldingYears:'ملکیت کے سال (Holding Period)',
     cgDisclaimer:'⚠️ 1 جولائی 2024 سے پہلے خریدی گئی پراپرٹی پر پرانا Holding Period Taper لاگو ہوتا ہے (زیادہ عرصہ رکھنے پر ٹیکس کم/صفر)۔ بعد میں خریدی گئی پراپرٹی پر فائلر کے لیے فلیٹ 15%، نان فائلر کے لیے 15%-45%۔ یہ عمومی تخمینہ ہے — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    ggEyebrow:'سونا / زیورات منافع ٹیکس', ggTitle:'Gold / Jewellery Capital Gains Tax Calculator (Section 37)',
+    ggSalePrice:'فروخت کی قیمت (Rs)', ggPurchasePrice:'خریداری کی قیمت (Rs)',
+    ggIncludeMakingLabel:'بنوائی / رسید کے اخراجات کو خریداری کی لاگت میں شامل کریں', ggMakingCharges:'بنوائی / دیگر اخراجات کی رقم (Rs)',
+    ggHoldingYears:'ملکیت کے سال (Holding Period)', ggIncomeSlab:'آپ کی کُل سالانہ آمدنی کا تخمینی سلیب',
+    ggSlab0:'Rs 6,00,000 تک — 0%', ggSlab1:'Rs 6,00,000 – 12,00,000 — 1%', ggSlab11:'Rs 12,00,000 – 22,00,000 — 11%', ggSlab20:'Rs 22,00,000 – 32,00,000 — 20%', ggSlab25:'Rs 32,00,000 – 41,00,000 — 25%', ggSlab29:'Rs 41,00,000 – 56,00,000 — 29%', ggSlab32:'Rs 56,00,000 – 70,00,000 — 32%', ggSlab35:'Rs 70,00,000 سے زائد — 35%',
+    ggHoldingHint:'💡 چونکہ ملکیت 1 سال سے زیادہ عرصے کی ہے، Section 37(3) کے تحت صرف 75% منافع قابلِ ٹیکس ہے (25% چھوٹ)۔',
+    ggSlabHint:'💡 سونا/زیورات پراپرٹی یا سیکیورٹیز کی طرح فلیٹ ریٹ پر ٹیکس نہیں دیتے — منافع آپ کی باقی سالانہ آمدنی میں شامل ہو کر عام انکم ٹیکس سلیب کے مطابق ٹیکس ہوتا ہے۔ یہ سیلری والے افراد کے سلیب ہیں — نان سیلری/بزنس افراد کا سلیب قدرے مختلف ہو سکتا ہے، اپنی صورتحال کے مطابق ریٹ خود تبدیل کر لیں۔',
+    ggDisclaimer:'⚠️ سونا/زیورات Section 37(5) کے تحت قابلِ ٹیکس کیپیٹل ایسٹ ہیں (ذاتی استعمال کی چھوٹ لاگو نہیں ہوتی)۔ منافع = فروخت کی قیمت − (خریداری کی قیمت + منتخب کردہ بنوائی کے اخراجات)۔ 1 سال سے زیادہ ملکیت پر صرف 75% منافع ٹیکس کے تابع ہے (Section 37(3))۔ حتمی ٹیکس آپ کی مکمل سالانہ آمدنی اور فائل کردہ ریٹرن پر منحصر ہے — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    aopEyebrow:'پارٹنرشپ / فرم انکم ٹیکس', aopTitle:'AOP (Association of Persons) Income Tax Calculator',
+    aopIncome:'AOP کی سالانہ خالص آمدنی/منافع (Rs)',
+    aopProfFirmLabel:'پروفیشنل فرم AOP ہے (کمپنی نہیں بن سکتی — زیادہ سے زیادہ ریٹ 40%)',
+    aopHint:'💡 Tax Year 2025-26 اور 2026-27 دونوں کے لیے AOP/نان سیلری سلیب ریٹس ایک جیسے ہیں (Finance Act 2026 نے کوئی تبدیلی نہیں کی) — اس لیے ایک ہی کیلکولیٹر دونوں سالوں کے لیے درست ہے۔',
+    aopDisclaimer:'⚠️ AOP اپنی خالص آمدنی پر بطور ایک الگ ادارہ ٹیکس ادا کرتا ہے (اراکین کو منافع کی تقسیم پر دوبارہ ٹیکس نہیں لگتا)۔ Rs 1 کروڑ سے زائد قابلِ ٹیکس آمدنی پر 10% سرچارج بھی شامل کیا گیا ہے۔ پروفیشنل فرم AOP (جو کمپنی نہیں بن سکتی) کے لیے زیادہ سے زیادہ ریٹ 40% ہے۔ یہ عمومی تخمینہ ہے — WHT ایڈجسٹمنٹس اور دیگر چھوٹ شامل نہیں — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    pvEyebrow:'FBR ویلیویشن ٹیبل', pvTitle:'Property Valuation Calculator (FBR Rates)',
+    pvUnit:'یونٹ کی قسم', pvUnitMarla:'مرلہ (Marla)', pvUnitKanal:'کنال (Kanal)', pvUnitSqYd:'مربع گز (Sq. Yard)', pvUnitSqFt:'مربع فٹ (Sq. Ft)',
+    pvSize:'کُل رقبہ (Size)', pvFbrRate:'FBR ویلیویشن ریٹ فی یونٹ (Rs)', pvDcRate:'DC ریٹ فی یونٹ (Rs) — اختیاری', pvActualRate:'رجسٹری/اصل قیمت فی یونٹ (Rs) — اختیاری',
+    pvHint:'💡 FBR ویلیویشن ریٹ ہر شہر/سیکٹر کے لیے الگ ہوتا ہے۔ یہ ریٹ FBR کی ویب سائٹ (Immovable Property Valuation Tables) سے اپنے علاقے کے مطابق خود درج کریں — ہم سے بھی معلوم کیا جا سکتا ہے۔',
+    pvDisclaimer:'⚠️ ٹیکس مقاصد (236C, 236K, کیپیٹل گینز وغیرہ) کے لیے قانونی طور پر جو قیمت زیادہ ہو — FBR ویلیویشن، DC ریٹ، یا رجسٹری میں لکھی قیمت — وہی "Fair Market Value" تصور ہو کر ٹیکس کی بنیاد بنتی ہے۔ یہ ایک عمومی تخمینہ ہے — درست ویلیویشن اور ٹیکس حساب کے لیے ہم سے رابطہ کریں۔',
+    bpEyebrow:'پروفٹ آن ڈیبٹ ٹیکس', bpTitle:'Bank Profit / Profit on Debt Tax Calculator (Section 151)',
+    bpAmount:'سالانہ منافع کی رقم (Rs)', bpType:'منافع کی قسم',
+    bpTypeBank:'بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS (20% / 40%)', bpTypeGovt:'گورنمنٹ سیکیورٹیز (کمپنی/AOP کو) (20% / 40%)', bpTypeSukukCo:'سکوک — ہولڈر کمپنی ہو (25% / 50%)', bpTypeOther:'دیگر تمام صورتیں (15% / 30%)',
+    bpHint:'💡 یہ عام طور پر انفرادی/AOP کے لیے فائنل ٹیکس ہے (Rs 5 ملین تک کے منافع پر)۔ Behbood Savings Certificate پر کوئی ودہولڈنگ ٹیکس نہیں کاٹا جاتا۔',
+    bpDisclaimer:'⚠️ ماخذ: FBR Withholding Income Tax Rate Card، Section 151۔ یہ عمومی تخمینہ ہے — آپ کے مخصوص انسٹرومنٹ (National Savings سرٹیفکیٹس وغیرہ) پر ریٹ مختلف ہو سکتا ہے — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    dvEyebrow:'ڈیویڈنڈ انکم ٹیکس', dvTitle:'Dividend Tax Calculator (Section 150)',
+    dvAmount:'ڈیویڈنڈ کی رقم (Rs)', dvType:'ڈیویڈنڈ کی قسم',
+    dvTypeListed:'لسٹڈ کمپنی (عام) (15% / 30%)', dvTypeUnlisted:'غیر لسٹڈ / پرائیویٹ کمپنی (25% / 50%)', dvTypeExempt:'کمپنی جس نے ٹیکس ادا نہیں کیا (چھوٹ/نقصان/ٹیکس کریڈٹ) (25% / 50%)', dvTypeMfStock:'میوچل فنڈ — اسٹاک فنڈ (15% / 30%)', dvTypeMfDebt:'میوچل فنڈ — منی مارکیٹ/انکم فنڈ (25% / 50%)', dvTypeIpp:'IPP پاس-تھرو (CPPA-G سے واپسی) (7.5% / 15%)',
+    dvDisclaimer:'⚠️ یہ فائنل ٹیکس ہے (انفرادی شیئر ہولڈرز کے لیے، Section 150 کے تحت)۔ ماخذ: FBR Withholding Income Tax Rate Card۔ یہ عمومی تخمینہ ہے — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    flEyebrow:'فری لانسر / IT ایکسپورٹ', flTitle:'Freelancer / IT Export Income Tax Calculator',
+    flAmount:'آمدنی کی رقم (Rs)', flType:'آمدنی کی نوعیت',
+    flTypeExportPseb:'IT/ITeS ایکسپورٹ — PSEB رجسٹرڈ + سیلز ٹیکس ریٹرن فائلر (0.25% فائنل)', flTypeExportOther:'دیگر سروسز ایکسپورٹ (غیر PSEB) (1% فائنل)', flTypeLocalFiler:'لوکل IT/ITeS کلائنٹ — فائلر (4% منیمم ٹیکس)', flTypeLocalNonfiler:'لوکل IT/ITeS کلائنٹ — نان فائلر (8% منیمم ٹیکس)',
+    flHint:'💡 ایکسپورٹ آمدنی کی صورت میں رقم بینکنگ چینل (SBP رجسٹرڈ) کے ذریعے موصول ہونا لازمی ہے تاکہ Final Tax Regime کا فائدہ مل سکے۔ PSEB رجسٹریشن اور باقاعدہ سیلز ٹیکس ریٹرن فائلنگ 0.25% ریٹ کی شرط ہے۔',
+    flDisclaimer:'⚠️ ماخذ: FBR Withholding Tax Rate Card اور Section 154A (سروسز ایکسپورٹ)، Section 153 (لوکل IT/ITeS)۔ لوکل کلائنٹ والا ٹیکس عام طور پر منیمم ٹیکس ہوتا ہے (ایڈجسٹ ایبل)، جبکہ ایکسپورٹ والا فائنل ٹیکس ہے۔ یہ عمومی تخمینہ ہے — آپ کی مخصوص صورتحال کے مطابق شرائط مختلف ہو سکتی ہیں — درست حساب کے لیے ہم سے رابطہ کریں۔',
+    fvEyebrow:'فائلر بمقابلہ نان فائلر', fvTitle:'Filer vs Non-Filer — Deep Comparison',
+    fvIntro:'Finance Act 2026 کے بعد اب صرف دو کیٹیگریز ہیں — Filer (FBR کی Active Taxpayer List یعنی ATL پر موجود) اور Non-Filer (ATL پر نہ ہونا)۔ نیچے دی گئی ٹیبل آپ کی اپنی ویب سائٹ کے calculators سے live اعداد اٹھا کر دکھاتی ہے — یہ ہمیشہ آپ کے دوسرے calculators کے ساتھ ہم آہنگ (consistent) رہے گی۔',
+    fvColCategory:'کیٹیگری', fvColFiler:'فائلر', fvColNonFiler:'نان فائلر',
+    fvSnapshotTitle:'Quick Savings Snapshot — اپنی بچت خود دیکھیں',
+    fvCategory:'کیٹیگری منتخب کریں', fvCatPropPurchase:'پراپرٹی خریداری (236K)', fvCatPropSale:'پراپرٹی فروخت (236C)', fvCatVehicle:'گاڑی رجسٹریشن (231B)', fvCatBank:'بینک منافع (151)', fvCatDividend:'ڈیویڈنڈ (150)', fvCatCash:'کیش نکلوانا (231AB)',
+    fvAmount:'رقم (Rs)',
+    fvBeyondTitle:'صرف ٹیکس ریٹ نہیں — دیگر اہم فرق',
+    fvBeyond1:'🏦 بینک لون/کریڈٹ کارڈ حاصل کرنے میں فائلر کو آسانی ہوتی ہے',
+    fvBeyond2:'🏛️ سرکاری ٹینڈرز اور کنٹریکٹس صرف فائلرز کے لیے کھلے ہوتے ہیں',
+    fvBeyond3:'✈️ ویزا اور امیگریشن کے عمل میں ٹیکس ریٹرن اکثر مانگی جاتی ہے',
+    fvBeyond4:'🔍 نان فائلرز پر FBR کی نگرانی اور آڈٹ کا امکان زیادہ ہوتا ہے',
+    fvBeyond5:'📈 اسٹاک/میوچل فنڈ منافع اور ڈیویڈنڈ پر بھی فائلر کو کم ٹیکس',
+    fvBeyond6:'🤝 بینکوں، سپلائرز اور بڑے کلائنٹس کے ساتھ ساکھ (credibility) بہتر ہوتی ہے',
+    fvDisclaimer:'⚠️ یہ عمومی موازنہ ہے اور آپ کی اپنی سائٹ کے calculators سے live ریٹس اٹھاتا ہے۔ کچھ ریٹس (بینک منافع، ڈیویڈنڈ، فری لانسر) ہمارے اپنے تصدیق شدہ ڈیٹا پر مبنی ہیں۔ AOP/انفرادی انکم ٹیکس سلیب فائلر/نان فائلر سے متاثر نہیں ہوتا (صرف ودہولڈنگ ٹیکس ریٹس مختلف ہوتے ہیں)۔ درست اور مکمل حساب کے لیے ہم سے رابطہ کریں۔',
+    fvTblPropPurchase:'پراپرٹی خریداری (236K)', fvTblPropSale:'پراپرٹی فروخت (236C)', fvTblVehicle:'گاڑی رجسٹریشن — 1300cc مثال (231B)', fvTblCash:'کیش نکلوانا (231AB)', fvTblBank:'بینک منافع (151)', fvTblDividend:'ڈیویڈنڈ — لسٹڈ کمپنی (150)', fvTblLocalIT:'لوکل IT/ITeS سروسز (153)', fvTblAop:'AOP / انفرادی انکم ٹیکس سلیب',
+    fvNoTax:'کوئی ٹیکس نہیں', fvSameSlab:'ایک جیسا سلیب (کوئی فرق نہیں)', fvLoading:'لوڈ ہو رہا ہے...',
     utEyebrow:'بجلی / موبائل / انٹرنیٹ', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'بجلی (Electricity)', utTabTelecom:'موبائل/انٹرنیٹ',
     utBillAmount:'ماہانہ بل کی رقم (Rs)', utElecHint:'💡 فائلر کے لیے گھریلو بجلی پر یہ ٹیکس مکمل معاف ہے۔ نان فائلر کے لیے، اگر ماہانہ بل Rs 25,000 سے زیادہ ہو تو پوری بل رقم پر 7.5% لاگو ہوتا ہے۔',
@@ -2188,7 +2687,7 @@ const I18N = {
   },
   en:{
     brand:'MFJ Services', brandSub:'TAX CONSULTANT',
-    navHome:'Home', navAbout:'About', navServices:'Services', navBlog:'Blog', navTestimonials:'Testimonials', navContact:'Contact', navPortal:'👤 Portal', navBook:'Book Appointment →',
+    navHome:'Home', navAbout:'About', navServices:'Services', navTeam:'Team', navOverseas:'Overseas Pakistanis', navBlog:'Blog', navTestimonials:'Testimonials', navContact:'Contact', navPortal:'👤 Portal', navBook:'Book Appointment →',
     heroEyebrow:"Pakistan's Trusted", heroTitle1:'Tax & Business', heroTitle2:'Solutions',
     heroSub:'We provide professional tax, accounting and business consultancy services across Pakistan — with 100% client satisfaction.', typewriterLabel:'We specialize in:',
     chk1:'Income Tax', chk2:'NTN Registration', chk3:'Sales Tax', chk4:'Business Registration', chk5:'FBR Consultancy',
@@ -2206,6 +2705,16 @@ const I18N = {
     svc6t:'Tax Notices', svc6d:'Expert response to FBR tax notices',
     svc7t:'Business Consultancy', svc7d:'Professional advice for your business growth',
     svc8t:'Document Verification', svc8d:'FBR document verification and related services',
+    teamEyebrow:'Our Team', teamTitle:'The People Behind Your Case',
+    teamFounderRole:'Founder & Tax Consultant', teamFounderBio:'Founder of MFJ Service — experienced in income tax, sales tax, and business registration.',
+    teamAddMember:'Add New Member', teamAddMemberDesc:'Get more of your team members\' name, designation, and photo added',
+    opEyebrow:'Overseas Pakistanis', opTitle:'Get Your Taxes Done Easily From Abroad',
+    opIntro:'You don\'t need to come to Pakistan — the entire process is completed via WhatsApp and our online portal. Whether you\'re a Non-Resident or hold property/bank accounts in Pakistan, we\'ll guide you through it.',
+    op1:'After the 2022 amendment, staying in Pakistan for fewer than 183 days makes you a Non-Resident', op2:'Even as a Non-Resident, becoming a filer gets you lower tax on property, vehicle, and bank transactions', op3:'Remote NTN registration is possible via CNIC/NICOP and passport', op4:'Full consultation on property, bank profit, or rental income you hold in Pakistan', op5:'Send documents over WhatsApp — we handle the rest',
+    opCta:'Book a Free Consultation',
+    dcEyebrow:'Document Checklist', dcTitle:'Document Checklist — Know What You Need',
+    dcProfile:'Select Your Category', dcProfSalaried:'Salaried', dcProfBusiness:'Business / Self-Employed', dcProfFreelancer:'Freelancer / IT Export', dcProfOverseas:'Overseas Pakistani', dcProfProperty:'Property Buyer/Seller',
+    dcPrint:'Print', dcShare:'Share on WhatsApp', dcHint:'💡 Click the checkbox to mark documents you already have.',
     svcCta:'View All Services',
     processEyebrow:'Our Process', processTitle:'In Just 4 Simple Steps',
     taxEstEyebrow:'Free Estimate', taxEstTitle:'Get Your Tax Estimate',
@@ -2214,9 +2723,9 @@ const I18N = {
     taxEstMode:'Calculation Type', taxEstModeIncomeToTax:'Income → Tax', taxEstModeTaxToIncome:'Tax → Income',
     taxEstTaxAmt:'Tax Amount (in Rs)', taxEstMonthlyTax:'Monthly Tax', taxEstAnnualTax:'Annual Tax',
     taxEstBtn:'📊 Calculate Tax', taxEstNote:'💡 This estimate is based on Tax Year 2026-27 FBR slabs. Your final tax may differ based on your specific situation (exemptions, deductions, etc.) — contact us for accurate filing.',
-    navCalculators:'Calculators', navCalcTaxEst:'Tax Estimate', navCalcAts:'Annual Salary & Tax', navCalcAdvance:'Advance Tax (Vehicle/Property)', navCalcWithholding:'Withholding Tax', navCalcSales:'Sales Tax', navCalcAtl:'ATL Status Check', navCalcRentCash:'Rent / Cash Withdrawal Tax', navCalcCapitalGains:'Capital Gains Tax', navCalcUtility:'Utility Tax', navCalcVehicle:'Vehicle Token / Registration Fee', navCalcPta:'PTA Mobile Tax',
+    navCalculators:'Calculators', navCalcTaxEst:'Tax Estimate', navCalcAts:'Annual Salary & Tax', navCalcAdvance:'Advance Tax (Vehicle/Property)', navCalcWithholding:'Withholding Tax', navCalcSales:'Sales Tax', navCalcAtl:'ATL Status Check', navCalcRentCash:'Rent / Cash Withdrawal Tax', navCalcCapitalGains:'Capital Gains Tax', navCalcGoldGains:'Gold Capital Gains Tax', navCalcAop:'AOP Income Tax', navCalcPropVal:'Property Valuation (FBR)', navCalcBankProfit:'Bank Profit Tax', navCalcDividend:'Dividend Tax', navCalcFreelancer:'Freelancer/IT Export Tax', navCalcFvN:'Filer vs Non-Filer', navCalcUtility:'Utility Tax', navCalcVehicle:'Vehicle Token / Registration Fee', navCalcPta:'PTA Mobile Tax', navCalcDocChecklist:'Document Checklist',
     dashEyebrow:'Quick Access', dashTitle:'All Calculators at a Glance', dashSub:'Click any calculator to jump straight there',
-    dashD1:'Get tax from income or income from tax', dashD2:'Full month-wise salary & tax summary', dashD3:'Tax on vehicle / property purchase & sale', dashD4:'For contractors and suppliers', dashD5:'Sales tax on goods and services', dashD6:'Check filer status by NTN / STRN', dashD7:'Tax on rental income and cash withdrawal', dashD8:'Profit tax on property sale', dashD9:'Tax on electricity, mobile & internet bills', dashD10:'Token tax, registration & transfer fee', dashD11:'Tax on mobiles brought from abroad',
+    dashD1:'Get tax from income or income from tax', dashD2:'Full month-wise salary & tax summary', dashD3:'Tax on vehicle / property purchase & sale', dashD4:'For contractors and suppliers', dashD5:'Sales tax on goods and services', dashD6:'Check filer status by NTN / STRN', dashD7:'Tax on rental income and cash withdrawal', dashD8:'Profit tax on property sale', dashD9:'Tax on electricity, mobile & internet bills', dashD10:'Token tax, registration & transfer fee', dashD11:'Tax on mobiles brought from abroad', dashD12:'Profit tax on selling gold/jewellery', dashD13:'Income tax on partnership/AOP profit', dashD14:'Property value per FBR valuation table', dashD15:'Tax on savings account/term deposit profit', dashD16:'Tax on shares/mutual fund dividend', dashD17:'Tax on freelance/IT export income', dashD18:'Full filer-vs-non-filer savings across major categories', dashD19:'Required documents list based on your category',
     atsEyebrow:'Tax Return Help', atsTitle:'Annual Salary &amp; Tax Summary',
     atsDisclaimer:'⚠️ This summary is based on the information you provide — it is not an official Employer or FBR-verified Tax Certificate. Please verify before filing your return.',
     atsName:'Employee Name', atsCnic:'CNIC', atsNtn:'NTN (if any)', atsEmployer:'Employer Name', atsTaxYear:'Tax Year',
@@ -2250,6 +2759,11 @@ const I18N = {
     wtCtaSub:'Vehicle, Property, or Contractor/Supplier Payments — every case is different. Send us your details and our team will confirm the correct rate and complete your filing.',
     wtCtaWa:'💬 Send Details on WhatsApp', wtCtaAppt:'📅 Book an Appointment',
     stEyebrow:'Sales Tax / GST', stTitle:'Sales Tax Calculator (Goods / Services)',
+    stTabProduct:'Product Lookup (HS Code)',
+    stTxnType:'Transaction Type', stTxnPurchase:'Purchase', stTxnSale:'Sale', stTxnImport:'Import',
+    stCategory:'Category', stProduct:'Select Product', stQuantity:'Quantity', stUnitPrice:'Unit Price (Rs)', stTaxableValue:'Taxable Value (Rs)',
+    stCompareLabel:'Compare Purchase & Sale (Input vs Output Tax)', stCompareSalePrice:'Sale Unit Price (Rs)',
+    stProductHint:'💡 Applicable tax rate is based on the selected product/HS-PCT Code and current tax treatment.',
     stTabGoods:'Goods', stTabServices:'Services',
     stSupplyType:'Supply Type', stStandard:'Standard Rate (18%)', stLuxury:'Imported Luxury Goods/Vehicles (25%)',
     stReduced:'Reduced Rate (5%)', stZeroRated:'Zero-Rated — Exports (0%)', stExempt:'Fully Exempt (0%)',
@@ -2278,6 +2792,54 @@ const I18N = {
     cgPropertyType:'Property Type', cgOpenPlot:'Open Plot', cgConstructed:'Constructed (house/shop)', cgFlat:'Flat / Apartment',
     cgHoldingYears:'Years of Ownership (Holding Period)',
     cgDisclaimer:'⚠️ Property acquired before 1 July 2024 follows the old Holding Period Taper (longer ownership means lower/zero tax). For property acquired after, it\'s a flat 15% for filers, 15%-45% for non-filers. This is a general estimate — contact us for an accurate calculation.',
+    ggEyebrow:'Gold Capital Gains', ggTitle:'Gold / Jewellery Capital Gains Tax Calculator (Section 37)',
+    ggSalePrice:'Sale Price (Rs)', ggPurchasePrice:'Purchase Price (Rs)',
+    ggIncludeMakingLabel:'Include making charges / receipt expenses in the purchase cost', ggMakingCharges:'Making Charges / Other Expenses (Rs)',
+    ggHoldingYears:'Years of Ownership (Holding Period)', ggIncomeSlab:'Your estimated total annual income slab',
+    ggSlab0:'Up to Rs 600,000 — 0%', ggSlab1:'Rs 600,000 – 1,200,000 — 1%', ggSlab11:'Rs 1,200,000 – 2,200,000 — 11%', ggSlab20:'Rs 2,200,000 – 3,200,000 — 20%', ggSlab25:'Rs 3,200,000 – 4,100,000 — 25%', ggSlab29:'Rs 4,100,000 – 5,600,000 — 29%', ggSlab32:'Rs 5,600,000 – 7,000,000 — 32%', ggSlab35:'Above Rs 7,000,000 — 35%',
+    ggHoldingHint:'💡 Since the asset has been held for more than 1 year, only 75% of the gain is taxable under Section 37(3) (25% exempt).',
+    ggSlabHint:'💡 Gold/jewellery isn\'t taxed at a flat CGT rate like property or securities — the gain is added to the rest of your annual income and taxed at your normal income tax slab. These are the salaried-individual slabs — non-salaried/business individuals have a slightly different slab table, so adjust the rate to match your situation.',
+    ggDisclaimer:'⚠️ Gold/jewellery is a taxable capital asset under Section 37(5) (the personal-use exemption doesn\'t apply). Gain = Sale Price − (Purchase Price + selected making charges). For assets held more than 1 year, only 75% of the gain is taxable (Section 37(3)). Your final tax depends on your complete annual income and filed return — contact us for an accurate calculation.',
+    aopEyebrow:'Partnership / Firm Income Tax', aopTitle:'AOP (Association of Persons) Income Tax Calculator',
+    aopIncome:'AOP Annual Net Income / Profit (Rs)',
+    aopProfFirmLabel:'This AOP is a professional firm (cannot incorporate as a company — capped at 40%)',
+    aopHint:'💡 AOP/non-salaried slab rates are identical for both Tax Year 2025-26 and 2026-27 (Finance Act 2026 made no change) — so one calculator is accurate for both years.',
+    aopDisclaimer:'⚠️ An AOP pays tax on its net income as a separate entity (members are not taxed again when profit is distributed to them). A 10% surcharge is included for taxable income above Rs 10 million. For a professional-firm AOP (one that cannot incorporate as a company), the maximum rate is capped at 40%. This is a general estimate — WHT adjustments and other exemptions are not included — contact us for an accurate calculation.',
+    pvEyebrow:'FBR Valuation Table', pvTitle:'Property Valuation Calculator (FBR Rates)',
+    pvUnit:'Unit Type', pvUnitMarla:'Marla', pvUnitKanal:'Kanal', pvUnitSqYd:'Sq. Yard', pvUnitSqFt:'Sq. Ft',
+    pvSize:'Total Size', pvFbrRate:'FBR Valuation Rate per Unit (Rs)', pvDcRate:'DC Rate per Unit (Rs) — optional', pvActualRate:'Registry/Actual Price per Unit (Rs) — optional',
+    pvHint:'💡 The FBR valuation rate differs by city/sector. Enter the rate for your specific area from FBR\'s Immovable Property Valuation Tables — you can also ask us for it.',
+    pvDisclaimer:'⚠️ For tax purposes (236C, 236K, capital gains, etc.), whichever value is legally higher — FBR valuation, DC rate, or the registered/deed price — is treated as the "Fair Market Value" and used as the tax base. This is a general estimate — contact us for accurate valuation and tax calculation.',
+    bpEyebrow:'Profit on Debt Tax', bpTitle:'Bank Profit / Profit on Debt Tax Calculator (Section 151)',
+    bpAmount:'Annual Profit Amount (Rs)', bpType:'Type of Profit',
+    bpTypeBank:'Bank Account / Term Deposit / PLS (20% / 40%)', bpTypeGovt:'Government Securities (paid to company/AOP) (20% / 40%)', bpTypeSukukCo:'Sukuk — holder is a company (25% / 50%)', bpTypeOther:'All other cases (15% / 30%)',
+    bpHint:'💡 This is generally a final tax for individuals/AOPs (on profit up to Rs 5 million). No withholding tax is deducted on Behbood Savings Certificates.',
+    bpDisclaimer:'⚠️ Source: FBR Withholding Income Tax Rate Card, Section 151. This is a general estimate — the rate may differ for your specific instrument (National Savings certificates, etc.) — contact us for an accurate calculation.',
+    dvEyebrow:'Dividend Income Tax', dvTitle:'Dividend Tax Calculator (Section 150)',
+    dvAmount:'Dividend Amount (Rs)', dvType:'Type of Dividend',
+    dvTypeListed:'Listed company (general) (15% / 30%)', dvTypeUnlisted:'Unlisted / private company (25% / 50%)', dvTypeExempt:'Company that has not paid tax (exemption/losses/tax credits) (25% / 50%)', dvTypeMfStock:'Mutual fund — stock fund (15% / 30%)', dvTypeMfDebt:'Mutual fund — money market/income fund (25% / 50%)', dvTypeIpp:'IPP pass-through (reimbursed by CPPA-G) (7.5% / 15%)',
+    dvDisclaimer:'⚠️ This is a final tax (for individual shareholders, under Section 150). Source: FBR Withholding Income Tax Rate Card. This is a general estimate — contact us for an accurate calculation.',
+    flEyebrow:'Freelancer / IT Export', flTitle:'Freelancer / IT Export Income Tax Calculator',
+    flAmount:'Income Amount (Rs)', flType:'Nature of Income',
+    flTypeExportPseb:'IT/ITeS export — PSEB registered + files sales tax returns (0.25% final)', flTypeExportOther:'Other services export (non-PSEB) (1% final)', flTypeLocalFiler:'Local IT/ITeS client — filer (4% minimum tax)', flTypeLocalNonfiler:'Local IT/ITeS client — non-filer (8% minimum tax)',
+    flHint:'💡 For export income, funds must be received through an SBP-registered banking channel to qualify for Final Tax Regime treatment. PSEB registration and regular sales tax return filing are conditions for the 0.25% rate.',
+    flDisclaimer:'⚠️ Source: FBR Withholding Tax Rate Card and Section 154A (export of services), Section 153 (local IT/ITeS). Tax on local clients is generally a minimum tax (adjustable), while export income tax is a final tax. This is a general estimate — your specific conditions may differ — contact us for an accurate calculation.',
+    fvEyebrow:'Filer vs Non-Filer', fvTitle:'Filer vs Non-Filer — Deep Comparison',
+    fvIntro:'After the Finance Act 2026, there are now only two categories — Filer (on FBR\'s Active Taxpayer List, i.e. ATL) and Non-Filer (not on the ATL). The table below pulls live numbers from your own site\'s calculators — so it always stays consistent with your other calculators.',
+    fvColCategory:'Category', fvColFiler:'Filer', fvColNonFiler:'Non-Filer',
+    fvSnapshotTitle:'Quick Savings Snapshot — See Your Own Savings',
+    fvCategory:'Select Category', fvCatPropPurchase:'Property Purchase (236K)', fvCatPropSale:'Property Sale (236C)', fvCatVehicle:'Vehicle Registration (231B)', fvCatBank:'Bank Profit (151)', fvCatDividend:'Dividend (150)', fvCatCash:'Cash Withdrawal (231AB)',
+    fvAmount:'Amount (Rs)',
+    fvBeyondTitle:'It\'s Not Just the Tax Rate — Other Key Differences',
+    fvBeyond1:'🏦 Filers find it easier to get bank loans/credit cards',
+    fvBeyond2:'🏛️ Government tenders and contracts are open to filers only',
+    fvBeyond3:'✈️ Tax returns are often requested during visa and immigration processes',
+    fvBeyond4:'🔍 Non-filers face a higher likelihood of FBR scrutiny and audit',
+    fvBeyond5:'📈 Filers also pay lower tax on stock/mutual fund profits and dividends',
+    fvBeyond6:'🤝 Better credibility with banks, suppliers, and large clients',
+    fvDisclaimer:'⚠️ This is a general comparison and pulls live rates from your own site\'s calculators. Some rates (bank profit, dividend, freelancer) are based on our own verified data. AOP/individual income tax slabs aren\'t affected by filer status (only withholding tax rates differ). Contact us for an accurate, complete calculation.',
+    fvTblPropPurchase:'Property Purchase (236K)', fvTblPropSale:'Property Sale (236C)', fvTblVehicle:'Vehicle Registration — 1300cc example (231B)', fvTblCash:'Cash Withdrawal (231AB)', fvTblBank:'Bank Profit (151)', fvTblDividend:'Dividend — Listed Company (150)', fvTblLocalIT:'Local IT/ITeS Services (153)', fvTblAop:'AOP / Individual Income Tax Slab',
+    fvNoTax:'No Tax', fvSameSlab:'Same slab (no difference)', fvLoading:'Loading...',
     utEyebrow:'Electricity / Mobile / Internet', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'Electricity', utTabTelecom:'Mobile/Internet',
     utBillAmount:'Monthly Bill Amount (Rs)', utElecHint:'💡 Filers are fully exempt from this tax on domestic electricity. For non-filers, if the monthly bill exceeds Rs 25,000, 7.5% applies to the entire bill amount.',
@@ -2336,6 +2898,10 @@ function applyLang(lang){
     const key = el.getAttribute('data-i18n-ph');
     if(I18N[lang][key]) el.placeholder = I18N[lang][key];
   });
+  try{ stPopulateCategories(); }catch(e){}
+  try{ populateFilerComparisonTable(); }catch(e){}
+  try{ dcRenderChecklist(); }catch(e){}
+  try{ renderTeamMembers(); }catch(e){}
 }
 function toggleLang(){
   applyLang(currentLang==='ur' ? 'en' : 'ur');
@@ -2488,6 +3054,36 @@ function sendContactWA(){
 /* ═══════════════ REVIEWS (unlimited library) ═══════════════ */
 let _allReviews = [];
 const colors=['#0F8A5F','#2563EB','#7C3AED','#EF4444','#D97706','#0891B2'];
+
+let _allTeamMembers = [];
+async function loadTeamMembers(){
+  try{
+    const {data,error}=await _supa.from('team_members').select('*').eq('active',true).order('display_order',{ascending:true});
+    if(error || !data || !data.length){
+      _allTeamMembers = [
+        {name:'Sohail', role_ur:'بانی و ٹیکس کنسلٹنٹ', role_en:'Founder & Tax Consultant',
+         bio_ur:'MFJ Service کے بانی — انکم ٹیکس، سیلز ٹیکس اور کاروباری رجسٹریشن میں تجربہ رکھتے ہیں۔',
+         bio_en:'Founder of MFJ Service — experienced in income tax, sales tax, and business registration.',
+         photo_url:'https://picsum.photos/seed/mfjfounder/200/200'}
+      ];
+    } else {
+      _allTeamMembers = data;
+    }
+    renderTeamMembers();
+  }catch(e){ console.warn(e); }
+}
+function renderTeamMembers(){
+  const grid = document.getElementById('teamGrid');
+  if(!grid) return;
+  const ur = currentLang==='ur';
+  grid.innerHTML = _allTeamMembers.map(m=>`
+    <div class="svc-card reveal-child" style="text-align:center;">
+      <img src="${m.photo_url||'https://picsum.photos/seed/mfjteam'+encodeURIComponent(m.name||'x')+'/200/200'}" alt="${m.name||''}" loading="lazy" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;">
+      <div class="svc-name" style="font-size:16px;">${m.name||''}</div>
+      <div style="font-size:13px;color:var(--green);font-weight:700;margin:4px 0;">${(ur?m.role_ur:m.role_en)||m.role_ur||m.role_en||''}</div>
+      <div class="svc-desc">${(ur?m.bio_ur:m.bio_en)||m.bio_ur||m.bio_en||''}</div>
+    </div>`).join('');
+}
 
 async function loadApprovedReviews(){
   try{
@@ -3218,8 +3814,10 @@ function wtCtaWhatsapp(){
 function stSwitchTab(tab){
   document.getElementById('stTabGoods').classList.toggle('active', tab==='goods');
   document.getElementById('stTabServices').classList.toggle('active', tab==='services');
+  document.getElementById('stTabProduct').classList.toggle('active', tab==='product');
   document.getElementById('stGoodsForm').style.display = tab==='goods' ? 'block' : 'none';
   document.getElementById('stServicesForm').style.display = tab==='services' ? 'block' : 'none';
+  document.getElementById('stProductForm').style.display = tab==='product' ? 'block' : 'none';
 }
 function stSuggestGoodsRate(){
   const type=document.getElementById('stGoodsType').value;
@@ -3295,6 +3893,164 @@ function stCalcServices(){
   trackEvent('sales_tax_services_calculated', document.getElementById('stProvince').value+'|'+Math.round(amount)+'|'+rate);
 }
 try{ stSuggestGoodsRate(); stSuggestServicesRate(); }catch(e){ console.warn('stSuggestRate skipped:', e); }
+
+/* ═══════════════ SALES TAX — PRODUCT / HS-PCT CODE DATABASE ═══════════════ */
+/* Rate database — editable here for future Finance Act / SRO updates.
+   Each entry: id, name/nameUr, cat, hs (HS/PCT code), rate (% or null if not fixed —
+   null triggers "verify with FBR" message), treatment/treatmentUr, eff (effective from). */
+const ST_CATEGORIES = [
+  {id:'textile', en:'Textile', ur:'کپڑا'},
+  {id:'food', en:'Food Items', ur:'خوراک'},
+  {id:'electronics', en:'Electronics', ur:'الیکٹرانکس'},
+  {id:'machinery', en:'Machinery', ur:'مشینری'},
+  {id:'rawMaterial', en:'Raw Material', ur:'خام مال'},
+  {id:'pharma', en:'Pharmaceuticals', ur:'ادویات'},
+  {id:'construction', en:'Construction Material', ur:'تعمیراتی مواد'},
+  {id:'agriculture', en:'Agriculture Inputs', ur:'زرعی اجزاء'},
+  {id:'stationery', en:'Stationery / Board Items', ur:'اسٹیشنری / بورڈ آئٹمز'},
+  {id:'exports', en:'Exports', ur:'برآمدات'},
+  {id:'other', en:'Other Taxable Items', ur:'دیگر اشیاء'}
+];
+const PRODUCT_TAX_DB = [
+  {id:'raw_cotton', name:'Raw / Unginned Cotton', nameUr:'خام روئی (اَن جِنڈ کاٹن)', cat:'textile', hs:'5201', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'cotton_yarn', name:'Cotton Yarn / Thread', nameUr:'کاٹن یارن / دھاگہ', cat:'textile', hs:'5205', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'01-07-2024'},
+  {id:'garments', name:'Finished Garments (Tier-1 Retail)', nameUr:'تیار شدہ ملبوسات (Tier-1 ریٹیل)', cat:'textile', hs:'6109', rate:18, treatment:'Standard Rate (was 15% before FY24-25)', treatmentUr:'اسٹینڈرڈ ریٹ (پہلے 15% تھا)', eff:'01-07-2024'},
+  {id:'leather_goods', name:'Leather Goods (Tier-1 Retail)', nameUr:'چمڑے کی مصنوعات (Tier-1 ریٹیل)', cat:'textile', hs:'4203', rate:18, treatment:'Standard Rate (was 15% before FY24-25)', treatmentUr:'اسٹینڈرڈ ریٹ (پہلے 15% تھا)', eff:'01-07-2024'},
+
+  {id:'fresh_veg_fruit', name:'Fresh Vegetables & Fruits', nameUr:'تازہ سبزیاں و پھل', cat:'food', hs:'0701-0810', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'wheat_flour', name:'Wheat / Wheat Flour (Atta)', nameUr:'گندم / آٹا', cat:'food', hs:'1001 / 1101', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'fresh_milk_loose', name:'Fresh Milk (loose / unbranded)', nameUr:'تازہ دودھ (کھلا / غیر برانڈڈ)', cat:'food', hs:'0401', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'branded_milk', name:'Milk — Corporate Farm / Branded', nameUr:'دودھ — کارپوریٹ فارم / برانڈڈ', cat:'food', hs:'0401', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'01-07-2024'},
+  {id:'packaged_food', name:'Packaged / Branded Food Items', nameUr:'پیکجڈ / برانڈڈ فوڈ آئٹمز', cat:'food', hs:'2106', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+  {id:'tea', name:'Tea', nameUr:'چائے', cat:'food', hs:'0902', rate:18, treatment:'Third Schedule (retail price basis)', treatmentUr:'تھرڈ شیڈول (ریٹیل پرائس بیسس)', eff:'—'},
+  {id:'beverages', name:'Bottled / Aerated Beverages', nameUr:'بوتل بند / ایریٹڈ مشروبات', cat:'food', hs:'2202', rate:18, treatment:'Third Schedule (retail price basis)', treatmentUr:'تھرڈ شیڈول (ریٹیل پرائس بیسس)', eff:'—'},
+
+  {id:'mobile_low', name:'Mobile Phones (value up to US$500)', nameUr:'موبائل فون (قیمت US$500 تک)', cat:'electronics', hs:'8517', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'01-07-2024'},
+  {id:'mobile_high', name:'Mobile Phones (value above US$500)', nameUr:'موبائل فون (قیمت US$500 سے زائد)', cat:'electronics', hs:'8517', rate:null, treatment:'Slab-based (FBR Mobile Phone Tax Table)', treatmentUr:'سلیب کے مطابق (FBR موبائل فون ٹیکس ٹیبل)', eff:'—'},
+  {id:'laptops', name:'Laptops / Personal Computers (import)', nameUr:'لیپ ٹاپ / پرسنل کمپیوٹر (درآمد)', cat:'electronics', hs:'8471', rate:10, treatment:'Reduced Rate', treatmentUr:'ریڈیوسڈ ریٹ', eff:'—'},
+  {id:'household_elec', name:'Household Electronics (TV/Fridge/AC)', nameUr:'گھریلو الیکٹرانکس (TV/فرج/AC)', cat:'electronics', hs:'8415 / 8418 / 8528', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+
+  {id:'industrial_machinery', name:'Industrial Plant & Machinery (general)', nameUr:'صنعتی پلانٹ و مشینری (عام)', cat:'machinery', hs:'8479', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+  {id:'agri_tractors', name:'Agricultural Tractors', nameUr:'زرعی ٹریکٹر', cat:'machinery', hs:'8701', rate:5, treatment:'Reduced Rate (SRO-based, verify current)', treatmentUr:'ریڈیوسڈ ریٹ (SRO کے مطابق، تصدیق کریں)', eff:'—'},
+
+  {id:'general_raw_material', name:'General Industrial Raw Material', nameUr:'عمومی صنعتی خام مال', cat:'rawMaterial', hs:'—', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+  {id:'iron_steel', name:'Iron & Steel Products / Billets', nameUr:'لوہا و اسٹیل مصنوعات / بلٹس', cat:'rawMaterial', hs:'7206', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+
+  {id:'essential_meds', name:'Life-Saving / Essential Medicines (registered)', nameUr:'لائف سیونگ / ضروری ادویات (رجسٹرڈ)', cat:'pharma', hs:'3004', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'other_meds', name:'Other Medicaments / Pharma Products', nameUr:'دیگر ادویات / فارما مصنوعات', cat:'pharma', hs:'3004', rate:18, treatment:'Standard Rate (reintroduced from 1%)', treatmentUr:'اسٹینڈرڈ ریٹ (پہلے 1% تھا)', eff:'01-07-2024'},
+
+  {id:'cement', name:'Cement', nameUr:'سیمنٹ', cat:'construction', hs:'2523', rate:18, treatment:'Standard Rate (+ separate Federal Excise Duty)', treatmentUr:'اسٹینڈرڈ ریٹ (+ الگ سے فیڈرل ایکسائز ڈیوٹی)', eff:'—'},
+  {id:'steel_bars', name:'Steel / Iron Bars (Rebar)', nameUr:'اسٹیل / لوہے کی سریا', cat:'construction', hs:'7214', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+
+  {id:'pesticides', name:'Pesticides', nameUr:'کیڑے مار ادویات', cat:'agriculture', hs:'3808', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'fertilizer', name:'Fertilizer (DAP / Urea)', nameUr:'کھاد (DAP / یوریا)', cat:'agriculture', hs:'3102 / 3105', rate:5, treatment:'Reduced Rate (changes often, verify)', treatmentUr:'ریڈیوسڈ ریٹ (اکثر تبدیل ہوتا ہے، تصدیق کریں)', eff:'—'},
+  {id:'certified_seeds', name:'Certified Seeds', nameUr:'سرٹیفائیڈ بیج', cat:'agriculture', hs:'1209', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+
+  {id:'paper', name:'Paper & Paperboard', nameUr:'کاغذ و پیپر بورڈ', cat:'stationery', hs:'4802', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+  {id:'books', name:'Printed Books / Educational Material', nameUr:'مطبوعہ کتب / تعلیمی مواد', cat:'stationery', hs:'4901', rate:0, treatment:'Exempt', treatmentUr:'مکمل مستثنیٰ', eff:'—'},
+  {id:'stationery_items', name:'General Stationery Items', nameUr:'عمومی اسٹیشنری آئٹمز', cat:'stationery', hs:'4820', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+
+  {id:'export_goods', name:'Export of Goods (any HS Code)', nameUr:'اشیاء کی برآمد (کوئی بھی HS Code)', cat:'exports', hs:'—', rate:0, treatment:'Zero-Rated', treatmentUr:'زیرو ریٹڈ', eff:'—'},
+
+  {id:'other_taxable', name:'Other Taxable Items (unspecified)', nameUr:'دیگر قابلِ ٹیکس اشیاء (غیر متعین)', cat:'other', hs:'—', rate:18, treatment:'Standard Rate', treatmentUr:'اسٹینڈرڈ ریٹ', eff:'—'},
+  {id:'imported_luxury', name:'Imported Luxury Goods / Vehicles', nameUr:'درآمدی لگژری اشیاء / گاڑیاں', cat:'other', hs:'—', rate:25, treatment:'Increased Rate', treatmentUr:'بڑھا ہوا ریٹ', eff:'08-03-2023'}
+];
+function stPopulateCategories(){
+  const sel=document.getElementById('stCategory');
+  if(!sel) return;
+  const ur=currentLang==='ur';
+  const prevVal=sel.value;
+  sel.innerHTML = ST_CATEGORIES.map(c=>`<option value="${c.id}">${ur?c.ur:c.en}</option>`).join('');
+  if(prevVal && ST_CATEGORIES.some(c=>c.id===prevVal)) sel.value=prevVal;
+  stPopulateProducts();
+}
+function stPopulateProducts(){
+  const catSel=document.getElementById('stCategory');
+  if(!catSel) return;
+  const cat=catSel.value;
+  const ur=currentLang==='ur';
+  const sel=document.getElementById('stProduct');
+  const prevVal=sel.value;
+  const items = PRODUCT_TAX_DB.filter(p=>p.cat===cat);
+  sel.innerHTML = items.map(p=>`<option value="${p.id}">${ur?p.nameUr:p.name}</option>`).join('');
+  if(prevVal && items.some(p=>p.id===prevVal)) sel.value=prevVal;
+  stProductSelected();
+}
+function stProductSelected(){
+  const ur=currentLang==='ur';
+  const productSel=document.getElementById('stProduct');
+  if(!productSel) return;
+  const id=productSel.value;
+  const p=PRODUCT_TAX_DB.find(x=>x.id===id);
+  const hsRow=document.getElementById('stHsCodeRow');
+  if(!p){ if(hsRow) hsRow.textContent=''; return; }
+  const treatment = ur?p.treatmentUr:p.treatment;
+  hsRow.innerHTML = `HS/PCT: <strong>${p.hs}</strong> &nbsp;|&nbsp; ${ur?'ٹریٹمنٹ':'Treatment'}: <strong>${treatment}</strong> &nbsp;|&nbsp; ${ur?'مؤثر از':'Effective From'}: ${p.eff}`;
+  document.getElementById('stProductRate').value = (p.rate===null ? '' : p.rate);
+  document.getElementById('stProductResult').style.display='none';
+}
+function stProductFilterChanged(){ /* transaction type only affects labels at calc time */ }
+function stComputeTaxableValue(){
+  const qty=parseFloat(document.getElementById('stQuantity').value)||0;
+  const price=parseFloat(document.getElementById('stUnitPrice').value)||0;
+  const val=qty*price;
+  document.getElementById('stTaxableValue').value = val>0 ? val : '';
+}
+function stToggleCompare(){
+  const on=document.getElementById('stCompareMode').checked;
+  document.getElementById('stCompareSaleRow').style.display = on ? 'block' : 'none';
+}
+function stCalcProduct(){
+  const ur=currentLang==='ur';
+  const txnType=document.getElementById('stTxnType').value;
+  const qty=parseFloat(document.getElementById('stQuantity').value)||0;
+  const price=parseFloat(document.getElementById('stUnitPrice').value)||0;
+  const rateRaw=document.getElementById('stProductRate').value;
+  const resultEl=document.getElementById('stProductResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  const taxableValue=qty*price;
+  resultEl.style.display='block';
+  if(taxableValue<=0){
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم مقدار اور فی یونٹ قیمت درج کریں':'⚠ Please enter quantity and unit price'}</div>`;
+    return;
+  }
+  if(rateRaw===''||rateRaw===null||rateRaw===undefined){
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ Tax rate not available — براہِ کرم FBR کا لاگو ریٹ/SRO تصدیق کریں۔':'⚠ Tax rate not available — Please verify the applicable FBR rate/SRO.'}</div>`;
+    return;
+  }
+  const rateNum=parseFloat(rateRaw)||0;
+  const tax=taxableValue*rateNum/100;
+  const total=taxableValue+tax;
+  const label = txnType==='sale' ? (ur?'آؤٹ پُٹ ٹیکس':'Output Tax') : (ur?'اِن پُٹ ٹیکس':'Input Tax');
+  const valueLabel = txnType==='sale' ? (ur?'فروخت کی مالیت':'Sale Value') : txnType==='import' ? (ur?'درآمدی مالیت':'Import Value') : (ur?'خریداری کی مالیت':'Purchase Value');
+  let html = `<div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${valueLabel}</span><strong>${fmt(taxableValue)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'ٹیکس ریٹ':'Tax Rate'}</span><strong>${rateNum}%</strong></div>
+      <div class="tax-est-result-row"><span>${label}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کُل رقم':'Total Amount'}</span><strong style="color:var(--green-dark);">${fmt(total)}</strong></div>`;
+  if(txnType==='import'){
+    html += `<div class="wt-hint" style="margin-top:8px;">${ur?'💡 یہ صرف سیلز ٹیکس ہے۔ کسٹمز ڈیوٹی/ریگولیٹری ڈیوٹی HS Code کے مطابق الگ سے لاگو ہوتی ہے۔':'💡 This is Sales Tax only. Customs Duty/Regulatory Duty applies separately based on the HS Code.'}</div>`;
+  }
+  if(document.getElementById('stCompareMode').checked){
+    const saleUnitPrice=parseFloat(document.getElementById('stCompareSaleUnitPrice').value)||0;
+    if(saleUnitPrice>0){
+      const saleValue=qty*saleUnitPrice;
+      const outputTax=saleValue*rateNum/100;
+      const inputTax=tax;
+      const net=outputTax-inputTax;
+      html += `<div style="border-top:1px dashed #ccc;margin:10px 0;"></div>
+      <div class="tax-est-result-row"><span>${ur?'خریداری Input Tax':'Purchase Input Tax'}</span><strong>${fmt(inputTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'فروخت Output Tax':'Sale Output Tax'}</span><strong>${fmt(outputTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'فرق (Net Adjustable Tax)':'Difference (Net Adjustable Tax)'}</span><strong style="color:${net>=0?'#DC2626':'#16A34A'};">${fmt(Math.abs(net))} ${net>=0?(ur?'قابلِ ادائیگی':'payable'):(ur?'ریفنڈ ایبل':'refundable')}</strong></div>`;
+    }
+  }
+  html += `<button class="print-result-btn" onclick="printResult('stProductResult','Sales Tax Product Calculator')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('stProductResult','Sales Tax Product Calculator')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  resultEl.innerHTML=html;
+  trackEvent('sales_tax_product_calculated', document.getElementById('stProduct').value+'|'+Math.round(taxableValue)+'|'+rateNum);
+}
+try{ stPopulateCategories(); }catch(e){ console.warn('stPopulateCategories skipped:', e); }
 
 /* ═══════════════ ATL / NTN / STRN VERIFICATION ═══════════════ */
 function atlOpenPortal(which){
@@ -3450,6 +4206,451 @@ function cgCalcPre(){
   trackEvent('cgt_property_pre_calculated', Math.round(gain)+'|'+rate);
 }
 try{ cgSuggestPostRate(); cgSuggestPreRate(); }catch(e){ console.warn('cgSuggestRate skipped:', e); }
+
+/* ═══════════════ CAPITAL GAINS TAX ON GOLD / JEWELLERY (Section 37) ═══════════════ */
+function ggToggleMaking(){
+  const on=document.getElementById('ggIncludeMaking').checked;
+  document.getElementById('ggMakingRow').style.display = on ? 'block' : 'none';
+}
+function ggSuggestRate(){
+  const rate=document.getElementById('ggIncomeSlab').value;
+  document.getElementById('ggRate').value=rate;
+  const years=parseFloat(document.getElementById('ggHoldingYears').value)||0;
+  document.getElementById('ggHoldingHint').style.display = years>1 ? 'block' : 'none';
+}
+function ggCalc(){
+  const ur=currentLang==='ur';
+  const sale=parseFloat(document.getElementById('ggSalePrice').value)||0;
+  const purchase=parseFloat(document.getElementById('ggPurchasePrice').value)||0;
+  const includeMaking=document.getElementById('ggIncludeMaking').checked;
+  const making=includeMaking ? (parseFloat(document.getElementById('ggMakingCharges').value)||0) : 0;
+  const years=parseFloat(document.getElementById('ggHoldingYears').value)||0;
+  const rate=parseFloat(document.getElementById('ggRate').value)||0;
+  const resultEl=document.getElementById('ggResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(sale<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم فروخت کی قیمت درج کریں':'⚠ Please enter the sale price'}</div>`;
+    return;
+  }
+  const totalCost=purchase+making;
+  const rawGain=Math.max(0, sale-totalCost);
+  const taxableFraction = years>1 ? 0.75 : 1;
+  const taxableGain=rawGain*taxableFraction;
+  const tax=taxableGain*rate/100;
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'کُل لاگت (خریداری + بنوائی)':'Total Cost (Purchase + Making)'}</span><strong>${fmt(totalCost)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'منافع (Capital Gain)':'Capital Gain'}</span><strong>${fmt(rawGain)}</strong></div>
+      ${years>1 ? `<div class="tax-est-result-row"><span>${ur?'قابلِ ٹیکس منافع (75%)':'Taxable Gain (75%)'}</span><strong>${fmt(taxableGain)}</strong></div>` : ''}
+      <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'تخمینی CGT':'Estimated CGT'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('ggResult','Gold Capital Gains Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('ggResult','Gold Capital Gains Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('cgt_gold_calculated', Math.round(rawGain)+'|'+rate);
+}
+try{ ggSuggestRate(); }catch(e){ console.warn('ggSuggestRate skipped:', e); }
+
+/* ═══════════════ AOP (ASSOCIATION OF PERSONS) INCOME TAX ═══════════════ */
+/* Slabs identical for Tax Year 2025-26 and 2026-27 (Finance Act 2026 made no change to AOP/non-salaried rates) */
+const AOP_SLABS = [
+  {upTo:600000, base:0, rate:0, over:0},
+  {upTo:1200000, base:0, rate:15, over:600000},
+  {upTo:1600000, base:90000, rate:20, over:1200000},
+  {upTo:3200000, base:170000, rate:30, over:1600000},
+  {upTo:5600000, base:650000, rate:40, over:3200000},
+  {upTo:Infinity, base:1610000, rate:45, over:5600000}
+];
+function aopCalc(){
+  const ur=currentLang==='ur';
+  const income=parseFloat(document.getElementById('aopIncome').value)||0;
+  const profFirm=document.getElementById('aopProfFirm').checked;
+  const resultEl=document.getElementById('aopResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(income<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم سالانہ آمدنی درج کریں':'⚠ Please enter the annual income'}</div>`;
+    return;
+  }
+  const slab=AOP_SLABS.find(s=>income<=s.upTo);
+  let tax=slab.base + (income-slab.over)*slab.rate/100;
+  let effectiveRate=slab.rate;
+  if(profFirm){
+    const capTax=income*0.40;
+    if(tax>capTax){ tax=capTax; effectiveRate=40; }
+  }
+  const surcharge = income>10000000 ? tax*0.10 : 0;
+  const totalTax = tax+surcharge;
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'سلیب ریٹ':'Slab Rate'}</span><strong>${effectiveRate}%</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'بنیادی ٹیکس':'Base Tax'}</span><strong>${fmt(tax)}</strong></div>
+      ${surcharge>0 ? `<div class="tax-est-result-row"><span>${ur?'سرچارج (10%)':'Surcharge (10%)'}</span><strong>${fmt(surcharge)}</strong></div>` : ''}
+      <div class="tax-est-result-row"><span>${ur?'کُل تخمینی ٹیکس':'Total Estimated Tax'}</span><strong style="color:#DC2626;">${fmt(totalTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'خالص آمدنی بعد ازٹیکس':'Net Income After Tax'}</span><strong>${fmt(income-totalTax)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('aopResult','AOP Income Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('aopResult','AOP Income Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('aop_tax_calculated', Math.round(income)+'|'+effectiveRate);
+}
+
+/* ═══════════════ FBR PROPERTY VALUATION CALCULATOR ═══════════════ */
+function pvCalc(){
+  const ur=currentLang==='ur';
+  const unit=document.getElementById('pvUnit').value;
+  const size=parseFloat(document.getElementById('pvSize').value)||0;
+  const fbrRate=parseFloat(document.getElementById('pvFbrRate').value)||0;
+  const dcRate=parseFloat(document.getElementById('pvDcRate').value)||0;
+  const actualRate=parseFloat(document.getElementById('pvActualRate').value)||0;
+  const resultEl=document.getElementById('pvResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(size<=0 || fbrRate<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم رقبہ اور FBR ریٹ درج کریں':'⚠ Please enter the size and FBR rate'}</div>`;
+    return;
+  }
+  const fbrValue=size*fbrRate;
+  const dcValue=dcRate>0 ? size*dcRate : 0;
+  const actualValue=actualRate>0 ? size*actualRate : 0;
+  const maxValue=Math.max(fbrValue, dcValue, actualValue);
+  let maxLabel = ur?'FBR ویلیویشن':'FBR Valuation';
+  if(maxValue===dcValue && dcValue>0) maxLabel = ur?'DC ریٹ':'DC Rate';
+  if(maxValue===actualValue && actualValue>0) maxLabel = ur?'رجسٹری/اصل قیمت':'Registry/Actual Price';
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'FBR ویلیویشن مالیت':'FBR Valuation Value'}</span><strong>${fmt(fbrValue)}</strong></div>
+      ${dcValue>0 ? `<div class="tax-est-result-row"><span>${ur?'DC ریٹ کے مطابق مالیت':'DC Rate Value'}</span><strong>${fmt(dcValue)}</strong></div>` : ''}
+      ${actualValue>0 ? `<div class="tax-est-result-row"><span>${ur?'رجسٹری/اصل قیمت':'Registry/Actual Value'}</span><strong>${fmt(actualValue)}</strong></div>` : ''}
+      <div class="tax-est-result-row"><span>${ur?'ٹیکس کی بنیاد (سب سے زیادہ)':'Tax Base (Highest)'}</span><strong style="color:#DC2626;">${fmt(maxValue)} <span style="font-size:12px;font-weight:400;">(${maxLabel})</span></strong></div>
+      <button class="print-result-btn" onclick="printResult('pvResult','Property Valuation')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('pvResult','Property Valuation')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('property_valuation_calculated', Math.round(maxValue)+'|'+unit);
+}
+
+/* ═══════════════ BANK PROFIT / PROFIT ON DEBT TAX (SECTION 151) ═══════════════ */
+const BP_RATES = { bank:{filer:20,nonfiler:40}, govtsec:{filer:20,nonfiler:40}, sukukco:{filer:25,nonfiler:50}, other:{filer:15,nonfiler:30} };
+function bpSuggestRate(){
+  const type=document.getElementById('bpType').value;
+  const filer=document.getElementById('bpFiler').value;
+  document.getElementById('bpRate').value=BP_RATES[type][filer];
+}
+function bpCalc(){
+  const ur=currentLang==='ur';
+  const amount=parseFloat(document.getElementById('bpAmount').value)||0;
+  const rate=parseFloat(document.getElementById('bpRate').value)||0;
+  const resultEl=document.getElementById('bpResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(amount<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم منافع کی رقم درج کریں':'⚠ Please enter the profit amount'}</div>`;
+    return;
+  }
+  const tax=amount*rate/100;
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'مجموعی منافع':'Gross Profit'}</span><strong>${fmt(amount)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کٹوتی شدہ ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'خالص منافع':'Net Profit'}</span><strong>${fmt(amount-tax)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('bpResult','Bank Profit Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('bpResult','Bank Profit Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('bank_profit_tax_calculated', Math.round(amount)+'|'+rate);
+}
+try{ bpSuggestRate(); }catch(e){ console.warn('bpSuggestRate skipped:', e); }
+
+/* ═══════════════ DIVIDEND TAX (SECTION 150) ═══════════════ */
+const DV_RATES = { listed:{filer:15,nonfiler:30}, unlisted:{filer:25,nonfiler:50}, exempt:{filer:25,nonfiler:50}, mfstock:{filer:15,nonfiler:30}, mfdebt:{filer:25,nonfiler:50}, ipp:{filer:7.5,nonfiler:15} };
+function dvSuggestRate(){
+  const type=document.getElementById('dvType').value;
+  const filer=document.getElementById('dvFiler').value;
+  document.getElementById('dvRate').value=DV_RATES[type][filer];
+}
+function dvCalc(){
+  const ur=currentLang==='ur';
+  const amount=parseFloat(document.getElementById('dvAmount').value)||0;
+  const rate=parseFloat(document.getElementById('dvRate').value)||0;
+  const resultEl=document.getElementById('dvResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(amount<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم ڈیویڈنڈ کی رقم درج کریں':'⚠ Please enter the dividend amount'}</div>`;
+    return;
+  }
+  const tax=amount*rate/100;
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'مجموعی ڈیویڈنڈ':'Gross Dividend'}</span><strong>${fmt(amount)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'کٹوتی شدہ ٹیکس':'Tax Deducted'}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'خالص ڈیویڈنڈ':'Net Dividend'}</span><strong>${fmt(amount-tax)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('dvResult','Dividend Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('dvResult','Dividend Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('dividend_tax_calculated', Math.round(amount)+'|'+rate);
+}
+try{ dvSuggestRate(); }catch(e){ console.warn('dvSuggestRate skipped:', e); }
+
+/* ═══════════════ FREELANCER / IT EXPORT INCOME TAX ═══════════════ */
+const FL_RATES = { export_pseb:0.25, export_other:1, local_filer:4, local_nonfiler:8 };
+function flSuggestRate(){
+  const type=document.getElementById('flType').value;
+  document.getElementById('flRate').value=FL_RATES[type];
+}
+function flCalc(){
+  const ur=currentLang==='ur';
+  const type=document.getElementById('flType').value;
+  const amount=parseFloat(document.getElementById('flAmount').value)||0;
+  const rate=parseFloat(document.getElementById('flRate').value)||0;
+  const resultEl=document.getElementById('flResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(amount<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم آمدنی کی رقم درج کریں':'⚠ Please enter the income amount'}</div>`;
+    return;
+  }
+  const tax=amount*rate/100;
+  const isFinal = type.startsWith('export');
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'مجموعی آمدنی':'Gross Income'}</span><strong>${fmt(amount)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'لاگو ریٹ':'Applied Rate'}</span><strong>${rate}%</strong></div>
+      <div class="tax-est-result-row"><span>${isFinal ? (ur?'فائنل ٹیکس':'Final Tax') : (ur?'منیمم ٹیکس':'Minimum Tax')}</span><strong style="color:#DC2626;">${fmt(tax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'خالص آمدنی':'Net Income'}</span><strong>${fmt(amount-tax)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('flResult','Freelancer/IT Export Tax')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('flResult','Freelancer/IT Export Tax')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('freelancer_tax_calculated', Math.round(amount)+'|'+type);
+}
+try{ flSuggestRate(); }catch(e){ console.warn('flSuggestRate skipped:', e); }
+
+/* ═══════════════ FILER VS NON-FILER — DEEP COMPARISON ═══════════════ */
+function populateFilerComparisonTable(){
+  const ur=currentLang==='ur';
+  const body=document.getElementById('fvTableBody');
+  if(!body) return;
+  const t=k=>I18N[currentLang][k]||k;
+  let rows=[];
+  try{
+    const R=TAX_RATES_2026_27;
+    // Property Purchase 236K
+    const ppFiler=R.property.purchase_236K.filerRate;
+    const ppBands=R.property.purchase_236K.nonFilerBands.map(b=>b.rate);
+    const ppNonFiler=`${Math.min(...ppBands)}% – ${Math.max(...ppBands)}%`;
+    rows.push([t('fvTblPropPurchase'), ppFiler+'%', ppNonFiler]);
+    // Property Sale 236C
+    rows.push([t('fvTblPropSale'), R.property.sale_236C.filerRate+'%', R.property.sale_236C.nonFilerRate+'%']);
+    // Vehicle — 1300cc example
+    const vBase=R.vehicle.brackets['1300']||0;
+    const vFiler=vBase;
+    const vNonFiler=Math.round(vBase*R.vehicle.nonFilerMultiplier*10)/10;
+    rows.push([t('fvTblVehicle'), vFiler+'%', vNonFiler+'%']);
+    // Cash Withdrawal 231AB
+    rows.push([t('fvTblCash'), t('fvNoTax'), R.withholding.cashWithdrawal.nonFilerRate+'% ('+(ur?'حد سے زیادہ پر':'above threshold')+')']);
+  }catch(e){
+    rows.push([t('fvTblPropPurchase'), t('fvLoading'), t('fvLoading')]);
+    rows.push([t('fvTblPropSale'), t('fvLoading'), t('fvLoading')]);
+    rows.push([t('fvTblVehicle'), t('fvLoading'), t('fvLoading')]);
+    rows.push([t('fvTblCash'), t('fvLoading'), t('fvLoading')]);
+    console.warn('TAX_RATES_2026_27 not ready for filer comparison table:', e);
+  }
+  // Own verified constants (always available)
+  rows.push([t('fvTblBank'), BP_RATES.bank.filer+'%', BP_RATES.bank.nonfiler+'%']);
+  rows.push([t('fvTblDividend'), DV_RATES.listed.filer+'%', DV_RATES.listed.nonfiler+'%']);
+  rows.push([t('fvTblLocalIT'), FL_RATES.local_filer+'%', FL_RATES.local_nonfiler+'%']);
+  rows.push([t('fvTblAop'), t('fvSameSlab'), t('fvSameSlab')]);
+
+  body.innerHTML = rows.map((r,i)=>`<tr style="background:${i%2===0?'#F7F9F7':'#fff'};border-bottom:1px solid #eee;">
+      <td style="padding:9px 8px;font-weight:600;">${r[0]}</td>
+      <td style="padding:9px 8px;text-align:center;color:#16A34A;font-weight:700;">${r[1]}</td>
+      <td style="padding:9px 8px;text-align:center;color:#DC2626;font-weight:700;">${r[2]}</td>
+    </tr>`).join('');
+}
+function fvSnapshotCategoryChanged(){
+  const cat=document.getElementById('fvCategory').value;
+  document.getElementById('fvEngineRow').style.display = cat==='vehicle' ? 'block' : 'none';
+  const ur=currentLang==='ur';
+  const labelEl=document.getElementById('fvAmountLabel');
+  const labels={
+    property_purchase: ur?'پراپرٹی کی مالیت (Rs)':'Property Value (Rs)',
+    property_sale: ur?'پراپرٹی کی مالیت (Rs)':'Property Value (Rs)',
+    vehicle: ur?'گاڑی کی مالیت (Rs)':'Vehicle Value (Rs)',
+    bank_profit: ur?'سالانہ منافع (Rs)':'Annual Profit (Rs)',
+    dividend: ur?'ڈیویڈنڈ کی رقم (Rs)':'Dividend Amount (Rs)',
+    cash_withdrawal: ur?'یومیہ نکالی گئی رقم (Rs)':'Per-Day Withdrawal Amount (Rs)'
+  };
+  labelEl.textContent = labels[cat] || (ur?'رقم (Rs)':'Amount (Rs)');
+  document.getElementById('fvSnapshotResult').style.display='none';
+}
+function fvCalcSnapshot(){
+  const ur=currentLang==='ur';
+  const cat=document.getElementById('fvCategory').value;
+  const amount=parseFloat(document.getElementById('fvAmount').value)||0;
+  const resultEl=document.getElementById('fvSnapshotResult');
+  const fmt=n=>'Rs '+Math.round(n).toLocaleString('en-US');
+  if(amount<=0){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ براہ کرم رقم درج کریں':'⚠ Please enter an amount'}</div>`;
+    return;
+  }
+  let filerTax=0, nonFilerTax=0, note='';
+  try{
+    const R=TAX_RATES_2026_27;
+    if(cat==='property_purchase'){
+      filerTax=amount*R.property.purchase_236K.filerRate/100;
+      const band=R.property.purchase_236K.nonFilerBands.find(b=>amount<=b.upTo);
+      nonFilerTax=amount*band.rate/100;
+    } else if(cat==='property_sale'){
+      filerTax=amount*R.property.sale_236C.filerRate/100;
+      nonFilerTax=amount*R.property.sale_236C.nonFilerRate/100;
+    } else if(cat==='vehicle'){
+      const engine=document.getElementById('fvEngine').value;
+      const base=R.vehicle.brackets[engine]||0;
+      filerTax=amount*base/100;
+      nonFilerTax=amount*(base*R.vehicle.nonFilerMultiplier)/100;
+    } else if(cat==='bank_profit'){
+      filerTax=amount*BP_RATES.bank.filer/100;
+      nonFilerTax=amount*BP_RATES.bank.nonfiler/100;
+    } else if(cat==='dividend'){
+      filerTax=amount*DV_RATES.listed.filer/100;
+      nonFilerTax=amount*DV_RATES.listed.nonfiler/100;
+    } else if(cat==='cash_withdrawal'){
+      const R2=TAX_RATES_2026_27.withholding.cashWithdrawal;
+      filerTax=0;
+      nonFilerTax = amount>R2.thresholdPerDay ? amount*R2.nonFilerRate/100 : 0;
+      if(amount<=R2.thresholdPerDay) note=ur?'(حد سے کم رقم — نان فائلر پر بھی ٹیکس لاگو نہیں)':'(below threshold — no tax even for non-filer)';
+    }
+  }catch(e){
+    resultEl.style.display='block';
+    resultEl.innerHTML=`<div class="tax-est-result-box tax-est-error">${ur?'⚠ ڈیٹا لوڈ نہیں ہوا، براہ کرم صفحہ ریفریش کریں':'⚠ Rate data not loaded — please refresh the page'}</div>`;
+    return;
+  }
+  const savings=nonFilerTax-filerTax;
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="tax-est-result-box">
+      <div class="tax-est-result-row"><span>${ur?'بطور فائلر ٹیکس':'Tax as Filer'}</span><strong style="color:#16A34A;">${fmt(filerTax)}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'بطور نان فائلر ٹیکس':'Tax as Non-Filer'}</span><strong style="color:#DC2626;">${fmt(nonFilerTax)} ${note}</strong></div>
+      <div class="tax-est-result-row"><span>${ur?'فائلر بن کر بچت':'Savings by Being a Filer'}</span><strong style="color:var(--green-dark);font-size:16px;">${fmt(savings)}</strong></div>
+      <button class="print-result-btn" onclick="printResult('fvSnapshotResult','Filer vs Non-Filer Savings')">🖨️ ${ur?'پرنٹ کریں':'Print'}</button>
+      <button class="whatsapp-share-btn" onclick="shareResultWhatsApp('fvSnapshotResult','Filer vs Non-Filer Savings')">💬 ${ur?'شیئر کریں':'Share'}</button>
+    </div>`;
+  trackEvent('filer_vs_nonfiler_snapshot', cat+'|'+Math.round(amount)+'|'+Math.round(savings));
+}
+try{ populateFilerComparisonTable(); fvSnapshotCategoryChanged(); }catch(e){ console.warn('Filer comparison init skipped:', e); }
+
+/* ═══════════════ DOCUMENT CHECKLIST TOOL ═══════════════ */
+const DC_DATA = {
+  salaried: [
+    {en:'CNIC copy (both sides)', ur:'CNIC کاپی (دونوں اطراف)'},
+    {en:'Salary certificate from employer', ur:'ملازمت دہندہ کی جانب سے تنخواہ سرٹیفکیٹ'},
+    {en:'Monthly salary slips (12 months)', ur:'ماہانہ تنخواہ سلپس (12 مہینے)'},
+    {en:'Personal bank statement (12 months)', ur:'ذاتی بینک اسٹیٹمنٹ (12 مہینے)'},
+    {en:'Annual tax deduction certificate (from employer)', ur:'سالانہ ٹیکس کٹوتی سرٹیفکیٹ (ملازمت دہندہ سے)'},
+    {en:'Investment / Zakat / donation receipts (if any)', ur:'سرمایہ کاری / زکوٰۃ / عطیات کی رسیدیں (اگر ہوں)'},
+    {en:'Vehicle registration book (if owned)', ur:'گاڑی کی رجسٹریشن بک (اگر ہو)'},
+    {en:'Property ownership documents (if any)', ur:'پراپرٹی کی ملکیت کے کاغذات (اگر ہوں)'},
+    {en:'Previous year\'s tax return (if already a filer)', ur:'پچھلے سال کا ٹیکس ریٹرن (اگر پہلے سے فائلر ہوں)'}
+  ],
+  business: [
+    {en:'CNIC copy (both sides)', ur:'CNIC کاپی (دونوں اطراف)'},
+    {en:'NTN certificate', ur:'NTN سرٹیفکیٹ'},
+    {en:'Business bank statement (12 months)', ur:'کاروباری بینک اسٹیٹمنٹ (12 مہینے)'},
+    {en:'Personal bank statement (12 months)', ur:'ذاتی بینک اسٹیٹمنٹ (12 مہینے)'},
+    {en:'Sales invoices / record', ur:'سیلز انوائسز / ریکارڈ'},
+    {en:'Purchase invoices & expense receipts', ur:'خریداری انوائسز اور اخراجات کی رسیدیں'},
+    {en:'Closing stock / inventory details', ur:'کلوزنگ اسٹاک / انوینٹری کی تفصیل'},
+    {en:'Rent agreement (if premises rented)', ur:'کرایہ نامہ (اگر جگہ کرائے پر ہو)'},
+    {en:'Utility bills of business premises', ur:'کاروباری جگہ کے یوٹیلیٹی بلز'},
+    {en:'Previous year\'s tax return', ur:'پچھلے سال کا ٹیکس ریٹرن'}
+  ],
+  freelancer: [
+    {en:'CNIC copy (both sides)', ur:'CNIC کاپی (دونوں اطراف)'},
+    {en:'NTN certificate', ur:'NTN سرٹیفکیٹ'},
+    {en:'PSEB registration certificate (if applicable)', ur:'PSEB رجسٹریشن سرٹیفکیٹ (اگر لاگو ہو)'},
+    {en:'Foreign remittance certificates from bank', ur:'بینک سے فارن ریمیٹنس سرٹیفکیٹس'},
+    {en:'Client invoices / contracts', ur:'کلائنٹ انوائسز / کنٹریکٹس'},
+    {en:'Bank statement showing foreign exchange inflow', ur:'بینک اسٹیٹمنٹ جس میں فارن ایکسچینج آمدنی ظاہر ہو'},
+    {en:'Sales tax return (if registered for IT services)', ur:'سیلز ٹیکس ریٹرن (اگر IT سروسز کے لیے رجسٹرڈ ہوں)'},
+    {en:'Previous year\'s tax return', ur:'پچھلے سال کا ٹیکس ریٹرن'}
+  ],
+  overseas: [
+    {en:'CNIC / NICOP copy', ur:'CNIC / NICOP کاپی'},
+    {en:'Passport copy (with entry/exit or visa stamps proving non-resident status)', ur:'پاسپورٹ کاپی (انٹری/ایگزٹ یا ویزا اسٹیمپس کے ساتھ جو Non-Resident اسٹیٹس ثابت کریں)'},
+    {en:'Foreign employment / salary certificate', ur:'بیرونِ ملک ملازمت / تنخواہ سرٹیفکیٹ'},
+    {en:'Foreign bank statement', ur:'بیرونِ ملک بینک اسٹیٹمنٹ'},
+    {en:'Details of any Pakistan-source income (property / bank profit / rent)', ur:'پاکستان میں موجود کسی بھی آمدنی کی تفصیل (پراپرٹی / بینک منافع / کرایہ)'},
+    {en:'Proof of remittances sent to Pakistan (if claiming exemption/credit)', ur:'پاکستان بھیجی گئی ترسیلات کا ثبوت (اگر چھوٹ/کریڈٹ کلیم کرنا ہو)'},
+    {en:'Previous year\'s tax return (if already a filer)', ur:'پچھلے سال کا ٹیکس ریٹرن (اگر پہلے سے فائلر ہوں)'}
+  ],
+  property: [
+    {en:'CNIC copy (both sides)', ur:'CNIC کاپی (دونوں اطراف)'},
+    {en:'NTN certificate', ur:'NTN سرٹیفکیٹ'},
+    {en:'Sale / purchase agreement', ur:'بیع نامہ / خریداری معاہدہ'},
+    {en:'Registry / transfer deed (Fard / Intiqal)', ur:'رجسٹری / ٹرانسفر ڈیڈ (فرد / انتقال)'},
+    {en:'FBR valuation table reference for the area', ur:'علاقے کے لیے FBR ویلیویشن ٹیبل ریفرنس'},
+    {en:'Previous ownership documents (chain of title)', ur:'سابقہ ملکیت کے کاغذات (چین آف ٹائٹل)'},
+    {en:'Bank statement showing payment proof / receipt', ur:'ادائیگی کا ثبوت / رسید دکھاتی بینک اسٹیٹمنٹ'},
+    {en:'Advance tax challan (236C for seller / 236K for buyer)', ur:'ایڈوانس ٹیکس چالان (236C فروخت کنندہ / 236K خریدار کے لیے)'}
+  ]
+};
+function dcRenderChecklist(){
+  const ur=currentLang==='ur';
+  const profile=document.getElementById('dcProfile').value;
+  const items=DC_DATA[profile]||[];
+  const box=document.getElementById('dcChecklistBox');
+  box.innerHTML = `<ul style="list-style:none;padding:0;margin:0;">` + items.map((it,i)=>`
+    <li style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #F1F3F6;font-size:14px;">
+      <input type="checkbox" id="dcItem${i}" style="width:18px;height:18px;margin-top:2px;accent-color:var(--green);flex-shrink:0;">
+      <label for="dcItem${i}" style="cursor:pointer;">${ur?it.ur:it.en}</label>
+    </li>`).join('') + `</ul>`;
+}
+function dcPrintChecklist(){
+  const ur=currentLang==='ur';
+  const profile=document.getElementById('dcProfile').value;
+  const items=DC_DATA[profile]||[];
+  const profileLabel=document.getElementById('dcProfile').selectedOptions[0].textContent;
+  const w=window.open('','_blank');
+  w.document.write(`<html><head><title>Document Checklist</title><meta charset="UTF-8"><style>
+    body{font-family:'Segoe UI',Arial,sans-serif;padding:36px;color:#152238;}
+    h2{color:#0F2A3D;margin-bottom:6px;}
+    p.sub{color:#64748B;margin-top:0;margin-bottom:20px;}
+    ul{list-style:none;padding:0;max-width:520px;}
+    li{padding:10px 0;border-bottom:1px solid #E5E9F0;font-size:14px;display:flex;gap:10px;}
+    .box{width:16px;height:16px;border:2px solid #94A3B8;border-radius:3px;flex-shrink:0;margin-top:2px;}
+    .foot{margin-top:26px;font-size:11px;color:#94A3B8;}
+  </style></head><body>
+    <h2>${ur?'دستاویزات چیک لسٹ':'Document Checklist'}</h2>
+    <p class="sub">${profileLabel}</p>
+    <ul>${items.map(it=>`<li><span class="box"></span><span>${ur?it.ur:it.en}</span></li>`).join('')}</ul>
+    <p class="foot">MFJ Services — ${new Date().toLocaleDateString('en-GB')}</p>
+  </body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{ w.print(); },350);
+  trackEvent('document_checklist_printed', profile);
+}
+function dcShareChecklist(){
+  const ur=currentLang==='ur';
+  const profile=document.getElementById('dcProfile').value;
+  const items=DC_DATA[profile]||[];
+  const profileLabel=document.getElementById('dcProfile').selectedOptions[0].textContent;
+  const lines=items.map(it=>`☐ ${ur?it.ur:it.en}`);
+  const footer='MFJ Services — Tax Consultancy 📊';
+  const text=`*${ur?'دستاویزات چیک لسٹ':'Document Checklist'} — ${profileLabel}*\n\n${lines.join('\n')}\n\n${footer}`;
+  const url=`https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+  trackEvent('document_checklist_shared', profile);
+}
+try{ dcRenderChecklist(); }catch(e){ console.warn('dcRenderChecklist skipped:', e); }
 
 /* ═══════════════ UTILITY TAX (Electricity 235 / Telecom 236) ═══════════════ */
 function utSwitchTab(tab){
@@ -4081,6 +5282,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   safe(()=>applyLang(currentLang), 'applyLang');
   safe(loadApprovedReviews, 'loadApprovedReviews');
   safe(loadBlogPosts, 'loadBlogPosts');
+  safe(loadTeamMembers, 'loadTeamMembers');
   safe(trackAndShowVisits, 'trackAndShowVisits');
   safe(initScrollReveal, 'initScrollReveal');
   safe(initCountUp, 'initCountUp');

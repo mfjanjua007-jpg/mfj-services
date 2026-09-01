@@ -788,7 +788,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   <div class="topbar-right">
     <a href="#" class="tb-social">📷</a>
     <a href="#" class="tb-social">💼</a>
-    <a href="https://wa.me/923469592120" class="tb-social" target="_blank" title="+92 346 9592120">💬</a>
+    <a href="https://wa.me/923469592120" class="tb-social" id="tbWhatsappLink" target="_blank" title="+92 346 9592120">💬</a>
     <a href="https://wa.me/923261192420" class="tb-social" target="_blank" title="+92 326 1192420">💬</a>
   </div>
 </div>
@@ -933,7 +933,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </div>
       <div class="hero-btns">
         <a href="#appointment-strip" class="btn-solid"><span data-i18n="heroBtn1">اپائنٹمنٹ بک کریں</span> →</a>
-        <a href="https://wa.me/923469592120" target="_blank" class="btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> <span data-i18n="heroBtn2">WhatsApp چیٹ</span></a>
+        <a href="https://wa.me/923469592120" id="heroWhatsappLink" target="_blank" class="btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> <span data-i18n="heroBtn2">WhatsApp چیٹ</span></a>
       </div>
       <!-- ⚠ Google rating نیچے placeholder ہے — اصل verified rating سے update کر لیں -->
       <div class="trust-badges">
@@ -2230,7 +2230,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
       </div>
     </div>
     <div class="why-img">
-      <img src="https://picsum.photos/seed/mfjoverseas/700/500" alt="Overseas Pakistani Tax Services" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+      <img id="overseasImgTag" src="https://picsum.photos/seed/mfjoverseas/700/500" alt="Overseas Pakistani Tax Services" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
     </div>
   </div>
 </section>
@@ -2332,10 +2332,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
   </div>
   <div class="contact-grid reveal">
     <div class="contact-cards">
-      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><div class="c-label" data-i18n="cPhone">Phone</div><div class="c-val"><a href="tel:+923469592120" style="color:inherit;text-decoration:none;">+92 346 9592120</a></div><div class="c-val" style="margin-top:2px;"><a href="tel:+923261192420" style="color:inherit;text-decoration:none;">+92 326 1192420</a></div></div></div>
-      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div><div class="c-label">WhatsApp</div><div class="c-val"><a href="https://wa.me/923469592120" target="_blank" style="color:inherit;text-decoration:none;">+92 346 9592120</a></div><div class="c-val" style="margin-top:2px;"><a href="https://wa.me/923261192420" target="_blank" style="color:inherit;text-decoration:none;">+92 326 1192420</a></div></div></div>
+      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><div class="c-label" data-i18n="cPhone">Phone</div><div class="c-val"><a href="tel:+923469592120" id="contactPhoneLink1" style="color:inherit;text-decoration:none;">+92 346 9592120</a></div><div class="c-val" style="margin-top:2px;"><a href="tel:+923261192420" style="color:inherit;text-decoration:none;">+92 326 1192420</a></div></div></div>
+      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div><div class="c-label">WhatsApp</div><div class="c-val"><a href="https://wa.me/923469592120" id="contactWhatsappLink1" target="_blank" style="color:inherit;text-decoration:none;">+92 346 9592120</a></div><div class="c-val" style="margin-top:2px;"><a href="https://wa.me/923261192420" target="_blank" style="color:inherit;text-decoration:none;">+92 326 1192420</a></div></div></div>
       <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="c-label" data-i18n="cName">نام</div><div class="c-val">Muhammad Fahad Janjua</div></div></div>
-      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="c-label" data-i18n="cLocation">مقام</div><div class="c-val" data-i18n="cLocationVal">راولپنڈی — آن لائن پورا پاکستان</div></div></div>
+      <div class="c-card"><div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="c-label" data-i18n="cLocation">مقام</div><div class="c-val" id="contactCityVal" data-i18n="cLocationVal">راولپنڈی — آن لائن پورا پاکستان</div></div></div>
       <div class="map-box"><iframe src="https://www.google.com/maps?q=Rawalpindi,Pakistan&output=embed" loading="lazy"></iframe></div>
     </div>
     <div class="contact-form-box">
@@ -2392,7 +2392,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     </div>
     <div class="footer-col">
       <h4 data-i18n="fLocation">ہمارا مقام</h4>
-      <div class="footer-contact-item">📍 <span data-i18n="cLocationVal">راولپنڈی — آن لائن پورا پاکستان</span></div>
+      <div class="footer-contact-item">📍 <span id="footerCityVal" data-i18n="cLocationVal">راولپنڈی — آن لائن پورا پاکستان</span></div>
       <div class="footer-contact-item">📞 +92 346 9592120 / +92 326 1192420</div>
       <div class="footer-map"><iframe src="https://www.google.com/maps?q=Rawalpindi,Pakistan&output=embed" loading="lazy"></iframe></div>
     </div>
@@ -2882,6 +2882,19 @@ const I18N = {
 };
 
 let currentLang = localStorage.getItem('mfj_lang') || 'ur';
+let BUSINESS_WHATSAPP = '923469592120';
+
+/* Security: escape any text pulled from Supabase (reviews, blog, team, FAQ)
+   before injecting into innerHTML, to block stored-XSS via submitted content. */
+function escapeHtml(str){
+  if(str===null||str===undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 
 function applyLang(lang){
   currentLang = lang;
@@ -3032,7 +3045,7 @@ async function bookAppointment(){
     await _supa.from('appointments').insert({name,mobile,service,message:(email?'Email: '+email+'. ':'')+msg,status:'pending'});
   }catch(e){ console.warn(e); }
   const waMsg=`📅 *نئی اپائنٹمنٹ*\\n👤 ${name}\\n📱 ${mobile}\\n💼 ${service}\\n${email?'✉️ '+email+'\\n':''}${msg?'💬 '+msg:''}`;
-  window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
+  window.open('https://wa.me/'+BUSINESS_WHATSAPP+'?text='+encodeURIComponent(waMsg),'_blank');
   trackEvent('appointment_submit', service);
   showSuccessAnimation(currentLang==='ur'?'✅ اپائنٹمنٹ بک ہو گئی!':'✅ Appointment booked!');
   ['aName','aMobile','aEmail','aMsg'].forEach(id=>document.getElementById(id).value='');
@@ -3048,7 +3061,7 @@ function sendContactWA(){
   if(!name||!phone){ showToast(currentLang==='ur'?'⚠ نام اور موبائل ضروری ہے':'⚠ Name and mobile required'); return; }
   const waMsg=`السلام علیکم!\\n👤 ${name}\\n📱 ${phone}\\n💼 ${service||'—'}\\n${msg?'💬 '+msg:''}`;
   trackEvent('contact_whatsapp_submit', service);
-  window.open('https://wa.me/923469592120?text='+encodeURIComponent(waMsg),'_blank');
+  window.open('https://wa.me/'+BUSINESS_WHATSAPP+'?text='+encodeURIComponent(waMsg),'_blank');
 }
 
 /* ═══════════════ REVIEWS (unlimited library) ═══════════════ */
@@ -3078,10 +3091,10 @@ function renderTeamMembers(){
   const ur = currentLang==='ur';
   grid.innerHTML = _allTeamMembers.map(m=>`
     <div class="svc-card reveal-child" style="text-align:center;">
-      <img src="${m.photo_url||'https://picsum.photos/seed/mfjteam'+encodeURIComponent(m.name||'x')+'/200/200'}" alt="${m.name||''}" loading="lazy" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;">
-      <div class="svc-name" style="font-size:16px;">${m.name||''}</div>
-      <div style="font-size:13px;color:var(--green);font-weight:700;margin:4px 0;">${(ur?m.role_ur:m.role_en)||m.role_ur||m.role_en||''}</div>
-      <div class="svc-desc">${(ur?m.bio_ur:m.bio_en)||m.bio_ur||m.bio_en||''}</div>
+      <img src="${escapeHtml(m.photo_url||'https://picsum.photos/seed/mfjteam'+encodeURIComponent(m.name||'x')+'/200/200')}" alt="${escapeHtml(m.name||'')}" loading="lazy" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;">
+      <div class="svc-name" style="font-size:16px;">${escapeHtml(m.name||'')}</div>
+      <div style="font-size:13px;color:var(--green);font-weight:700;margin:4px 0;">${escapeHtml((ur?m.role_ur:m.role_en)||m.role_ur||m.role_en||'')}</div>
+      <div class="svc-desc">${escapeHtml((ur?m.bio_ur:m.bio_en)||m.bio_ur||m.bio_en||'')}</div>
     </div>`).join('');
 }
 
@@ -3106,11 +3119,11 @@ function renderReviews(){
     <div class="testi-card">
       <div class="testi-quote">"</div>
       <div class="testi-top">
-        <div class="testi-avatar" style="background:${colors[i%6]};">${(r.name||'?')[0]}</div>
-        <div><div class="testi-name">${r.name}</div><div class="testi-role">${r.city||''}</div></div>
+        <div class="testi-avatar" style="background:${colors[i%6]};">${escapeHtml((r.name||'?')[0])}</div>
+        <div><div class="testi-name">${escapeHtml(r.name)}</div><div class="testi-role">${escapeHtml(r.city||'')}</div></div>
       </div>
       <div class="testi-stars">${'★'.repeat(r.rating||5)}</div>
-      <div class="testi-text">${r.review_text}</div>
+      <div class="testi-text">${escapeHtml(r.review_text)}</div>
     </div>
   `).join('');
   // Duplicated for a seamless infinite scroll loop
@@ -3177,9 +3190,9 @@ function renderBlogGrid(){
     const catLabel = CAT_LABELS[currentLang][b.category||'general'] || CAT_LABELS[currentLang].general;
     const cover = b.media_url
       ? (b.media_type==='video'
-          ? `<video src="${b.media_url}" style="width:100%;height:100%;object-fit:cover;" muted></video>`
-          : `<img src="${b.media_url}" style="width:100%;height:100%;object-fit:cover;" alt="${b.title}" loading="lazy">`)
-      : `<img src="${fallbackPhotos[pos%6]}" style="width:100%;height:100%;object-fit:cover;" alt="${b.title}" loading="lazy">`;
+          ? `<video src="${escapeHtml(b.media_url)}" style="width:100%;height:100%;object-fit:cover;" muted></video>`
+          : `<img src="${escapeHtml(b.media_url)}" style="width:100%;height:100%;object-fit:cover;" alt="${escapeHtml(b.title)}" loading="lazy">`)
+      : `<img src="${fallbackPhotos[pos%6]}" style="width:100%;height:100%;object-fit:cover;" alt="${escapeHtml(b.title)}" loading="lazy">`;
     return `
     <div class="blog-card" onclick="openBlogPost(${i})">
       <div class="blog-cover">${cover}</div>
@@ -3188,7 +3201,7 @@ function renderBlogGrid(){
           <span class="blog-date">${dateStr}</span>
           <span class="blog-cat-tag">${catLabel}</span>
         </div>
-        <div class="blog-title">${b.title}</div>
+        <div class="blog-title">${escapeHtml(b.title)}</div>
         <div class="blog-read">${currentLang==='ur'?'مزید پڑھیں':'Read More'} →</div>
       </div>
     </div>`;
@@ -3211,8 +3224,8 @@ function openBlogPost(i){
   const coverEl = document.getElementById('blogModalCover');
   if(b.media_url){
     coverEl.innerHTML = b.media_type==='video'
-      ? `<video src="${b.media_url}" style="width:100%;max-height:280px;border-radius:14px;object-fit:cover;" controls></video>`
-      : `<img src="${b.media_url}" style="width:100%;max-height:280px;border-radius:14px;object-fit:cover;" alt="${b.title}">`;
+      ? `<video src="${escapeHtml(b.media_url)}" style="width:100%;max-height:280px;border-radius:14px;object-fit:cover;" controls></video>`
+      : `<img src="${escapeHtml(b.media_url)}" style="width:100%;max-height:280px;border-radius:14px;object-fit:cover;" alt="${escapeHtml(b.title)}">`;
   } else {
     coverEl.innerHTML = ''; coverEl.textContent = b.cover_emoji||'📝';
   }
@@ -3249,23 +3262,44 @@ async function loadSiteContent(){
         const img = document.getElementById('officeImgTag');
         if(img) img.src = c.image;
       }
+      if(row.section==='overseas' && c.image){
+        const img = document.getElementById('overseasImgTag');
+        if(img) img.src = c.image;
+      }
       if(row.section==='hero'){
         if(c.title){
           const parts = c.title.split('||');
-          const l1 = document.getElementById('heroTitleLine1');
-          const l2 = document.getElementById('heroTitleLine2');
-          if(l1 && parts[0] && parts[0].trim()) l1.textContent = parts[0].trim();
-          if(l2 && parts[1] && parts[1].trim()) l2.textContent = parts[1].trim();
+          const t1 = parts[0] && parts[0].trim();
+          const t2 = parts[1] && parts[1].trim();
+          if(t1){ I18N.ur.heroTitle1 = t1; I18N.en.heroTitle1 = t1; }
+          if(t2){ I18N.ur.heroTitle2 = t2; I18N.en.heroTitle2 = t2; }
         }
-        if(c.sub){
-          const sub = document.querySelector('.hero-sub');
-          if(sub) sub.textContent = c.sub;
-        }
+        if(c.sub){ I18N.ur.heroSub = c.sub; I18N.en.heroSub = c.sub; }
         if(c.whatsapp){
+          BUSINESS_WHATSAPP = c.whatsapp;
           document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{
             a.href = a.href.replace(/wa\.me\/\d+/, 'wa.me/'+c.whatsapp);
           });
         }
+      }
+      if(row.section==='contact'){
+        if(c.city){ I18N.ur.cLocationVal = c.city; I18N.en.cLocationVal = c.city; }
+        if(c.phone){
+          const tel = 'tel:+'+c.phone.replace(/\D/g,'');
+          const p1 = document.getElementById('contactPhoneLink1');
+          if(p1){ p1.href = tel; p1.textContent = c.phone; }
+        }
+      }
+      if(row.section==='overseas'){
+        if(c.title){ I18N.ur.opTitle = c.title; I18N.en.opTitle = c.title; }
+        if(c.intro){ I18N.ur.opIntro = c.intro; I18N.en.opIntro = c.intro; }
+      }
+      if(row.section==='services' && c.items && c.items.length){
+        c.items.forEach((it,i)=>{
+          const n=i+1;
+          if(it.title){ I18N.ur['svc'+n+'t']=it.title; I18N.en['svc'+n+'t']=it.title; }
+          if(it.desc){ I18N.ur['svc'+n+'d']=it.desc; I18N.en['svc'+n+'d']=it.desc; }
+        });
       }
       if(row.section==='deadline'){
         _deadlineConfig = c;
@@ -3275,6 +3309,7 @@ async function loadSiteContent(){
       }
     });
     initDeadlineBanner();
+    applyLang(currentLang); // re-apply so patched I18N values render immediately
   } catch(e){ console.warn('Site content load error:', e); }
 }
 
@@ -3283,8 +3318,8 @@ function renderFaqFromAdmin(items){
   if(!wrap) return;
   wrap.innerHTML = items.map(f => `
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)"><span>${f.q}</span><span class="faq-arr">▾</span></div>
-      <div class="faq-a"><p>${f.a}</p></div>
+      <div class="faq-q" onclick="toggleFaq(this)"><span>${escapeHtml(f.q)}</span><span class="faq-arr">▾</span></div>
+      <div class="faq-a"><p>${escapeHtml(f.a)}</p></div>
     </div>
   `).join('');
 }
@@ -3807,7 +3842,7 @@ function wtCtaWhatsapp(){
   const ur=currentLang==='ur';
   const msg=ur?'السلام علیکم، مجھے Advance Tax / Withholding Tax کی درست ریٹ کنفرم کروانی ہے اور فائلنگ میں مدد چاہیے۔':'Hi, I need help confirming the correct Advance/Withholding Tax rate and filing.';
   trackEvent('wt_cta_whatsapp_click');
-  window.open('https://wa.me/923469592120?text='+encodeURIComponent(msg),'_blank');
+  window.open('https://wa.me/'+BUSINESS_WHATSAPP+'?text='+encodeURIComponent(msg),'_blank');
 }
 
 /* ═══════════════ SALES TAX CALCULATOR (GOODS / SERVICES) ═══════════════ */
@@ -4999,7 +5034,7 @@ function toggleWaPopup(){
 function waQuickMsg(key){
   const msg = I18N[currentLang][key] || '';
   trackEvent('whatsapp_quick_message', key);
-  window.open('https://wa.me/923469592120?text='+encodeURIComponent(msg), '_blank');
+  window.open('https://wa.me/'+BUSINESS_WHATSAPP+'?text='+encodeURIComponent(msg), '_blank');
   document.getElementById('waPopup').classList.remove('show');
 }
 document.addEventListener('click', (e)=>{

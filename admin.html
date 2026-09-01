@@ -1918,8 +1918,21 @@ tbody tr:hover td{background:var(--primary-ultra);}
               <div class="field"><label>Invoice نمبر</label><input type="text" id="invNum" placeholder="INV-001"></div>
             </div>
             <div class="row">
-              <div class="field"><label>فیس (Rs)</label><input type="number" id="invFee" placeholder="0"></div>
+              <div class="field"><label>فیس (Rs)</label><input type="number" id="invFee" placeholder="0" oninput="renderInvoiceFamilyMembers()"></div>
               <div class="field"><label>ادا شدہ (Rs)</label><input type="number" id="invPaid" placeholder="0"></div>
+            </div>
+
+            <div style="background:var(--surface2);border:1.5px dashed var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-size:12.5px;font-weight:700;color:var(--text-mute);margin-bottom:8px;">🔗 خاندان / ریفرل ٹری کے دیگر ممبرز اسی Invoice میں شامل کریں</div>
+              <div id="invFamilySuggestions" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+              <div style="display:flex;gap:8px;">
+                <select id="invFamilyPickSel" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:12.5px;">
+                  <option value="">-- کوئی بھی کلائنٹ منتخب کریں --</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" onclick="addFamilyMemberToInvoice(document.getElementById('invFamilyPickSel').value)">+ شامل کریں</button>
+              </div>
+              <div id="invFamilyMembersList" style="margin-top:10px;"></div>
+              <div id="invFamilyTotal" style="margin-top:8px;font-size:13px;font-weight:700;color:var(--primary);display:none;"></div>
             </div>
             <div class="row">
               <div class="field"><label>تاریخ</label><input type="date" id="invDate"></div>
@@ -2214,6 +2227,25 @@ tbody tr:hover td{background:var(--primary-ultra);}
               <div id="wc-office-img-preview" style="margin-top:10px;"></div>
             </div>
             <button class="btn btn-primary btn-sm" onclick="saveWebContent('officeimg')">💾 محفوظ کریں</button>
+          </div>
+
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-header"><span class="card-title">🌍 بیرونِ ملک پاکستانی سیکشن</span></div>
+            <div class="field"><label>عنوان (Title)</label><input type="text" id="wc-overseas-title" placeholder="بیرونِ ملک بیٹھے اپنا ٹیکس آسانی سے مکمل کروائیں"></div>
+            <div class="field"><label>تعارفی متن (Intro)</label><textarea id="wc-overseas-intro" style="height:80px;" placeholder="آپ کو پاکستان آنے کی ضرورت نہیں..."></textarea></div>
+            <div class="field">
+              <label>🖼️ تصویر منتخب کریں</label>
+              <input type="file" id="wc-overseas-img" accept="image/*" onchange="previewWebImage(event,'overseas')" style="padding:9px;border:1.5px dashed var(--border);border-radius:8px;width:100%;font-family:inherit;font-size:12.5px;">
+              <div id="wc-overseas-img-preview" style="margin-top:10px;"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveWebContent('overseas')">💾 محفوظ کریں</button>
+          </div>
+
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-header"><span class="card-title">🧾 خدمات (Services) — عنوان و تفصیل</span></div>
+            <div style="font-size:11.5px;color:var(--text-mute);margin-bottom:10px;">خالی چھوڑ دیں تو موجودہ ڈیفالٹ متن ہی رہے گا۔</div>
+            <div id="wc-services-list"></div>
+            <button class="btn btn-primary btn-sm" onclick="saveWebContent('services')">💾 محفوظ کریں</button>
           </div>
 
           <div class="card" style="margin-bottom:14px;">
@@ -4247,6 +4279,84 @@ const INVOICE_KEY = 'mfj_invoices';
 function loadInvoices(){ try{ return JSON.parse(localStorage.getItem(INVOICE_KEY))||[]; } catch(e){ return []; } }
 function saveInvoices(arr){ localStorage.setItem(INVOICE_KEY, JSON.stringify(arr)); }
 
+/* ── Family / Referral-Tree multi-member invoice ── */
+let invoiceExtraMembers = []; // [{id, name, service, fee}]
+
+function populateInvoiceFamilySuggestions(primaryId){
+  const box = document.getElementById('invFamilySuggestions');
+  if(!box) return;
+  const primary = clients.find(x=>x.id===primaryId);
+  if(!primary){ box.innerHTML=''; return; }
+  // Related = whoever referred the primary + whoever the primary referred (siblings/tree)
+  const related = new Map();
+  if(primary.referredBy){
+    const referrer = clients.find(x=>x.id===primary.referredBy);
+    if(referrer) related.set(referrer.id, referrer);
+  }
+  clients.filter(c=>c.referredBy===primaryId).forEach(c=>related.set(c.id,c));
+  if(primary.referredBy){
+    clients.filter(c=>c.referredBy===primary.referredBy && c.id!==primaryId).forEach(c=>related.set(c.id,c));
+  }
+  const list = [...related.values()];
+  if(!list.length){ box.innerHTML='<div style="font-size:11.5px;color:var(--text-mute);">اس کلائنٹ کی ریفرل ٹری میں کوئی اور ممبر نہیں ملا — نیچے سے کوئی بھی کلائنٹ منتخب کر کے شامل کریں</div>'; return; }
+  box.innerHTML = list.map(c=>`<button type="button" class="btn btn-sm btn-secondary" style="font-size:11.5px;padding:5px 10px;" onclick="addFamilyMemberToInvoice('${c.id}')">+ ${c.name}</button>`).join('');
+}
+
+function addFamilyMemberToInvoice(id){
+  if(!id) return;
+  const primaryId = document.getElementById('invClientSel').value;
+  if(id===primaryId){ showToast('⚠ یہ تو پہلے سے ہی مرکزی کلائنٹ ہے'); return; }
+  if(invoiceExtraMembers.some(m=>m.id===id)){ showToast('⚠ یہ ممبر پہلے سے شامل ہے'); return; }
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  invoiceExtraMembers.push({
+    id: c.id,
+    name: c.name||'',
+    service: CATEGORY_LABEL[c.category]||'',
+    fee: c.fee||0
+  });
+  renderInvoiceFamilyMembers();
+}
+
+function removeFamilyMemberFromInvoice(id){
+  invoiceExtraMembers = invoiceExtraMembers.filter(m=>m.id!==id);
+  renderInvoiceFamilyMembers();
+}
+
+function updateFamilyMemberField(id, field, value){
+  const m = invoiceExtraMembers.find(x=>x.id===id);
+  if(!m) return;
+  m[field] = field==='fee' ? (parseFloat(value)||0) : value;
+  if(field==='fee') renderInvoiceFamilyMembers();
+}
+
+function getInvoiceGrandTotal(){
+  const primaryFee = parseFloat(document.getElementById('invFee')?.value)||0;
+  return primaryFee + invoiceExtraMembers.reduce((s,m)=>s+(parseFloat(m.fee)||0),0);
+}
+
+function renderInvoiceFamilyMembers(){
+  const listEl = document.getElementById('invFamilyMembersList');
+  const totalEl = document.getElementById('invFamilyTotal');
+  if(!listEl) return;
+  if(!invoiceExtraMembers.length){
+    listEl.innerHTML = '';
+    if(totalEl) totalEl.style.display = 'none';
+    return;
+  }
+  listEl.innerHTML = invoiceExtraMembers.map(m=>`
+    <div style="display:flex;gap:6px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px;">
+      <div style="flex:1;font-weight:700;font-size:12.5px;">${m.name}</div>
+      <input type="text" value="${m.service}" placeholder="خدمت" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;" onchange="updateFamilyMemberField('${m.id}','service',this.value)">
+      <input type="number" value="${m.fee}" placeholder="فیس" style="width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;" onchange="updateFamilyMemberField('${m.id}','fee',this.value)">
+      <button type="button" class="btn btn-sm btn-secondary" style="padding:5px 9px;" onclick="removeFamilyMemberFromInvoice('${m.id}')">✕</button>
+    </div>`).join('');
+  if(totalEl){
+    totalEl.style.display = 'block';
+    totalEl.textContent = '💰 مجموعی فیس (سب ممبرز): Rs ' + getInvoiceGrandTotal().toLocaleString();
+  }
+}
+
 function renderInvoiceTab(){
   // Populate client dropdown
   const sel = document.getElementById('invClientSel');
@@ -4257,6 +4367,17 @@ function renderInvoiceTab(){
     opt.textContent = c.name + (c.mobile?' — '+c.mobile:'');
     sel.appendChild(opt);
   });
+  // Populate family/referral add-member dropdown (same client list)
+  const famSel = document.getElementById('invFamilyPickSel');
+  if(famSel){
+    famSel.innerHTML = '<option value="">-- کوئی بھی کلائنٹ منتخب کریں --</option>';
+    clients.forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name + (c.mobile?' — '+c.mobile:'');
+      famSel.appendChild(opt);
+    });
+  }
   // Set today's date
   document.getElementById('invDate').value = new Date().toISOString().slice(0,10);
   // Auto invoice number
@@ -4273,9 +4394,12 @@ function autoFillInvoice(id){
   document.getElementById('invMobile').value = c.whatsapp||c.mobile||'';
   document.getElementById('invService').value = (()=>{
     const m = {income_tax:'Income Tax Return',ntn:'NTN Registration',sales_tax:'Sales Tax',business_reg:'Business Registration',company_reg:'Company Registration',pvt_ltd:'Pvt Ltd Company',import_export:'Import/Export License',other:'دیگر'};
-    return m[c.category]||'';
+    return m[c.category]||CATEGORY_LABEL[c.category]||'';
   })();
   document.getElementById('invFee').value = c.fee||'';
+  invoiceExtraMembers = [];
+  renderInvoiceFamilyMembers();
+  populateInvoiceFamilySuggestions(id);
 }
 
 function generateInvoice(){
@@ -4283,14 +4407,23 @@ function generateInvoice(){
   const mobile = document.getElementById('invMobile').value.trim();
   const service = document.getElementById('invService').value.trim();
   const num = document.getElementById('invNum').value.trim();
-  const fee = parseFloat(document.getElementById('invFee').value)||0;
+  const primaryFee = parseFloat(document.getElementById('invFee').value)||0;
   const paid = parseFloat(document.getElementById('invPaid').value)||0;
   const date = document.getElementById('invDate').value;
   const status = document.getElementById('invStatus').value;
   const note = document.getElementById('invNote').value.trim();
+  const fee = primaryFee + invoiceExtraMembers.reduce((s,m)=>s+(parseFloat(m.fee)||0),0);
   const remaining = fee - paid;
   const statusLabel = {unpaid:'ادائیگی باقی',partial:'جزوی ادا',paid:'مکمل ادا'};
   const statusColor = {unpaid:'#EF4444',partial:'#F59E0B',paid:'#10B981'};
+
+  const allRows = [{name, service: service||'Professional Service', fee: primaryFee}, ...invoiceExtraMembers];
+  const isFamily = invoiceExtraMembers.length>0;
+  const rowsHtml = allRows.map(r=>`
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #E9F7F0;font-weight:600;">${isFamily?`${r.name} — ${r.service}`:r.service}</td>
+            <td style="padding:12px;border-bottom:1px solid #E9F7F0;font-weight:700;color:#0F8A5F;text-align:left;">Rs ${(r.fee||0).toLocaleString()}</td>
+          </tr>`).join('');
 
   const html = `
     <div style="direction:rtl;text-align:right;">
@@ -4308,8 +4441,8 @@ function generateInvoice(){
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
         <div style="background:#EAFBF3;border-radius:8px;padding:10px 14px;">
-          <div style="font-size:10px;color:#0F8A5F;font-weight:700;text-transform:uppercase;margin-bottom:4px;">کلائنٹ</div>
-          <div style="font-weight:700;font-size:14px;">${name||'—'}</div>
+          <div style="font-size:10px;color:#0F8A5F;font-weight:700;text-transform:uppercase;margin-bottom:4px;">کلائنٹ${isFamily?' (خاندان/گروپ)':''}</div>
+          <div style="font-weight:700;font-size:14px;">${name||'—'}${isFamily?` + ${invoiceExtraMembers.length} ممبرز`:''}</div>
           <div style="font-size:12px;color:#666;">${mobile||''}</div>
         </div>
         <div style="background:#EAFBF3;border-radius:8px;padding:10px 14px;">
@@ -4321,15 +4454,12 @@ function generateInvoice(){
       <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
         <thead>
           <tr style="background:#EAFBF3;">
-            <th style="padding:10px 12px;text-align:right;font-size:12px;color:#0F8A5F;border-bottom:2px solid #BEEED9;">خدمت</th>
+            <th style="padding:10px 12px;text-align:right;font-size:12px;color:#0F8A5F;border-bottom:2px solid #BEEED9;">${isFamily?'ممبر — خدمت':'خدمت'}</th>
             <th style="padding:10px 12px;text-align:left;font-size:12px;color:#0F8A5F;border-bottom:2px solid #BEEED9;">رقم</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td style="padding:12px;border-bottom:1px solid #E9F7F0;font-weight:600;">${service||'Professional Service'}</td>
-            <td style="padding:12px;border-bottom:1px solid #E9F7F0;font-weight:700;color:#0F8A5F;text-align:left;">Rs ${fee.toLocaleString()}</td>
-          </tr>
+          ${rowsHtml}
         </tbody>
       </table>
       <div style="background:#EAFBF3;border-radius:8px;padding:12px 16px;margin-bottom:12px;">
@@ -4357,12 +4487,13 @@ function generateInvoice(){
       const waNum = mobNum.startsWith('0') ? '92'+mobNum.slice(1) : mobNum;
       const clientName = (document.getElementById('invName').value||'').trim();
       const svc = (document.getElementById('invService').value||'').trim();
-      const feeVal = parseFloat(document.getElementById('invFee').value)||0;
+      const feeVal = getInvoiceGrandTotal();
       const paidVal = parseFloat(document.getElementById('invPaid').value)||0;
       const rem = feeVal - paidVal;
       const stLbl = {unpaid:'ادائیگی باقی',partial:'جزوی ادا',paid:'مکمل ادا'};
       const stVal = document.getElementById('invStatus').value;
-      const msg = `السلام علیکم ${clientName}!\n\n🧾 *Invoice — MFJ Services*\n━━━━━━━━━━━━━━━\n#️⃣ ${invNum}\n💼 ${svc||'خدمت'}\n💰 کل فیس: Rs ${feeVal.toLocaleString()}\n✅ ادا: Rs ${paidVal.toLocaleString()}\n💳 باقی: Rs ${rem.toLocaleString()}\n📋 حالت: ${stLbl[stVal]||''}\n━━━━━━━━━━━━━━━\nشکریہ — _MFJ Services_`;
+      const familyLine = invoiceExtraMembers.length ? `\n👨‍👩‍👧‍👦 خاندان/گروپ: ${invoiceExtraMembers.length+1} افراد شامل\n` : '';
+      const msg = `السلام علیکم ${clientName}!\n\n🧾 *Invoice — MFJ Services*\n━━━━━━━━━━━━━━━${familyLine}#️⃣ ${invNum}\n💼 ${svc||'خدمت'}\n💰 کل فیس: Rs ${feeVal.toLocaleString()}\n✅ ادا: Rs ${paidVal.toLocaleString()}\n💳 باقی: Rs ${rem.toLocaleString()}\n📋 حالت: ${stLbl[stVal]||''}\n━━━━━━━━━━━━━━━\nشکریہ — _MFJ Services_`;
       if(confirm(`کیا ${clientName||'کلائنٹ'} کو Invoice WhatsApp پر بھیجنا ہے؟`)){
         window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
         showToast('📤 Invoice WhatsApp پر بھیجی گئی');
@@ -4511,7 +4642,8 @@ function drawMfjFooter(doc, line1, line2, fontFamily){
 }
 
 function drawMfjInvoicePage(doc, d){
-  const { name, mobile, service, num, fee, paid, date, status, note, remaining, sigImg } = d;
+  const { name, mobile, service, num, fee, paid, date, status, note, remaining, sigImg, items, isFamily } = d;
+  const rows = (items && items.length) ? items : [{name, service, fee}];
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
   const M = 48;
@@ -4527,10 +4659,10 @@ function drawMfjInvoicePage(doc, d){
   doc.roundedRect(M, y, W-2*M, 64, 6, 6, 'F');
   doc.setTextColor(...MFJ_C.accent);
   doc.setFont('courier','bold'); doc.setFontSize(9);
-  doc.text('BILL TO', M+16, y+20);
+  doc.text(isFamily ? 'BILL TO (FAMILY / GROUP)' : 'BILL TO', M+16, y+20);
   doc.setTextColor(...MFJ_C.ink);
   doc.setFont('courier','bold'); doc.setFontSize(13);
-  doc.text(name, M+16, y+38);
+  doc.text(name + (isFamily ? ' + '+rows.length+' members' : ''), M+16, y+38);
   doc.setFont('courier','normal'); doc.setFontSize(10);
   doc.setTextColor(...MFJ_C.muted);
   doc.text(mobile||'-', M+16, y+53);
@@ -4544,12 +4676,12 @@ function drawMfjInvoicePage(doc, d){
 
   y += 90;
 
-  /* SERVICE TABLE */
+  /* SERVICE TABLE (multi-row when family/group members present) */
   doc.setFillColor(...MFJ_C.tint);
   doc.rect(M, y, W-2*M, 30, 'F');
   doc.setTextColor(...MFJ_C.accent);
   doc.setFont('courier','bold'); doc.setFontSize(10);
-  doc.text('DESCRIPTION', M+14, y+19);
+  doc.text(isFamily ? 'MEMBER — DESCRIPTION' : 'DESCRIPTION', M+14, y+19);
   doc.text('AMOUNT', W-M-14, y+19, {align:'right'});
 
   y += 30;
@@ -4557,13 +4689,17 @@ function drawMfjInvoicePage(doc, d){
   doc.line(M, y, W-M, y);
   y += 26;
   doc.setTextColor(...MFJ_C.ink);
-  doc.setFont('courier','normal'); doc.setFontSize(11);
-  doc.text(service || 'Professional Service', M+14, y);
-  doc.setFont('courier','bold');
-  doc.text('Rs '+fee.toLocaleString(), W-M-14, y, {align:'right'});
-  y += 14;
-  doc.setDrawColor(...MFJ_C.faintLine);
-  doc.line(M, y, W-M, y);
+  rows.forEach((r, idx)=>{
+    doc.setFont('courier','normal'); doc.setFontSize(11);
+    const label = isFamily ? `${r.name} — ${r.service||'Professional Service'}` : (r.service||'Professional Service');
+    doc.text(label, M+14, y);
+    doc.setFont('courier','bold');
+    doc.text('Rs '+(r.fee||0).toLocaleString(), W-M-14, y, {align:'right'});
+    y += 14;
+    doc.setDrawColor(...MFJ_C.faintLine);
+    doc.line(M, y, W-M, y);
+    if(idx < rows.length-1) y += 24;
+  });
 
   y += 40;
 
@@ -4742,7 +4878,7 @@ async function generateInvoicePDF(){
   const mobile = (document.getElementById('invMobile').value||'').trim();
   const service = (document.getElementById('invService').value||'').trim();
   const num = (document.getElementById('invNum').value||'').trim() || ('INV-'+Date.now().toString().slice(-6));
-  const fee = parseFloat(document.getElementById('invFee').value)||0;
+  const primaryFee = parseFloat(document.getElementById('invFee').value)||0;
   const paid = parseFloat(document.getElementById('invPaid').value)||0;
   const date = document.getElementById('invDate').value || new Date().toISOString().slice(0,10);
   const status = document.getElementById('invStatus').value;
@@ -4750,12 +4886,25 @@ async function generateInvoicePDF(){
 
   if(!name){ showToast('⚠ پہلے کلائنٹ کا نام درج کریں'); return; }
 
-  const doc = await buildMfjInvoicePDF({ name, mobile, service, num, fee, paid, date, status, note });
+  const isFamily = invoiceExtraMembers.length>0;
+  const items = [{name, service: service||'Professional Service', fee: primaryFee}, ...invoiceExtraMembers];
+  const fee = items.reduce((s,it)=>s+(parseFloat(it.fee)||0),0);
+
+  const doc = await buildMfjInvoicePDF({ name, mobile, service, num, fee, paid, date, status, note, items, isFamily });
   if(!doc) return;
 
   const fileName = 'MFJ_Invoice_'+num+'_'+(name||'client').replace(/\s+/g,'_')+'.pdf';
   doc.save(fileName);
   showToast('✅ PDF Invoice download ہو گئی!');
+
+  // Save to invoice history
+  const invs = loadInvoices();
+  invs.unshift({
+    id: Date.now(), name, mobile, service, num, fee, paid, remaining: fee-paid,
+    date, status, isFamily, membersCount: items.length, items
+  });
+  saveInvoices(invs);
+  renderInvoiceHistory();
 
   return doc;
 }
@@ -4817,6 +4966,10 @@ function clearInvoiceForm(){
   });
   document.getElementById('invClientSel').selectedIndex=0;
   document.getElementById('invPreviewCard').style.display='none';
+  invoiceExtraMembers = [];
+  renderInvoiceFamilyMembers();
+  const sugBox = document.getElementById('invFamilySuggestions');
+  if(sugBox) sugBox.innerHTML='';
 }
 
 function renderInvoiceHistory(){
@@ -4829,7 +4982,7 @@ function renderInvoiceHistory(){
   el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Invoice#</th><th>نام</th><th>خدمت</th><th>فیس</th><th>باقی</th><th>تاریخ</th><th>اسٹیٹس</th></tr></thead><tbody>
     ${invs.slice(0,20).map(inv=>`<tr>
       <td style="font-family:monospace;font-size:12px;">${inv.num||'—'}</td>
-      <td style="font-weight:700;">${inv.name||'—'}</td>
+      <td style="font-weight:700;">${inv.name||'—'}${inv.isFamily?` <span style="font-size:10px;color:var(--primary);font-weight:700;">+${inv.membersCount-1} 👨‍👩‍👧‍👦</span>`:''}</td>
       <td><span class="cat-tag">${inv.service||'—'}</span></td>
       <td style="color:var(--primary);font-weight:700;">Rs ${(inv.fee||0).toLocaleString()}</td>
       <td style="color:${(inv.remaining||0)>0?'var(--danger)':'var(--success)'};font-weight:700;">Rs ${(inv.remaining||0).toLocaleString()}</td>
@@ -6302,13 +6455,41 @@ function switchWebTab(tab){
   if(tab==='team') loadTeamAdminList();
 }
 
+const WC_SERVICES_DEFAULT = [
+  {title:'Income Tax Return', desc:'اپنا انکم ٹیکس ریٹرن درست اور وقت پر فائل کریں'},
+  {title:'NTN Registration', desc:'اپنا NTN آسانی سے اور تیزی سے حاصل کریں'},
+  {title:'Sales Tax Registration', desc:'افراد اور کمپنیوں کے لیے Sales Tax رجسٹریشن'},
+  {title:'Company Registration', desc:'Private limited، AOP، LLC اور دیگر ڈھانچے'},
+  {title:'ATL Status', desc:'اپنے کاروبار کو ATL پر لائیں اور فوائد حاصل کریں'},
+  {title:'Tax Notices', desc:'FBR Tax notices کا ماہرانہ جواب'},
+  {title:'Business Consultancy', desc:'آپ کے کاروبار کی ترقی کے لیے پیشہ ورانہ مشورہ'},
+  {title:'Document Verification', desc:'FBR دستاویزات کی تصدیق اور متعلقہ خدمات'}
+];
+function renderWcServicesForm(saved){
+  const box = document.getElementById('wc-services-list');
+  if(!box) return;
+  box.innerHTML = WC_SERVICES_DEFAULT.map((def,i)=>{
+    const s = (saved && saved[i]) || {};
+    return `
+    <div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--text-mute);margin-bottom:6px;">خدمت #${i+1}</div>
+      <input type="text" id="wc-svc-title-${i}" value="${s.title||''}" placeholder="${def.title}" style="width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;margin-bottom:6px;font-family:inherit;">
+      <input type="text" id="wc-svc-desc-${i}" value="${s.desc||''}" placeholder="${def.desc}" style="width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-family:inherit;">
+    </div>`;
+  }).join('');
+}
+
 async function loadWebsiteContent(){
   if(!_supa) return;
+  renderWcServicesForm(null);
   try{
     const {data} = await _supa.from('site_content').select('*');
     if(!data) return;
     data.forEach(row=>{
       const c = row.content||{};
+      if(row.section==='services' && c.items){
+        renderWcServicesForm(c.items);
+      }
       if(row.section==='hero'){
         const t=document.getElementById('wc-hero-title');
         const s=document.getElementById('wc-hero-sub');
@@ -6324,6 +6505,16 @@ async function loadWebsiteContent(){
       if(row.section==='officeimg'){
         if(c.image){
           const prev = document.getElementById('wc-office-img-preview');
+          if(prev) prev.innerHTML = `<img src="${c.image}" style="max-width:220px;max-height:140px;border-radius:10px;object-fit:cover;"><div style="font-size:11px;color:var(--text-mute);margin-top:4px;">✅ موجودہ تصویر</div>`;
+        }
+      }
+      if(row.section==='overseas'){
+        const t=document.getElementById('wc-overseas-title');
+        const i=document.getElementById('wc-overseas-intro');
+        if(t) t.value=c.title||'';
+        if(i) i.value=c.intro||'';
+        if(c.image){
+          const prev = document.getElementById('wc-overseas-img-preview');
           if(prev) prev.innerHTML = `<img src="${c.image}" style="max-width:220px;max-height:140px;border-radius:10px;object-fit:cover;"><div style="font-size:11px;color:var(--text-mute);margin-top:4px;">✅ موجودہ تصویر</div>`;
         }
       }
@@ -6359,7 +6550,7 @@ async function loadWebsiteContent(){
 }
 
 /* ── Website image upload (Hero / Office) ── */
-let _wcImageFiles = { hero:null, office:null };
+let _wcImageFiles = { hero:null, office:null, overseas:null };
 
 function previewWebImage(evt, key){
   const file = evt.target.files[0];
@@ -6414,6 +6605,23 @@ async function saveWebContent(section){
     }
     if(!imgUrl){ showToast('⚠ تصویر اپلوڈ نہیں ہوئی — Supabase Storage policies چیک کریں'); return; }
     contentData = { image: imgUrl };
+  } else if(section==='overseas'){
+    let imgUrl = null;
+    if(_wcImageFiles.overseas){
+      showToast('⏳ تصویر اپلوڈ ہو رہی ہے...');
+      imgUrl = await uploadWebImage(_wcImageFiles.overseas, 'overseas');
+    }
+    if(!imgUrl){
+      try{
+        const {data} = await _supa.from('site_content').select('content').eq('id','overseas').single();
+        imgUrl = data?.content?.image || null;
+      } catch(e){}
+    }
+    contentData = {
+      title: document.getElementById('wc-overseas-title')?.value||'',
+      intro: document.getElementById('wc-overseas-intro')?.value||'',
+      image: imgUrl
+    };
   } else if(section==='about'){
     contentData = {
       name: document.getElementById('wc-about-name')?.value||'',
@@ -6427,6 +6635,12 @@ async function saveWebContent(section){
       city:   document.getElementById('wc-city')?.value||'',
       timing: document.getElementById('wc-timing')?.value||''
     };
+  } else if(section==='services'){
+    const items = WC_SERVICES_DEFAULT.map((def,i)=>({
+      title: document.getElementById('wc-svc-title-'+i)?.value||'',
+      desc:  document.getElementById('wc-svc-desc-'+i)?.value||''
+    }));
+    contentData = { items };
   } else if(section==='deadline'){
     contentData = {
       date:  document.getElementById('wc-deadline-date')?.value||'',

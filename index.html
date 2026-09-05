@@ -1398,6 +1398,20 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
         <div class="tax-est-field"><label data-i18n="atcTmaFee">TMA Fee (%)</label><input type="number" id="atcTmaFee" step="0.1" placeholder="مثلاً 1"></div>
         <div class="ats-quickfill" style="margin-top:4px;">
           <button onclick="atcOpenDcPortal()" data-i18n="atcDcBtn">🏛️ صوبائی DC ریٹ پورٹل کھولیں</button>
+          <button onclick="atcFillPunjabRegistryDefaults()" data-i18n="atcPunjabQuickFill">📍 پنجاب ڈیفالٹ ریٹ بھریں (Stamp Duty 1% + TMA 1%)</button>
+        </div>
+        <div class="wt-hint" id="atcPunjabRefBox" style="margin-top:10px;">
+          <strong data-i18n="atcPunjabRefTitle">📋 پنجاب (راولپنڈی/گوجرخان) ریفرنس — رجسٹری فیس شیڈول:</strong>
+          <ul style="margin:8px 0 0;padding-inline-start:18px;line-height:1.9;">
+            <li data-i18n="atcPunjabRef1">Stamp Duty — رہائشی اربن ایریا: 1% | زرعی/رورل: 1%</li>
+            <li data-i18n="atcPunjabRef2">Stamp Duty — دوکان/مکان نقشہ پاس ہونے کی صورت میں: 2%</li>
+            <li data-i18n="atcPunjabRef3">TMA ٹیکس: 1%</li>
+            <li data-i18n="atcPunjabRef4">PLRA چارجز: Rs 30 لاکھ تک — Rs 3,300 فلیٹ؛ Rs 30 لاکھ سے زائد پر — 1%</li>
+            <li data-i18n="atcPunjabRef5">Registration Fee: Rs 5 لاکھ تک — Rs 500 فلیٹ؛ Rs 5 لاکھ سے زائد پر — Rs 1,000 فلیٹ</li>
+            <li data-i18n="atcPunjabRef6">مختار نامہ (خونی رشتہ): Rs 3,025 فلیٹ | مختار نامہ (ویلیوایشن/غیر رشتہ داری): 2% مالیت پر</li>
+            <li data-i18n="atcPunjabRef7">کاپی/مقابلہ فیس: Rs 100 | انتقال فیس وغیرہ: Rs 600</li>
+          </ul>
+          <div style="margin-top:6px;font-size:12.5px;color:var(--muted);" data-i18n="atcPunjabRefNote">⚠️ یہ ریٹس ایک مخصوص تحصیل کے آفیشل نوٹس بورڈ سے لیے گئے ہیں (تصویر بمطابق 2026-27) — Registration Fee اور مختار نامہ فیس فلیٹ روپے میں ہیں، فیصد میں نہیں، اس لیے اوپر والے % فیلڈز میں شامل نہیں کی جا سکتیں۔ اپنی تحصیل میں حتمی تصدیق کے بعد ہی استعمال کریں۔</div>
         </div>
       </div>
       <div id="atcPResult" style="display:none;"></div>
@@ -1829,8 +1843,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
     <div class="tax-est-field">
       <label data-i18n="bpType">منافع کی قسم</label>
       <select id="bpType" onchange="bpSuggestRate()">
-        <option value="bank" data-i18n="bpTypeBank">بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS (20% / 40%)</option>
-        <option value="govtsec" data-i18n="bpTypeGovt">گورنمنٹ سیکیورٹیز (کمپنی/AOP کو) (20% / 40%)</option>
+        <option value="bank" data-i18n="bpTypeBank">بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS — انفرادی/AOP (15% / 30%)</option>
+        <option value="govtsec" data-i18n="bpTypeGovt">بینک ڈپازٹ / گورنمنٹ سیکیورٹیز — کمپنی (نان انڈیویجول) (20% / 40%)</option>
         <option value="sukukco" data-i18n="bpTypeSukukCo">سکوک — ہولڈر کمپنی ہو (25% / 50%)</option>
         <option value="other" data-i18n="bpTypeOther">دیگر تمام صورتیں (15% / 30%)</option>
       </select>
@@ -1842,7 +1856,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:56px 5% 0;margi
         <option value="nonfiler" data-i18n="atcNonFiler">نان فائلر</option>
       </select>
     </div>
-    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="bpRate" step="0.1" value="20"></div>
+    <div class="tax-est-field"><label><span class="wt-editable-tag" data-i18n="atcEditableTag">ایڈیٹ ایبل</span><span data-i18n="stRate">ریٹ (%)</span></label><input type="number" id="bpRate" step="0.1" value="15"></div>
     <button class="btn-solid ripple-host" style="width:100%;justify-content:center;margin-top:6px;" onclick="bpCalc()"><span data-i18n="atcCalcBtn">حساب کریں</span></button>
     <div id="bpResult" style="display:none;"></div>
     <div class="wt-hint" data-i18n="bpHint">💡 یہ عام طور پر انفرادی/AOP کے لیے فائنل ٹیکس ہے (Rs 5 ملین تک کے منافع پر)۔ Behbood Savings Certificate پر کوئی ودہولڈنگ ٹیکس نہیں کاٹا جاتا۔</div>
@@ -2553,6 +2567,16 @@ const I18N = {
     atcDcHint:'💡 236K/236C کے لیے FBR کی نوٹیفائیڈ ویلیو استعمال ہوتی ہے (جو اکثر DC ریٹ سے مختلف ہوتی ہے) — جو بھی زیادہ ہو وہ لاگو ہوتی ہے۔ اوپر "پراپرٹی کی مالیت" میں وہی رقم درج کریں۔',
     atcRegistryToggle:'🧾 مکمل رجسٹری اخراجات بھی شامل کریں (Stamp Duty + Registration Fee + TMA Fee)',
     atcRegistryHint:'💡 یہ تینوں شرحیں صوبے، ضلع اور جائیداد کی نوعیت کے حساب سے مختلف ہوتی ہیں اور اکثر تبدیل ہوتی رہتی ہیں — براہ کرم اپنے متعلقہ Sub-Registrar / Excise & Taxation / TMA دفتر یا ہم سے تصدیق شدہ ریٹ لے کر یہاں درج کریں۔',
+    atcPunjabQuickFill:'📍 پنجاب ڈیفالٹ ریٹ بھریں (Stamp Duty 1% + TMA 1%)',
+    atcPunjabRefTitle:'📋 پنجاب (راولپنڈی/گوجرخان) ریفرنس — رجسٹری فیس شیڈول:',
+    atcPunjabRef1:'Stamp Duty — رہائشی اربن ایریا: 1% | زرعی/رورل: 1%',
+    atcPunjabRef2:'Stamp Duty — دوکان/مکان نقشہ پاس ہونے کی صورت میں: 2%',
+    atcPunjabRef3:'TMA ٹیکس: 1%',
+    atcPunjabRef4:'PLRA چارجز: Rs 30 لاکھ تک — Rs 3,300 فلیٹ؛ Rs 30 لاکھ سے زائد پر — 1%',
+    atcPunjabRef5:'Registration Fee: Rs 5 لاکھ تک — Rs 500 فلیٹ؛ Rs 5 لاکھ سے زائد پر — Rs 1,000 فلیٹ',
+    atcPunjabRef6:'مختار نامہ (خونی رشتہ): Rs 3,025 فلیٹ | مختار نامہ (ویلیوایشن/غیر رشتہ داری): 2% مالیت پر',
+    atcPunjabRef7:'کاپی/مقابلہ فیس: Rs 100 | انتقال فیس وغیرہ: Rs 600',
+    atcPunjabRefNote:'⚠️ یہ ریٹس ایک مخصوص تحصیل کے آفیشل نوٹس بورڈ سے لیے گئے ہیں (تصویر بمطابق 2026-27) — Registration Fee اور مختار نامہ فیس فلیٹ روپے میں ہیں، فیصد میں نہیں، اس لیے اوپر والے % فیلڈز میں شامل نہیں کی جا سکتیں۔ اپنی تحصیل میں حتمی تصدیق کے بعد ہی استعمال کریں۔',
     atcStampDuty:'Stamp Duty (%)', atcRegFee:'Registration Fee (%)', atcTmaFee:'TMA Fee (%)',
     atcDisclaimer:'⚠️ یہ کیلکولیٹر پورے پاکستان (پنجاب، سندھ، KPK، بلوچستان، اسلام آباد) کے لیے ہے کیونکہ 231B, 236C, 236K وفاقی (FBR) ٹیکس ہیں اور ہر جگہ یکساں لاگو ہوتے ہیں۔ پراپرٹی کے فائلر ریٹس Finance Act 2026 کے مطابق اپڈیٹ ہیں: 236K = 1.25% (خریدار)، 236C = 2.75% (فروخت کنندہ)۔ نان فائلر اور گاڑی کے ریٹس عمومی تخمینہ ہیں — آپ اوپر ریٹ خود بھی تبدیل کر سکتے ہیں۔ صوبائی Stamp Duty، Registration Fee اور TMA Fee "رجسٹری اخراجات" آپشن میں خود درج کر کے شامل کیے جا سکتے ہیں (یہ خودکار نہیں، کیونکہ یہ ضلع وار مختلف ہوتے ہیں)۔ ✅ Finance Act 2026-27 کی دیگر اہم تبدیلیاں: "لیٹ فائلر" کیٹیگری ختم (اب صرف Filer/Non-Filer)، Section 7E (Deemed Income Tax) ختم، پراپرٹی ٹرانسفر پر 7% FED ختم۔ درست تصدیق کے لیے ہم سے رابطہ کریں۔',
     wtEyebrow:'Section 153 تخمینہ', wtTitle:'Withholding Tax Calculator (Contractor / Supplier / Retailer)',
@@ -2618,7 +2642,7 @@ const I18N = {
     pvDisclaimer:'⚠️ ٹیکس مقاصد (236C, 236K, کیپیٹل گینز وغیرہ) کے لیے قانونی طور پر جو قیمت زیادہ ہو — FBR ویلیویشن، DC ریٹ، یا رجسٹری میں لکھی قیمت — وہی "Fair Market Value" تصور ہو کر ٹیکس کی بنیاد بنتی ہے۔ یہ ایک عمومی تخمینہ ہے — درست ویلیویشن اور ٹیکس حساب کے لیے ہم سے رابطہ کریں۔',
     bpEyebrow:'پروفٹ آن ڈیبٹ ٹیکس', bpTitle:'Bank Profit / Profit on Debt Tax Calculator (Section 151)',
     bpAmount:'سالانہ منافع کی رقم (Rs)', bpType:'منافع کی قسم',
-    bpTypeBank:'بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS (20% / 40%)', bpTypeGovt:'گورنمنٹ سیکیورٹیز (کمپنی/AOP کو) (20% / 40%)', bpTypeSukukCo:'سکوک — ہولڈر کمپنی ہو (25% / 50%)', bpTypeOther:'دیگر تمام صورتیں (15% / 30%)',
+    bpTypeBank:'بینک اکاؤنٹ / ٹرم ڈپازٹ / PLS — انفرادی/AOP (15% / 30%)', bpTypeGovt:'بینک ڈپازٹ / گورنمنٹ سیکیورٹیز — کمپنی (نان انڈیویجول) (20% / 40%)', bpTypeSukukCo:'سکوک — ہولڈر کمپنی ہو (25% / 50%)', bpTypeOther:'دیگر تمام صورتیں (15% / 30%)',
     bpHint:'💡 یہ عام طور پر انفرادی/AOP کے لیے فائنل ٹیکس ہے (Rs 5 ملین تک کے منافع پر)۔ Behbood Savings Certificate پر کوئی ودہولڈنگ ٹیکس نہیں کاٹا جاتا۔',
     bpDisclaimer:'⚠️ ماخذ: FBR Withholding Income Tax Rate Card، Section 151۔ یہ عمومی تخمینہ ہے — آپ کے مخصوص انسٹرومنٹ (National Savings سرٹیفکیٹس وغیرہ) پر ریٹ مختلف ہو سکتا ہے — درست حساب کے لیے ہم سے رابطہ کریں۔',
     dvEyebrow:'ڈیویڈنڈ انکم ٹیکس', dvTitle:'Dividend Tax Calculator (Section 150)',
@@ -2645,6 +2669,7 @@ const I18N = {
     fvBeyond6:'🤝 بینکوں، سپلائرز اور بڑے کلائنٹس کے ساتھ ساکھ (credibility) بہتر ہوتی ہے',
     fvDisclaimer:'⚠️ یہ عمومی موازنہ ہے اور آپ کی اپنی سائٹ کے calculators سے live ریٹس اٹھاتا ہے۔ کچھ ریٹس (بینک منافع، ڈیویڈنڈ، فری لانسر) ہمارے اپنے تصدیق شدہ ڈیٹا پر مبنی ہیں۔ AOP/انفرادی انکم ٹیکس سلیب فائلر/نان فائلر سے متاثر نہیں ہوتا (صرف ودہولڈنگ ٹیکس ریٹس مختلف ہوتے ہیں)۔ درست اور مکمل حساب کے لیے ہم سے رابطہ کریں۔',
     fvTblPropPurchase:'پراپرٹی خریداری (236K)', fvTblPropSale:'پراپرٹی فروخت (236C)', fvTblVehicle:'گاڑی رجسٹریشن — 1300cc مثال (231B)', fvTblCash:'کیش نکلوانا (231AB)', fvTblBank:'بینک منافع (151)', fvTblDividend:'ڈیویڈنڈ — لسٹڈ کمپنی (150)', fvTblLocalIT:'لوکل IT/ITeS سروسز (153)', fvTblAop:'AOP / انفرادی انکم ٹیکس سلیب',
+    fvTblCard236Y:'انٹرنیشنل کارڈ پیمنٹ (236Y)', fvTblPrizeBond:'پرائز بانڈ / کراس ورڈ انعام (156)', fvTblLottery:'ریفل/لاٹری/کوئز انعام (156)', fvTblCommission:'کمیشن/بروکریج (233)', fvTbl236G:'ڈسٹری بیوٹر/ہول سیلر کو فروخت (236G)', fvTbl236H:'ریٹیلرز کو فروخت (236H)', fvTblFunctionHall:'شادی ہال / فنکشن (236CB)',
     fvNoTax:'کوئی ٹیکس نہیں', fvSameSlab:'ایک جیسا سلیب (کوئی فرق نہیں)', fvLoading:'لوڈ ہو رہا ہے...',
     utEyebrow:'بجلی / موبائل / انٹرنیٹ', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'بجلی (Electricity)', utTabTelecom:'موبائل/انٹرنیٹ',
@@ -2747,6 +2772,16 @@ const I18N = {
     atcDcHint:'💡 236K/236C use the FBR-notified value (often different from the DC rate) — whichever is higher applies. Enter that amount above as "Property Value".',
     atcRegistryToggle:'🧾 Also include full registry expenses (Stamp Duty + Registration Fee + TMA Fee)',
     atcRegistryHint:'💡 These three rates vary by province, district, and property type, and change often — please confirm the current rate with your local Sub-Registrar / Excise & Taxation / TMA office, or with us, before entering it here.',
+    atcPunjabQuickFill:'📍 Fill Punjab defaults (Stamp Duty 1% + TMA 1%)',
+    atcPunjabRefTitle:'📋 Punjab (Rawalpindi/Gujar Khan) Reference — Registry Fee Schedule:',
+    atcPunjabRef1:'Stamp Duty — Residential urban area: 1% | Agricultural/rural: 1%',
+    atcPunjabRef2:'Stamp Duty — Shop/house where map has been approved: 2%',
+    atcPunjabRef3:'TMA tax: 1%',
+    atcPunjabRef4:'PLRA charges: Up to Rs 3 million — flat Rs 3,300; above Rs 3 million — 1%',
+    atcPunjabRef5:'Registration Fee: Up to Rs 0.5 million — flat Rs 500; above Rs 0.5 million — flat Rs 1,000',
+    atcPunjabRef6:'Mukhtar Nama / Power of Attorney (blood relation): flat Rs 3,025 | Mukhtar Nama (valuation/non-relation): 2% of value',
+    atcPunjabRef7:'Copy/comparison fee: Rs 100 | Transfer fee etc: Rs 600',
+    atcPunjabRefNote:'⚠️ These rates are taken from one specific Tehsil\'s official notice board (per photo, 2026-27) — Registration Fee and Mukhtar Nama fee are flat Rupee amounts, not percentages, so they cannot be added into the % fields above. Confirm with your own Tehsil office before relying on these.',
     atcStampDuty:'Stamp Duty (%)', atcRegFee:'Registration Fee (%)', atcTmaFee:'TMA Fee (%)',
     atcDisclaimer:'⚠️ This calculator applies across all of Pakistan (Punjab, Sindh, KPK, Balochistan, Islamabad) since Sections 231B, 236C, 236K are federal (FBR) taxes applied uniformly nationwide. Property filer rates are updated per Finance Act 2026: 236K = 1.25% (buyer), 236C = 2.75% (seller). Non-filer and vehicle rates are general estimates — you can edit the rate above. Provincial Stamp Duty, Registration Fee and TMA Fee can be added via the "Registry Expenses" option by entering them yourself (not automatic, since these vary by district). ✅ Other key Finance Act 2026-27 changes: the "Late Filer" category is removed (only Filer/Non-Filer now apply), Section 7E (Deemed Income Tax) is abolished, and the 7% FED on property transfer is abolished. Contact us for accurate confirmation.',
     wtEyebrow:'Section 153 Estimate', wtTitle:'Withholding Tax Calculator (Contractor / Supplier / Retailer)',
@@ -2812,7 +2847,7 @@ const I18N = {
     pvDisclaimer:'⚠️ For tax purposes (236C, 236K, capital gains, etc.), whichever value is legally higher — FBR valuation, DC rate, or the registered/deed price — is treated as the "Fair Market Value" and used as the tax base. This is a general estimate — contact us for accurate valuation and tax calculation.',
     bpEyebrow:'Profit on Debt Tax', bpTitle:'Bank Profit / Profit on Debt Tax Calculator (Section 151)',
     bpAmount:'Annual Profit Amount (Rs)', bpType:'Type of Profit',
-    bpTypeBank:'Bank Account / Term Deposit / PLS (20% / 40%)', bpTypeGovt:'Government Securities (paid to company/AOP) (20% / 40%)', bpTypeSukukCo:'Sukuk — holder is a company (25% / 50%)', bpTypeOther:'All other cases (15% / 30%)',
+    bpTypeBank:'Bank Account / Term Deposit / PLS — Individual/AOP (15% / 30%)', bpTypeGovt:'Bank Deposit / Govt Securities — Company (Non-Individual) (20% / 40%)', bpTypeSukukCo:'Sukuk — holder is a company (25% / 50%)', bpTypeOther:'All other cases (15% / 30%)',
     bpHint:'💡 This is generally a final tax for individuals/AOPs (on profit up to Rs 5 million). No withholding tax is deducted on Behbood Savings Certificates.',
     bpDisclaimer:'⚠️ Source: FBR Withholding Income Tax Rate Card, Section 151. This is a general estimate — the rate may differ for your specific instrument (National Savings certificates, etc.) — contact us for an accurate calculation.',
     dvEyebrow:'Dividend Income Tax', dvTitle:'Dividend Tax Calculator (Section 150)',
@@ -2839,6 +2874,7 @@ const I18N = {
     fvBeyond6:'🤝 Better credibility with banks, suppliers, and large clients',
     fvDisclaimer:'⚠️ This is a general comparison and pulls live rates from your own site\'s calculators. Some rates (bank profit, dividend, freelancer) are based on our own verified data. AOP/individual income tax slabs aren\'t affected by filer status (only withholding tax rates differ). Contact us for an accurate, complete calculation.',
     fvTblPropPurchase:'Property Purchase (236K)', fvTblPropSale:'Property Sale (236C)', fvTblVehicle:'Vehicle Registration — 1300cc example (231B)', fvTblCash:'Cash Withdrawal (231AB)', fvTblBank:'Bank Profit (151)', fvTblDividend:'Dividend — Listed Company (150)', fvTblLocalIT:'Local IT/ITeS Services (153)', fvTblAop:'AOP / Individual Income Tax Slab',
+    fvTblCard236Y:'International Card Payment (236Y)', fvTblPrizeBond:'Prize Bond / Crossword Prize (156)', fvTblLottery:'Raffle/Lottery/Quiz Prize (156)', fvTblCommission:'Commission/Brokerage (233)', fvTbl236G:'Sale to Distributor/Wholesaler (236G)', fvTbl236H:'Sale to Retailers (236H)', fvTblFunctionHall:'Marriage Hall / Function (236CB)',
     fvNoTax:'No Tax', fvSameSlab:'Same slab (no difference)', fvLoading:'Loading...',
     utEyebrow:'Electricity / Mobile / Internet', utTitle:'Utility Tax Calculator (Electricity / Mobile / Internet)',
     utTabElec:'Electricity', utTabTelecom:'Mobile/Internet',
@@ -3750,6 +3786,13 @@ function atcToggleRegistryFields(){
   const on=document.getElementById('atcRegistryToggle').checked;
   document.getElementById('atcRegistryFields').style.display=on?'block':'none';
 }
+function atcFillPunjabRegistryDefaults(){
+  // Punjab (Rawalpindi/Gujar Khan) reference: residential urban Stamp Duty 1%, TMA 1%.
+  // Registration Fee is a flat Rupee amount in this district (not %), so it is intentionally
+  // left blank here — see the reference list below for the exact flat-fee schedule.
+  document.getElementById('atcStampDuty').value = 1;
+  document.getElementById('atcTmaFee').value = 1;
+}
 function atcCalcProperty(){
   const ur=currentLang==='ur';
   const value=parseFloat(document.getElementById('atcPropertyValue').value)||0;
@@ -4368,7 +4411,7 @@ function pvCalc(){
 }
 
 /* ═══════════════ BANK PROFIT / PROFIT ON DEBT TAX (SECTION 151) ═══════════════ */
-const BP_RATES = { bank:{filer:20,nonfiler:40}, govtsec:{filer:20,nonfiler:40}, sukukco:{filer:25,nonfiler:50}, other:{filer:15,nonfiler:30} };
+const BP_RATES = { bank:{filer:15,nonfiler:30}, govtsec:{filer:20,nonfiler:40}, sukukco:{filer:25,nonfiler:50}, other:{filer:15,nonfiler:30} };
 function bpSuggestRate(){
   const type=document.getElementById('bpType').value;
   const filer=document.getElementById('bpFiler').value;
@@ -4490,6 +4533,18 @@ function populateFilerComparisonTable(){
     rows.push([t('fvTblVehicle'), vFiler+'%', vNonFiler+'%']);
     // Cash Withdrawal 231AB
     rows.push([t('fvTblCash'), t('fvNoTax'), R.withholding.cashWithdrawal.nonFilerRate+'% ('+(ur?'حد سے زیادہ پر':'above threshold')+')']);
+    // International Card Payment 236Y
+    rows.push([t('fvTblCard236Y'), R.withholding.internationalCard236Y.filerRate+'%', R.withholding.internationalCard236Y.nonFilerRate+'%']);
+    // Prizes 156
+    rows.push([t('fvTblPrizeBond'), R.withholding.prizes156.prizeBondCrossword.filer+'%', R.withholding.prizes156.prizeBondCrossword.nonfiler+'%']);
+    rows.push([t('fvTblLottery'), R.withholding.prizes156.raffleLotteryQuiz.filer+'%', R.withholding.prizes156.raffleLotteryQuiz.nonfiler+'%']);
+    // Commission 233
+    rows.push([t('fvTblCommission'), R.withholding.commission233.otherCommission.filer+'%', R.withholding.commission233.otherCommission.nonfiler+'%']);
+    // 236G / 236H
+    rows.push([t('fvTbl236G'), R.withholding.distributorWholesale236G.other.filer+'%', R.withholding.distributorWholesale236G.other.nonfiler+'%']);
+    rows.push([t('fvTbl236H'), R.withholding.retailer236H.filer+'%', R.withholding.retailer236H.nonfiler+'%']);
+    // Function Hall 236CB
+    rows.push([t('fvTblFunctionHall'), R.withholding.functionHall236CB.filerRate+'%', R.withholding.functionHall236CB.nonFilerRate+'%']);
   }catch(e){
     rows.push([t('fvTblPropPurchase'), t('fvLoading'), t('fvLoading')]);
     rows.push([t('fvTblPropSale'), t('fvLoading'), t('fvLoading')]);

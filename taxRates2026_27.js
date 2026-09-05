@@ -1,7 +1,7 @@
 /*
   MFJ Services — Pakistan Tax Rate Card
   Tax Year: 2026-27 (Finance Act 2026)
-  Last reviewed: 2026-08-04
+  Last reviewed: 2026-09-03
 
   HOW TO UPDATE FOR A NEW TAX YEAR:
   - Do NOT edit index.html for rate changes.
@@ -23,7 +23,7 @@ const TAX_RATES_2026_27 = {
   meta: {
     taxYear: '2026-27',
     financeAct: 'Finance Act 2026',
-    lastReviewed: '2026-08-13'
+    lastReviewed: '2026-09-03'
   },
 
   /* Section 153 — Withholding Tax on Goods / Services / Contracts.
@@ -55,7 +55,43 @@ const TAX_RATES_2026_27 = {
       thresholdPerDay: 50000,
       filerRate: 0,
       nonFilerRate: 0.8
-    }
+    },
+
+    /* Section 236Y — Advance tax on amount remitted abroad via credit/debit/prepaid card.
+       Finance Act 2026 cut this from 5%/10% to 0.5%/1%. Adjustable (creditable against final liability).
+       Verified 2026-09-03 against Trustpoint Consultants Withholding Tax Card 2026-27. */
+    internationalCard236Y: { filerRate: 0.5, nonFilerRate: 1 },
+
+    /* Section 156 — Prizes and winnings. Two different sub-rates depending on the type of prize —
+       these are commonly confused with each other in informal rate lists.
+       Verified 2026-09-03 against Trustpoint Consultants Withholding Tax Card 2026-27. */
+    prizes156: {
+      prizeBondCrossword:  { filer: 15, nonfiler: 30 }, // Prize bond winnings, cross-word puzzle prizes
+      raffleLotteryQuiz:   { filer: 20, nonfiler: 40 }  // Raffle, lottery, quiz, sales-promotion prizes
+    },
+
+    /* Section 233 — Brokerage and Commission. Verified 2026-09-03 against Trustpoint Consultants
+       Withholding Tax Card 2026-27. Note: Section 233A (stock exchange member commission) was
+       omitted in an earlier Finance Act and is NOT currently in force — do not quote a rate for it. */
+    commission233: {
+      advertisingAgents:   { filer: 10, nonfiler: 20 },
+      lifeInsuranceAgents: { filer: 8,  nonfiler: 16 }, // only where annual commission < Rs 500,000
+      otherCommission:     { filer: 12, nonfiler: 24 }
+    },
+
+    /* Sections 236G & 236H — Advance tax collected from distributors/dealers/wholesalers (236G)
+       and retailers (236H) on sale value. Non-filer rates here are FIXED (not simply doubled) per
+       the Tenth Schedule. Verified 2026-09-03 against Trustpoint Consultants Withholding Tax Card 2026-27. */
+    distributorWholesale236G: {
+      fertiliser: { filer: 0.7, nonfiler: 1.4 }, // 0.25% if seller is on both Sales-Tax & Income-Tax ATL
+      other:      { filer: 0.1, nonfiler: 2 }
+    },
+    retailer236H: { filer: 0.5, nonfiler: 2.5 },
+
+    /* Section 236CB — Advance tax on functions and gatherings (marriage halls, marquees, banquet
+       halls, community centres etc.), charged on the total bill. Verified 2026-09-03 against
+       Trustpoint Consultants Withholding Tax Card 2026-27. */
+    functionHall236CB: { filerRate: 10, nonFilerRate: 20 }
   },
 
   /* Section 231B — Advance Tax on Motor Vehicle registration/transfer/leasing.

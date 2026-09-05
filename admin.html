@@ -1359,11 +1359,31 @@ tbody tr:hover td{background:var(--primary-ultra);}
             <option value="referral">ریفرل کلائنٹ</option>
           </select>
         </div>
+
+        <div class="card" id="bulkActionsBar" style="margin-bottom:14px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+          <div style="font-weight:700;font-size:13px;color:var(--dark);white-space:nowrap;">
+            🧾 <span id="bulkSelCount">0</span> کلائنٹ منتخب
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="bulkSelectAllFiltered()">☑ سب منتخب کریں (نظر آنے والے)</button>
+          <button class="btn btn-secondary btn-sm" onclick="bulkClearSelection()">✖ انتخاب صاف کریں</button>
+          <span style="width:1px;align-self:stretch;background:var(--border);"></span>
+          <select id="bulkField" onchange="bulkFieldChanged()" style="min-width:150px;">
+            <option value="status">اسٹیٹس بدلیں</option>
+            <option value="category">خدمت (Category) بدلیں</option>
+            <option value="clientType">نوع (مین/ریفرل) بدلیں</option>
+            <option value="engagementType">کلائنٹ ٹائپ بدلیں</option>
+            <option value="source">ذریعہ (Source) بدلیں</option>
+          </select>
+          <select id="bulkValue" style="min-width:160px;"></select>
+          <button class="btn btn-primary btn-sm" onclick="bulkApplyChange()">⚡ منتخب سب پر لاگو کریں</button>
+        </div>
+
         <div class="card">
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
+                  <th><input type="checkbox" id="selectAllClients" onchange="bulkToggleSelectAll(this)"></th>
                   <th>#</th>
                   <th>نام</th>
                   <th>موبائل</th>
@@ -2471,6 +2491,7 @@ const DOC_LISTS = {
 };
 
 let clients = [];
+let selectedClientIds = new Set();
 let editingId = null;
 
 /* ═══════════════════════════════════════════════════════
@@ -2827,13 +2848,14 @@ function renderTable(){
   const tbody = document.getElementById('clientsTable');
   const empty = document.getElementById('tableEmpty');
   const footer = document.getElementById('tableFooter');
-  if(!list.length){ tbody.innerHTML=''; empty.style.display=''; footer.textContent=''; return; }
+  if(!list.length){ tbody.innerHTML=''; empty.style.display=''; footer.textContent=''; bulkUpdateBar(); return; }
   empty.style.display='none';
 
   list = [...list].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
   tbody.innerHTML = list.map((c,i)=>{
     const referrerName = c.referredBy ? (clients.find(x=>x.id===c.referredBy)||{}).name||'' : '';
     return `<tr>
+      <td><input type="checkbox" class="row-check" data-id="${c.id}" ${selectedClientIds.has(c.id)?'checked':''} onchange="bulkToggleOne('${c.id}',this.checked)"></td>
       <td style="color:var(--text-mute);font-size:12px;">${i+1}</td>
       <td>
         <div style="font-weight:700;color:var(--dark);">${c.name||'—'}</div>
@@ -2861,6 +2883,8 @@ function renderTable(){
     </tr>`;
   }).join('');
   footer.textContent = `کل ${list.length} کلائنٹ دکھائے جا رہے ہیں (کل: ${clients.length})`;
+  bulkSyncSelectAllCheckbox();
+  bulkUpdateBar();
 }
 
 async function quickStatus(id, val){
@@ -2876,6 +2900,90 @@ async function quickStatus(id, val){
       sendStatusSMSNotification(c, val);
     }, 400);
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BULK ACTIONS — select multiple clients, change one field
+   (status / category / clientType / engagementType / source)
+   for all of them in a single click.
+   ═══════════════════════════════════════════════════════ */
+const BULK_FIELD_OPTIONS = {
+  status: STATUS_LABEL,
+  category: CATEGORY_LABEL,
+  clientType: {main:'⭐ مین کلائنٹ', referral:'🌿 ریفرل کلائنٹ'},
+  engagementType: ENGAGEMENT_LABEL,
+  source: SOURCE_LABEL
+};
+
+function bulkToggleOne(id, checked){
+  if(checked) selectedClientIds.add(id); else selectedClientIds.delete(id);
+  bulkSyncSelectAllCheckbox();
+  bulkUpdateBar();
+}
+
+function bulkToggleSelectAll(cb){
+  document.querySelectorAll('#clientsTable .row-check').forEach(row=>{
+    row.checked = cb.checked;
+    if(cb.checked) selectedClientIds.add(row.dataset.id); else selectedClientIds.delete(row.dataset.id);
+  });
+  bulkUpdateBar();
+}
+
+function bulkSelectAllFiltered(){
+  document.querySelectorAll('#clientsTable .row-check').forEach(row=>{
+    row.checked = true;
+    selectedClientIds.add(row.dataset.id);
+  });
+  bulkSyncSelectAllCheckbox();
+  bulkUpdateBar();
+}
+
+function bulkClearSelection(){
+  selectedClientIds.clear();
+  document.querySelectorAll('#clientsTable .row-check').forEach(row=>row.checked=false);
+  bulkSyncSelectAllCheckbox();
+  bulkUpdateBar();
+}
+
+function bulkSyncSelectAllCheckbox(){
+  const all = document.getElementById('selectAllClients');
+  if(!all) return;
+  const rows = document.querySelectorAll('#clientsTable .row-check');
+  all.checked = rows.length>0 && [...rows].every(r=>selectedClientIds.has(r.dataset.id));
+}
+
+function bulkUpdateBar(){
+  const el = document.getElementById('bulkSelCount');
+  if(el) el.textContent = selectedClientIds.size;
+}
+
+function bulkFieldChanged(){
+  const field = document.getElementById('bulkField').value;
+  const opts = BULK_FIELD_OPTIONS[field] || {};
+  document.getElementById('bulkValue').innerHTML =
+    Object.entries(opts).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+}
+
+async function bulkApplyChange(){
+  if(selectedClientIds.size===0){ showToast('⚠ پہلے کم از کم ایک کلائنٹ منتخب کریں'); return; }
+  const field = document.getElementById('bulkField').value;
+  const val = document.getElementById('bulkValue').value;
+  const fieldLabelMap = {status:'اسٹیٹس', category:'خدمت', clientType:'نوع', engagementType:'کلائنٹ ٹائپ', source:'ذریعہ'};
+  const valLabel = (BULK_FIELD_OPTIONS[field]||{})[val] || val;
+  const n = selectedClientIds.size;
+  const ok = confirm(`کیا آپ واقعی ${n} منتخب کلائنٹس کا "${fieldLabelMap[field]||field}" بدل کر "${valLabel}" کرنا چاہتے ہیں؟\n\n(نوٹ: یہ صرف ڈیٹا اپڈیٹ کرے گا — کلائنٹس کو کوئی WhatsApp/SMS پیغام خودکار نہیں جائے گا)`);
+  if(!ok) return;
+
+  const affected = [];
+  clients.forEach(c=>{
+    if(selectedClientIds.has(c.id)){ c[field] = val; affected.push(c); }
+  });
+  await save();
+  await Promise.all(affected.map(c=>_supaUpsert(c)));
+  updateStats();
+  renderTable();
+  showToast(`✓ ${affected.length} کلائنٹس کا "${fieldLabelMap[field]||field}" اپڈیٹ ہو گیا`);
+  bulkClearSelection();
 }
 
 function sendStatusChangeWA(c, newStatus){
@@ -4055,6 +4163,7 @@ async function initApp(){
   updateStats();
   renderTable();
   renderActivitySummary();
+  try{ bulkFieldChanged(); }catch(e){}
 }
 
 /* Entry point */

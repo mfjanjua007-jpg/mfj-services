@@ -532,6 +532,7 @@ body{
 .kpi.purple::before,.kpi-grid>.kpi:nth-child(5)::before{background:linear-gradient(90deg,#8B5CF6,#A78BFA);}
 .kpi.cyan::before,.kpi-grid>.kpi:nth-child(3)::before{background:linear-gradient(90deg,#06B6D4,#22D3EE);}
 .kpi.indigo::before{background:linear-gradient(90deg,#6366F1,#818CF8);}
+.kpi.gray::before{background:linear-gradient(90deg,#64748B,#94A3B8);}
 .kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .kpi-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;}
 .kpi.blue .kpi-ic,.kpi-grid>.kpi:nth-child(1) .kpi-ic{background:rgba(99,102,241,.15);color:#6366F1;}
@@ -541,6 +542,7 @@ body{
 .kpi.purple .kpi-ic,.kpi-grid>.kpi:nth-child(5) .kpi-ic{background:rgba(139,92,246,.15);color:#0F8A5F;}
 .kpi.cyan .kpi-ic,.kpi-grid>.kpi:nth-child(3) .kpi-ic{background:rgba(6,182,212,.15);color:#0891B2;}
 .kpi.indigo .kpi-ic{background:#EEF2FF;color:#6366F1;}
+.kpi.gray .kpi-ic{background:rgba(100,116,139,.15);color:#475569;}
 .kpi-trend{font-size:11px;font-weight:700;}
 .kpi-label{font-size:11.5px;color:var(--text-mute);font-weight:600;letter-spacing:.2px;margin-bottom:6px;}
 .kpi-val{font-size:28px;font-weight:800;color:var(--dark);letter-spacing:-1px;line-height:1.1;}
@@ -1296,6 +1298,7 @@ tbody tr:hover td{background:var(--primary-ultra);}
           <button class="quick-card" onclick="showTabByName('clients')"><div class="quick-ic">🔍</div><span>کلائنٹ تلاش</span></button>
           <button class="quick-card" onclick="exportCSV()"><div class="quick-ic">📥</div><span>CSV Export</span></button>
           <button class="quick-card" onclick="showTabByName('analytics')"><div class="quick-ic">📈</div><span>Analytics</span></button>
+          <button class="quick-card" onclick="goToVanishedBox()"><div class="quick-ic">👻</div><span>اُڑن چھو کلائنٹس</span></button>
         </div>
 
         <!-- Activity -->
@@ -1313,7 +1316,13 @@ tbody tr:hover td{background:var(--primary-ultra);}
       <div id="tab-clients" class="panel">
         <div class="section-head">
           <h3>👥 تمام کلائنٹس</h3>
-          <button class="btn btn-primary btn-sm" onclick="showTabByName('add')">➕ نیا کلائنٹ</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" id="vanishedToggleBtn" onclick="toggleVanishedBoxView()">👻 اُڑن چھو کلائنٹس (<span id="vanishedCount">0</span>)</button>
+            <button class="btn btn-primary btn-sm" onclick="showTabByName('add')">➕ نیا کلائنٹ</button>
+          </div>
+        </div>
+        <div class="wt-hint" id="vanishedBanner" style="display:none;margin-bottom:12px;">
+          👻 آپ اس وقت <strong>"اُڑن چھو کلائنٹس"</strong> کا خانہ دیکھ رہے ہیں — یہ وہ کلائنٹس ہیں جنہوں نے ایک بار کام کروایا اور اگلی بار خود نہیں آئے یا کہیں اور سے کام کروا لیا۔ عام کلائنٹس کی فہرست میں واپس جانے کے لیے اوپر بٹن دوبارہ دبائیں۔
         </div>
         <div class="search-bar">
           <input type="text" placeholder="نام، موبائل، CNIC، ای میل، NTN، ریفرنس سے تلاش..." id="searchInput" oninput="renderTable()">
@@ -1373,6 +1382,7 @@ tbody tr:hover td{background:var(--primary-ultra);}
             <option value="clientType">نوع (مین/ریفرل) بدلیں</option>
             <option value="engagementType">کلائنٹ ٹائپ بدلیں</option>
             <option value="source">ذریعہ (Source) بدلیں</option>
+            <option value="clientBox">👻 خانہ بدلیں (عام / اُڑن چھو)</option>
           </select>
           <select id="bulkValue" style="min-width:160px;"></select>
           <button class="btn btn-primary btn-sm" onclick="bulkApplyChange()">⚡ منتخب سب پر لاگو کریں</button>
@@ -2492,6 +2502,7 @@ const DOC_LISTS = {
 
 let clients = [];
 let selectedClientIds = new Set();
+let viewingVanishedBox = false;
 let editingId = null;
 
 /* ═══════════════════════════════════════════════════════
@@ -2544,6 +2555,7 @@ function doLogout(){
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appShell').classList.add('active');
+  history.replaceState({mfjTab:'dashboard'}, '', '#dashboard');
   initApp();
 }
 
@@ -2726,6 +2738,7 @@ function migrateClient(c){
   if(!c.clientType) c.clientType = 'main';
   if(!c.referredBy) c.referredBy = '';
   if(!c.engagementType) c.engagementType = 'new';
+  if(!c.clientBox) c.clientBox = 'regular';
   if(!c.id) c.id = Date.now() + Math.random().toString(36).slice(2);
   return c;
 }
@@ -2785,6 +2798,7 @@ function updateStats(){
   const paid = clients.filter(c=>c.status==='paid').length;
   const revenue = clients.reduce((s,c)=>s+(parseFloat(c.fee)||0), 0);
   const referrals = clients.filter(c=>c.clientType==='referral').length;
+  const vanished = clients.filter(c=>c.clientBox==='vanished').length;
 
   const grid = document.getElementById('statsGrid');
   grid.innerHTML = `
@@ -2795,6 +2809,7 @@ function updateStats(){
     ${kpiCard('indigo','💳','ادا شدہ',paid,'','paid',"filterAndShow('paid')")}
     ${kpiCard('purple','💰','کل آمدن','Rs '+(revenue.toLocaleString()),'','total revenue',"showTabByName('reports')")}
     ${kpiCard('red','🌳','ریفرل کلائنٹس',referrals,'','via referral',"showTabByName('referral')")}
+    ${kpiCard('gray','👻','اُڑن چھو کلائنٹس',vanished,'','one-time / not returned',"goToVanishedBox()")}
   `;
   document.getElementById('navClientCount').textContent = total;
 }
@@ -2836,6 +2851,8 @@ function renderTable(){
   const fe = (document.getElementById('filterEngagement')||{value:''}).value;
 
   let list = clients.filter(c=>{
+    if(viewingVanishedBox){ if(c.clientBox!=='vanished') return false; }
+    else{ if(c.clientBox==='vanished') return false; }
     if(fs && c.status!==fs) return false;
     if(fc && c.category!==fc) return false;
     if(ft && c.clientType!==ft) return false;
@@ -2848,7 +2865,7 @@ function renderTable(){
   const tbody = document.getElementById('clientsTable');
   const empty = document.getElementById('tableEmpty');
   const footer = document.getElementById('tableFooter');
-  if(!list.length){ tbody.innerHTML=''; empty.style.display=''; footer.textContent=''; bulkUpdateBar(); return; }
+  if(!list.length){ tbody.innerHTML=''; empty.style.display=''; footer.textContent=''; bulkUpdateBar(); updateVanishedToggleUI(); return; }
   empty.style.display='none';
 
   list = [...list].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
@@ -2877,6 +2894,10 @@ function renderTable(){
           <button class="icon-btn edit" title="ترمیم" onclick="editClient('${c.id}')">✏️</button>
           <button class="icon-btn wa" title="WhatsApp" onclick="waClient('${c.id}')">💬</button>
           ${c.clientType==='main'?`<button class="icon-btn tree" title="ریفرل رابطہ" onclick="referralContact('${c.id}')">🌳</button>`:''}
+          ${c.clientBox==='vanished'
+            ? `<button class="icon-btn" title="واپس عام کلائنٹس میں لائیں" onclick="toggleClientBox('${c.id}')">↩️</button>`
+            : `<button class="icon-btn" title="اُڑن چھو خانے میں ڈالیں" onclick="toggleClientBox('${c.id}')">👻</button>`
+          }
           <button class="icon-btn del" title="حذف" onclick="delClient('${c.id}')">🗑</button>
         </div>
       </td>
@@ -2885,6 +2906,7 @@ function renderTable(){
   footer.textContent = `کل ${list.length} کلائنٹ دکھائے جا رہے ہیں (کل: ${clients.length})`;
   bulkSyncSelectAllCheckbox();
   bulkUpdateBar();
+  updateVanishedToggleUI();
 }
 
 async function quickStatus(id, val){
@@ -2912,8 +2934,45 @@ const BULK_FIELD_OPTIONS = {
   category: CATEGORY_LABEL,
   clientType: {main:'⭐ مین کلائنٹ', referral:'🌿 ریفرل کلائنٹ'},
   engagementType: ENGAGEMENT_LABEL,
-  source: SOURCE_LABEL
+  source: SOURCE_LABEL,
+  clientBox: {regular:'📋 عام کلائنٹس', vanished:'👻 اُڑن چھو کلائنٹس'}
 };
+
+/* ─────────────────────────────────────────────
+   "اُڑن چھو کلائنٹس" (Vanished Clients) box —
+   for one-time clients who didn't return next
+   year, or got work done elsewhere. Keeps them
+   out of the regular client list.
+   ───────────────────────────────────────────── */
+async function toggleClientBox(id){
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  const movingToVanished = c.clientBox !== 'vanished';
+  if(movingToVanished){
+    if(!confirm(`"${c.name||'یہ کلائنٹ'}" کو 👻 اُڑن چھو خانے میں ڈالنا چاہتے ہیں؟\n\nیہ عام کلائنٹس کی فہرست سے نظر آنا بند ہو جائے گا (ڈیٹا ڈیلیٹ نہیں ہوگا، بس الگ خانے میں چلا جائے گا)۔`)) return;
+  }
+  c.clientBox = movingToVanished ? 'vanished' : 'regular';
+  await save(); _supaUpsert(c); updateStats();
+  showToast(movingToVanished ? '👻 اُڑن چھو خانے میں ڈال دیا گیا' : '↩️ عام کلائنٹس میں واپس لایا گیا');
+  renderTable();
+}
+
+function toggleVanishedBoxView(){
+  viewingVanishedBox = !viewingVanishedBox;
+  selectedClientIds.clear();
+  renderTable();
+}
+
+function updateVanishedToggleUI(){
+  const btn = document.getElementById('vanishedToggleBtn');
+  const banner = document.getElementById('vanishedBanner');
+  const countEl = document.getElementById('vanishedCount');
+  if(countEl) countEl.textContent = clients.filter(c=>c.clientBox==='vanished').length;
+  if(btn) btn.textContent = viewingVanishedBox
+    ? '🔙 عام کلائنٹس پر واپس جائیں'
+    : `👻 اُڑن چھو کلائنٹس (${clients.filter(c=>c.clientBox==='vanished').length})`;
+  if(banner) banner.style.display = viewingVanishedBox ? '' : 'none';
+}
 
 function bulkToggleOne(id, checked){
   if(checked) selectedClientIds.add(id); else selectedClientIds.delete(id);
@@ -2968,7 +3027,7 @@ async function bulkApplyChange(){
   if(selectedClientIds.size===0){ showToast('⚠ پہلے کم از کم ایک کلائنٹ منتخب کریں'); return; }
   const field = document.getElementById('bulkField').value;
   const val = document.getElementById('bulkValue').value;
-  const fieldLabelMap = {status:'اسٹیٹس', category:'خدمت', clientType:'نوع', engagementType:'کلائنٹ ٹائپ', source:'ذریعہ'};
+  const fieldLabelMap = {status:'اسٹیٹس', category:'خدمت', clientType:'نوع', engagementType:'کلائنٹ ٹائپ', source:'ذریعہ', clientBox:'خانہ'};
   const valLabel = (BULK_FIELD_OPTIONS[field]||{})[val] || val;
   const n = selectedClientIds.size;
   const ok = confirm(`کیا آپ واقعی ${n} منتخب کلائنٹس کا "${fieldLabelMap[field]||field}" بدل کر "${valLabel}" کرنا چاہتے ہیں؟\n\n(نوٹ: یہ صرف ڈیٹا اپڈیٹ کرے گا — کلائنٹس کو کوئی WhatsApp/SMS پیغام خودکار نہیں جائے گا)`);
@@ -5318,6 +5377,13 @@ function filterAndShow(status){
     if(sel){ sel.value = status; renderTable(); }
   }, 50);
 }
+function goToVanishedBox(){
+  showTabByName('clients');
+  setTimeout(()=>{
+    viewingVanishedBox = true;
+    renderTable();
+  }, 50);
+}
 
 /* ═══════════════════════════════════════════════════════
    🎤 VOICE INPUT — Fixed
@@ -6534,13 +6600,29 @@ function initAITab(){
 /* ════════════════════════════════════════
    Hook into showTabByName for new tabs
    ════════════════════════════════════════ */
+let _navigatingFromPopstate = false;
 function showTabByName(name){
   _showTabBase(name);
+  if(!_navigatingFromPopstate){
+    history.pushState({mfjTab:name}, '', '#'+name);
+  }
   if(name==='messages') initMessagesTab();
   if(name==='appointments') loadAppointments();
   if(name==='website'){ loadWebsiteManager(); }
   if(name==='ai') initAITab();
 }
+window.addEventListener('popstate', function(e){
+  const appShell = document.getElementById('appShell');
+  if(!appShell || !appShell.classList.contains('active')) return; // not logged in yet — let browser handle it normally
+  const tab = (e.state && e.state.mfjTab) || 'dashboard';
+  _navigatingFromPopstate = true;
+  _showTabBase(tab);
+  if(tab==='messages') initMessagesTab();
+  if(tab==='appointments') loadAppointments();
+  if(tab==='website'){ loadWebsiteManager(); }
+  if(tab==='ai') initAITab();
+  _navigatingFromPopstate = false;
+});
 
 
 /* ════════════════════════════════════════════════════

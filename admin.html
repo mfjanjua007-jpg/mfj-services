@@ -621,6 +621,8 @@ textarea{width:100%;resize:vertical;font-family:inherit;}
    DATA TABLE
    ==================================================== */
 .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+#clientsTableWrap .sel-th,#clientsTableWrap .sel-td{display:none;}
+#clientsTableWrap.select-mode .sel-th,#clientsTableWrap.select-mode .sel-td{display:table-cell;}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;}
 thead th{position:sticky;top:0;z-index:5;background:var(--surface2);}
 th{text-align:right;padding:12px 14px;color:var(--text-soft);font-weight:700;
@@ -1015,6 +1017,15 @@ tbody tr:hover td{background:var(--primary-ultra);}
 .pdf-btn:hover{background:var(--success);color:#fff;}
 .wa-share-btn{background:#25D366;color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
 .wa-share-btn:hover{background:#128C7E;}
+
+/* Website feature toggle switch */
+.mfj-switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}
+.mfj-switch input{opacity:0;width:0;height:0;}
+.mfj-switch .slider{position:absolute;cursor:pointer;inset:0;background:#CBD5E1;transition:.2s;border-radius:26px;}
+.mfj-switch .slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;transition:.2s;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.mfj-switch input:checked + .slider{background:#0F8A5F;}
+.mfj-switch input:checked + .slider:before{transform:translateX(-20px);}
+.mfj-switch input:disabled + .slider{opacity:.5;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -1317,6 +1328,7 @@ tbody tr:hover td{background:var(--primary-ultra);}
         <div class="section-head">
           <h3>👥 تمام کلائنٹس</h3>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" id="bulkModeToggleBtn" onclick="toggleBulkSelectMode()">☑️ کلائنٹس منتخب کریں</button>
             <button class="btn btn-secondary btn-sm" id="vanishedToggleBtn" onclick="toggleVanishedBoxView()">👻 اُڑن چھو کلائنٹس (<span id="vanishedCount">0</span>)</button>
             <button class="btn btn-primary btn-sm" onclick="showTabByName('add')">➕ نیا کلائنٹ</button>
           </div>
@@ -1369,7 +1381,7 @@ tbody tr:hover td{background:var(--primary-ultra);}
           </select>
         </div>
 
-        <div class="card" id="bulkActionsBar" style="margin-bottom:14px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+        <div class="card" id="bulkActionsBar" style="margin-bottom:14px;padding:14px 16px;display:none;flex-wrap:wrap;align-items:center;gap:10px;">
           <div style="font-weight:700;font-size:13px;color:var(--dark);white-space:nowrap;">
             🧾 <span id="bulkSelCount">0</span> کلائنٹ منتخب
           </div>
@@ -1389,11 +1401,11 @@ tbody tr:hover td{background:var(--primary-ultra);}
         </div>
 
         <div class="card">
-          <div class="table-wrap">
+          <div class="table-wrap" id="clientsTableWrap">
             <table>
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="selectAllClients" onchange="bulkToggleSelectAll(this)"></th>
+                  <th class="sel-th"><input type="checkbox" id="selectAllClients" onchange="bulkToggleSelectAll(this)"></th>
                   <th>#</th>
                   <th>نام</th>
                   <th>موبائل</th>
@@ -2043,6 +2055,26 @@ tbody tr:hover td{background:var(--primary-ultra);}
             <div id="systemInfo" style="font-size:13px;color:var(--text-soft);line-height:2;"></div>
           </div>
 
+          <!-- WEBSITE FEATURE TOGGLES CARD -->
+          <div class="card" style="border:1.5px solid var(--primary-mid);grid-column:1/-1;">
+            <div class="card-header" style="background:linear-gradient(135deg,#0F8A5F15,#06B6D415);border-radius:var(--radius) var(--radius) 0 0;">
+              <span class="card-title">🌐 ویب سائٹ فیچرز (آن/آف)</span>
+            </div>
+            <div style="padding:6px 0 4px;">
+              <p style="font-size:12.5px;color:var(--text-mute);margin-bottom:14px;">یہاں سے آپ اپنی پبلک ویب سائٹ کے مخصوص فیچرز فوری آن/آف کر سکتے ہیں — کوئی فائل ڈیلیٹ نہیں ہوتی، صرف رسائی بند/بحال ہوتی ہے۔</p>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-soft,#F8FAFC);border-radius:10px;">
+                <div>
+                  <div style="font-weight:700;font-size:13.5px;">🏫 2D اسکول/گھر میپ بلڈر</div>
+                  <div style="font-size:11.5px;color:var(--text-mute);" id="mapBuilderStatusText">اسٹیٹس چیک ہو رہا ہے...</div>
+                </div>
+                <label class="mfj-switch">
+                  <input type="checkbox" id="mapBuilderToggle" disabled onchange="toggleMapBuilderFeature(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
           <!-- PASSWORD / USERNAME CHANGE CARD -->
           <div class="card" style="border:1.5px solid var(--primary-mid);grid-column:1/-1;">
             <div class="card-header" style="background:linear-gradient(135deg,#0F8A5F15,#06B6D415);border-radius:var(--radius) var(--radius) 0 0;">
@@ -2688,6 +2720,7 @@ async function load(){
           payments:typeof row.payments==='object'?(row.payments||[]):(row.payments?JSON.parse(row.payments):[]),
           media:typeof row.media==='object'?(row.media||[]):(row.media?JSON.parse(row.media):[]),
           clientType:row.client_type||'main', referredBy:row.referred_by||'',
+          clientBox:row.client_box||'regular',
           date:row.created_at||new Date().toISOString(),
         }));
         localStorage.setItem(DATA_KEY, JSON.stringify(clients));
@@ -2720,7 +2753,8 @@ async function _supaUpsert(c){
       iris_pass:c.irisPass||'', email_pass:c.emailPass||'',
       note:c.note||'', docs:c.docs||{}, payments:c.payments||[],
       media:c.media||[], client_type:c.clientType||'main',
-      referred_by:c.referredBy||'', updated_at:new Date().toISOString()
+      referred_by:c.referredBy||'', client_box:c.clientBox||'regular',
+      updated_at:new Date().toISOString()
     },{onConflict:'id'});
     if(error) console.warn('Supabase upsert error:', error.message);
   } catch(e){ console.warn('Supabase save error:', e); }
@@ -2732,6 +2766,40 @@ async function _supaDelete(id){
     const {error} = await _supa.from('clients').delete().eq('id',id);
     if(error) console.warn('Supabase delete error:', error.message);
   } catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════
+   🔄 REAL-TIME MULTI-DEVICE SYNC
+   Listens for any insert/update/delete on the `clients`
+   table (from ANY device/browser) and quietly refreshes
+   this device's data + view — no manual reload needed.
+   Requires Realtime to be enabled on the `clients` table
+   in the Supabase dashboard (Database → Replication).
+   ═══════════════════════════════════════════════════════ */
+let _realtimeRefreshTimer = null;
+let _realtimeChannel = null;
+function _scheduleRealtimeRefresh(){
+  // Debounce — bulk actions can fire many change events in a row;
+  // we only want a single refresh after things settle.
+  clearTimeout(_realtimeRefreshTimer);
+  _realtimeRefreshTimer = setTimeout(async ()=>{
+    await load();
+    updateStats();
+    if(document.getElementById('tab-clients')?.classList.contains('active')) renderTable();
+    renderActivitySummary();
+    showToast('🔄 دوسری ڈیوائس سے تازہ ڈیٹا آ گیا');
+  }, 700);
+}
+function initRealtimeSync(){
+  if(!_supa || _realtimeChannel) return;
+  try{
+    _realtimeChannel = _supa
+      .channel('clients-realtime-sync')
+      .on('postgres_changes', {event:'*', schema:'public', table:'clients'}, ()=>{
+        _scheduleRealtimeRefresh();
+      })
+      .subscribe();
+  } catch(e){ console.warn('Realtime sync could not start:', e); }
 }
 
 function migrateClient(c){
@@ -2872,7 +2940,7 @@ function renderTable(){
   tbody.innerHTML = list.map((c,i)=>{
     const referrerName = c.referredBy ? (clients.find(x=>x.id===c.referredBy)||{}).name||'' : '';
     return `<tr>
-      <td><input type="checkbox" class="row-check" data-id="${c.id}" ${selectedClientIds.has(c.id)?'checked':''} onchange="bulkToggleOne('${c.id}',this.checked)"></td>
+      <td class="sel-td"><input type="checkbox" class="row-check" data-id="${c.id}" ${selectedClientIds.has(c.id)?'checked':''} onchange="bulkToggleOne('${c.id}',this.checked)"></td>
       <td style="color:var(--text-mute);font-size:12px;">${i+1}</td>
       <td>
         <div style="font-weight:700;color:var(--dark);">${c.name||'—'}</div>
@@ -3002,6 +3070,18 @@ function bulkClearSelection(){
   document.querySelectorAll('#clientsTable .row-check').forEach(row=>row.checked=false);
   bulkSyncSelectAllCheckbox();
   bulkUpdateBar();
+}
+
+let bulkSelectModeOn = false;
+function toggleBulkSelectMode(){
+  bulkSelectModeOn = !bulkSelectModeOn;
+  const wrap = document.getElementById('clientsTableWrap');
+  const bar = document.getElementById('bulkActionsBar');
+  const btn = document.getElementById('bulkModeToggleBtn');
+  if(wrap) wrap.classList.toggle('select-mode', bulkSelectModeOn);
+  if(bar) bar.style.display = bulkSelectModeOn ? 'flex' : 'none';
+  if(btn) btn.textContent = bulkSelectModeOn ? '✖ منتخب کرنا بند کریں' : '☑️ کلائنٹس منتخب کریں';
+  if(!bulkSelectModeOn) bulkClearSelection();
 }
 
 function bulkSyncSelectAllCheckbox(){
@@ -3895,6 +3975,49 @@ function renderSettings(){
   `;
   renderCurrentUsersList();
   ensureRecoveryKeyLoaded().then(renderRecoveryKeyDisplay);
+  loadMapBuilderToggleState();
+}
+
+/* ===== Website feature toggle: 2D Map Builder =====
+   Reads/writes Supabase table site_settings (key='school_map_enabled', value boolean).
+   index.html and school-map-builder.html read this same row to hide/block the tool. */
+async function loadMapBuilderToggleState(){
+  const chk = document.getElementById('mapBuilderToggle');
+  const txt = document.getElementById('mapBuilderStatusText');
+  if(!chk || !_supa) return;
+  try{
+    const { data, error } = await _supa.from('site_settings').select('value').eq('key','school_map_enabled').single();
+    if(error || !data){
+      txt.textContent = 'ابھی سیٹ اپ نہیں ہوا — نیچے بٹن سے ایکٹیویٹ کریں';
+      chk.checked = true; chk.disabled = false;
+      return;
+    }
+    chk.checked = data.value !== false;
+    chk.disabled = false;
+    txt.textContent = chk.checked ? '✅ فی الحال ویب سائٹ پر لائیو ہے' : '⛔ فی الحال آف لائن ہے';
+  }catch(e){
+    txt.textContent = 'اسٹیٹس لوڈ نہیں ہو سکا — انٹرنیٹ چیک کریں';
+  }
+}
+async function toggleMapBuilderFeature(enabled){
+  const chk = document.getElementById('mapBuilderToggle');
+  const txt = document.getElementById('mapBuilderStatusText');
+  chk.disabled = true;
+  txt.textContent = 'اپڈیٹ ہو رہا ہے...';
+  try{
+    const { error } = await _supa.from('site_settings').upsert({ key:'school_map_enabled', value: enabled });
+    if(error){
+      txt.textContent = 'ناکام: ' + error.message;
+      chk.checked = !enabled;
+    } else {
+      txt.textContent = enabled ? '✅ فی الحال ویب سائٹ پر لائیو ہے' : '⛔ فی الحال آف لائن ہے';
+      showToast(enabled ? '✓ میپ بلڈر لائیو کر دیا گیا' : '✓ میپ بلڈر آف لائن کر دیا گیا');
+    }
+  }catch(e){
+    txt.textContent = 'ناکام — دوبارہ کوشش کریں';
+    chk.checked = !enabled;
+  }
+  chk.disabled = false;
 }
 
 function renderRecoveryKeyDisplay(){
@@ -4223,6 +4346,7 @@ async function initApp(){
   renderTable();
   renderActivitySummary();
   try{ bulkFieldChanged(); }catch(e){}
+  initRealtimeSync();
 }
 
 /* Entry point */

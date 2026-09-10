@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2D اسکول/گھر میپ بلڈر | MFJ Service</title>
+<meta name="description" content="اپنے اسکول یا گھر کا مکمل 2D نقشہ خود بنائیں — منزلیں، فرنیچر، پیمائش (مرلہ/کنال)، اور رف نقشے پر ٹریس کرنے کی سہولت کے ساتھ۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --navy2:#153B54;
+  --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+body.dark{
+  --ink:#E5E7EB; --mute:#9CA3AF; --faint:#6B7280; --border:rgba(255,255,255,.14);
+  --bg:#0B1220; --panel:#131B2C; --green-light:#0F2A22;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; transition:background .2s,color .2s; visibility:hidden;}
+
+.mb-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.mb-brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px;}
+.mb-brand span.sub{font-weight:500; font-size:12.5px; color:#cfe9de; display:block;}
+.mb-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; transition:.2s;}
+.mb-back:hover{background:rgba(255,255,255,.22);}
+.mb-projname{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:7px 10px; color:#fff; font-size:13px; width:180px;}
+.mb-projname::placeholder{color:#cfe9de;}
+.mb-icon-btn{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:7px 10px; color:#fff; font-size:13px; cursor:pointer;}
+.mb-icon-btn:hover{background:rgba(255,255,255,.22);}
+
+.mb-app{display:grid; grid-template-columns:280px 1fr 270px; gap:14px; padding:14px; align-items:start;}
+@media (max-width:1080px){ .mb-app{grid-template-columns:1fr; } .mb-side{order:2;} .mb-canvas-wrap{order:1;} .mb-props{order:3;} }
+
+.mb-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:0 2px 10px rgba(15,42,61,.05); margin-bottom:14px;}
+.mb-panel h3{font-size:14px; color:var(--navy); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+body.dark .mb-panel h3{color:#93C5FD;}
+.mb-panel h4{font-size:12.5px; color:var(--mute); margin:10px 0 6px;}
+details.mb-panel summary{cursor:pointer; font-size:14px; color:var(--navy); font-weight:700; list-style:none;}
+body.dark details.mb-panel summary{color:#93C5FD;}
+details.mb-panel summary::-webkit-details-marker{display:none;}
+details.mb-panel[open] summary{margin-bottom:10px;}
+
+.mb-scale-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px;}
+.mb-scale-row input[type=number]{width:60px; border:1.5px solid var(--border); border-radius:7px; padding:6px 8px; font-size:12.5px; background:var(--panel); color:var(--ink);}
+.mb-scale-row select, .mb-scale-row input[type=text]{border:1.5px solid var(--border); border-radius:7px; padding:6px 8px; font-size:12.5px; background:var(--panel); color:var(--ink);}
+
+.mb-ref-actions{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;}
+.mb-ref-actions input[type=file]{display:none;}
+.mb-opacity-row{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--mute);}
+.mb-opacity-row input{flex:1;}
+
+.mb-cat-tabs{display:flex; gap:4px; margin-bottom:10px; flex-wrap:wrap;}
+.mb-cat-tab{flex:1; min-width:56px; text-align:center; border:1.5px solid var(--border); border-radius:8px; padding:6px 3px; font-size:11px; font-weight:700; cursor:pointer; background:var(--bg); color:var(--mute);}
+.mb-cat-tab.active{background:var(--green); color:#fff; border-color:var(--green);}
+
+.mb-shape-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+.mb-shape-btn{border:1.5px dashed var(--border); background:var(--bg); border-radius:10px; padding:9px 6px; font-size:11.5px; font-weight:600; color:var(--ink); cursor:grab; text-align:center; transition:.15s; user-select:none;}
+.mb-shape-btn:hover{border-color:var(--green); background:var(--green-light); transform:translateY(-1px);}
+.mb-shape-btn .ic{display:block; font-size:18px; margin-bottom:2px;}
+
+.mb-room-list{display:flex; flex-direction:column; gap:6px; max-height:280px; overflow-y:auto; padding-inline-end:4px;}
+.mb-room-item{display:flex; align-items:center; gap:8px; border:1.5px solid var(--border); border-radius:9px; padding:7px 10px; cursor:grab; font-size:12.5px; font-weight:600; background:var(--panel); color:var(--ink); transition:.15s;}
+.mb-room-item:hover{border-color:var(--green); background:var(--green-light);}
+.mb-room-swatch{width:13px; height:13px; border-radius:4px; flex-shrink:0; border:1px solid rgba(0,0,0,.15);}
+.mb-room-swatch.hatch{background-image:repeating-linear-gradient(45deg,#94a3b8,#94a3b8 2px,transparent 2px,transparent 5px); background-color:#fff;}
+
+.mb-add-room-row{display:flex; gap:6px; margin-top:10px;}
+.mb-add-room-row input{flex:1; border:1.5px solid var(--border); border-radius:8px; padding:7px 9px; font-size:12px; background:var(--panel); color:var(--ink);}
+.mb-add-room-row button{background:var(--green); color:#fff; border:none; border-radius:8px; padding:0 12px; font-size:13px; cursor:pointer; font-weight:700;}
+
+.mb-toolbar{display:flex; align-items:center; gap:6px; margin-bottom:10px; flex-wrap:wrap;}
+.mb-tbtn{background:var(--panel); border:1.5px solid var(--border); border-radius:8px; padding:7px 11px; font-size:12px; font-weight:600; cursor:pointer; color:var(--ink); display:flex; align-items:center; gap:5px; transition:.15s; white-space:nowrap;}
+.mb-tbtn:hover{border-color:var(--green); color:var(--green-dark);}
+.mb-tbtn.danger:hover{border-color:#DC2626; color:#DC2626; background:#FEF2F2;}
+.mb-tbtn.primary{background:var(--green); color:#fff; border-color:var(--green);}
+.mb-tbtn.primary:hover{background:var(--green-dark);}
+.mb-tbtn.active-tool{background:var(--navy); color:#fff; border-color:var(--navy);}
+.mb-spacer{flex:1;}
+.mb-zoom-label{font-size:12px; color:var(--mute); font-weight:600; min-width:40px; text-align:center;}
+
+.mb-floor-tabs{display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; align-items:center;}
+.mb-floor-tab{border:1.5px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer; background:var(--panel); color:var(--mute);}
+.mb-floor-tab.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.mb-floor-add{border:1.5px dashed var(--border); border-radius:8px; padding:6px 10px; font-size:13px; cursor:pointer; background:var(--bg); color:var(--green-dark); font-weight:700;}
+
+.mb-canvas-outer{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; box-shadow:0 2px 10px rgba(15,42,61,.05);}
+.mb-canvas-scroll{overflow:auto; border-radius:10px; background:repeating-linear-gradient(0deg,#eef2f5,#eef2f5 24px,#e7ebee 25px),repeating-linear-gradient(90deg,#eef2f5,#eef2f5 24px,#e7ebee 25px); border:1px solid var(--border); max-height:62vh; position:relative;}
+#mapCanvas{display:block; touch-action:none; cursor:crosshair;}
+.mb-hint{font-size:11px; color:var(--faint); margin-top:8px; text-align:center;}
+.mb-wall-hint{display:none; background:var(--green-light); color:var(--green-dark); font-size:12px; font-weight:700; padding:8px 12px; border-radius:8px; margin-bottom:10px;}
+.mb-wall-hint.show{display:block;}
+
+.mb-prop-row{margin-bottom:12px;}
+.mb-prop-row label{display:block; font-size:11.5px; font-weight:700; color:var(--mute); margin-bottom:5px;}
+.mb-prop-row input[type=text]{width:100%; border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; background:var(--panel); color:var(--ink);}
+.mb-prop-row input[type=range]{width:100%;}
+.mb-prop-grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+.mb-prop-grid3{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px;}
+.mb-color-swatches{display:flex; gap:6px; flex-wrap:wrap;}
+.mb-cswatch{width:23px; height:23px; border-radius:6px; cursor:pointer; border:2px solid transparent;}
+.mb-cswatch.active{border-color:var(--navy); transform:scale(1.1);}
+.mb-empty-note{font-size:12.5px; color:var(--faint); text-align:center; padding:20px 6px;}
+.mb-rotate-row{display:flex; align-items:center; gap:8px;}
+.mb-rotate-row input[type=number]{width:56px; border:1.5px solid var(--border); border-radius:7px; padding:6px 7px; font-size:12px; background:var(--panel); color:var(--ink);}
+.mb-checkbox-row{display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--ink); margin-bottom:8px;}
+
+.mb-summary-box{background:var(--green-light); border-radius:10px; padding:10px 12px; font-size:12.5px; color:var(--green-dark); font-weight:700; display:flex; justify-content:space-between; margin-bottom:8px;}
+
+.mb-modal-bg{position:fixed; inset:0; background:rgba(15,26,38,.55); z-index:999; display:none; align-items:center; justify-content:center; padding:20px;}
+.mb-modal-bg.show{display:flex;}
+.mb-modal{background:var(--panel); color:var(--ink); border-radius:14px; padding:20px; max-width:560px; width:100%; max-height:80vh; overflow-y:auto;}
+.mb-modal h3{color:var(--navy); margin-bottom:10px;}
+body.dark .mb-modal h3{color:#93C5FD;}
+.mb-modal textarea{width:100%; height:170px; font-family:monospace; font-size:11.5px; border:1.5px solid var(--border); border-radius:8px; padding:10px; background:var(--bg); color:var(--ink);}
+.mb-modal-actions{display:flex; gap:8px; margin-top:12px; justify-content:flex-end;}
+.mb-toast{position:fixed; bottom:20px; inset-inline-start:50%; transform:translateX(50%); background:var(--navy); color:#fff; padding:10px 20px; border-radius:30px; font-size:13px; font-weight:600; z-index:1000; opacity:0; pointer-events:none; transition:.25s;}
+.mb-toast.show{opacity:1; transform:translate(50%,-6px);}
+.mb-cloud-row{display:flex; flex-direction:column; gap:7px; margin-top:8px;}
+.mb-cloud-row input{border:1.5px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12px; background:var(--panel); color:var(--ink);}
+.mb-proj-item{display:flex; align-items:center; justify-content:space-between; gap:6px; border:1.5px solid var(--border); border-radius:8px; padding:7px 9px; font-size:12px; margin-bottom:6px; background:var(--panel);}
+.mb-proj-item .name{font-weight:700; flex:1; cursor:pointer;}
+.mb-proj-item button{border:none; background:none; cursor:pointer; font-size:14px;}
+.mb-shortcut-row{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px;}
+.mb-shortcut-row kbd{background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:2px 7px; font-family:monospace; font-size:12px;}
+
+@media print{
+  .mb-topbar,.mb-side,.mb-props,.mb-toolbar,.mb-hint,.mb-wall-hint,.mb-floor-tabs{display:none !important;}
+  .mb-app{display:block; padding:0;}
+  .mb-canvas-outer{box-shadow:none; border:none; padding:0;}
+  .mb-canvas-scroll{max-height:none; overflow:visible; border:none;}
+  #printHeader{display:block !important;}
+}
+#printHeader{display:none; text-align:center; margin-bottom:10px;}
+#printHeader h2{color:var(--navy);}
+#printHeader p{color:var(--mute); font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="mb-topbar">
+  <div class="mb-brand">
+    <span>🏫 2D اسکول/گھر میپ بلڈر
+      <span class="sub">by MFJ Service</span>
+    </span>
+  </div>
+  <input type="text" id="projectName" class="mb-projname" placeholder="پراجیکٹ/اسکول کا نام">
+  <div style="display:flex; gap:6px;">
+    <button class="mb-icon-btn" onclick="toggleDark()" id="darkBtn">🌙 ڈارک</button>
+    <button class="mb-icon-btn" onclick="openShortcuts()">⌨️ Shortcuts</button>
+    <button class="mb-icon-btn" onclick="openTemplates()">📁 ٹیمپلیٹس</button>
+    <a href="index.html" class="mb-back">← واپس</a>
+  </div>
+</div>
+
+<div class="mb-app">
+
+  <div class="mb-side">
+
+    <div class="mb-panel">
+      <h3>📏 پیمائش کا پیمانہ</h3>
+      <div class="mb-scale-row">
+        <span>1 گرڈ خانہ =</span>
+        <input type="number" id="scaleValue" value="5" min="0.1" step="0.1" oninput="updateScale()">
+        <select id="scaleUnit" onchange="updateScale()">
+          <option value="ft">فٹ (ft)</option>
+          <option value="m">میٹر (m)</option>
+        </select>
+      </div>
+      <div class="mb-scale-row" style="margin-top:8px;">
+        <span>رقبے کی اکائی</span>
+        <select id="areaUnit" onchange="areaUnit=this.value; draw();">
+          <option value="sqft">فٹ² (sq ft)</option>
+          <option value="sqm">میٹر² (sq m)</option>
+          <option value="marla">مرلہ (Marla)</option>
+          <option value="kanal">کنال (Kanal)</option>
+        </select>
+      </div>
+      <div class="mb-scale-row" style="margin-top:8px;">
+        <span>🧱 دیوار کی موٹائی</span>
+        <select id="wallThickness" onchange="wallThicknessInches=+this.value; draw();">
+          <option value="4.5">4.5"</option>
+          <option value="9" selected>9"</option>
+          <option value="13.5">13.5"</option>
+        </select>
+      </div>
+      <div class="mb-checkbox-row" style="margin-top:10px;">
+        <input type="checkbox" id="showMeasureChk" checked onchange="showMeasurements=this.checked; draw();">
+        <label for="showMeasureChk">ہر عنصر پر پیمائش دکھائیں</label>
+      </div>
+      <div class="mb-checkbox-row">
+        <input type="checkbox" id="showLegendChk" onchange="showLegend=this.checked; draw();">
+        <label for="showLegendChk">نقشے پر Legend دکھائیں</label>
+      </div>
+    </div>
+
+    <div class="mb-panel">
+      <h3>👨‍🎓 گنجائش کیلکولیٹر</h3>
+      <div class="mb-checkbox-row">
+        <input type="checkbox" id="showCapChk" onchange="showCapacity=this.checked; draw();">
+        <label for="showCapChk">Room پر تخمینی گنجائش دکھائیں</label>
+      </div>
+      <div class="mb-scale-row">
+        <span>فی طالبعلم رقبہ (فٹ²)</span>
+        <input type="number" id="capPerStudent" value="10" min="1" oninput="capacityPerStudentSqft=+this.value; draw();">
+      </div>
+    </div>
+
+    <div class="mb-panel">
+      <h3>🏷️ کمرہ نمبرنگ</h3>
+      <div class="mb-checkbox-row">
+        <input type="checkbox" id="showNumChk" onchange="showRoomNumbers=this.checked; draw();">
+        <label for="showNumChk">نمبر دکھائیں</label>
+      </div>
+      <div class="mb-scale-row" style="margin-bottom:8px;">
+        <span>شروع نمبر</span>
+        <input type="number" id="numStart" value="101" style="width:70px;">
+      </div>
+      <button class="mb-tbtn primary" style="width:100%;" onclick="autoNumberRooms()">خودکار نمبر لگائیں (اس منزل)</button>
+    </div>
+
+    <div class="mb-panel">
+      <h3>🖼️ رف نقشہ اپلوڈ (Trace)</h3>
+      <div class="mb-ref-actions">
+        <button class="mb-tbtn" onclick="document.getElementById('refFileInput').click()">📤 تصویر چنیں</button>
+        <input type="file" id="refFileInput" accept="image/*" onchange="loadRefImage(event)">
+        <button class="mb-tbtn danger" onclick="removeRefImage()">🗑️ ہٹائیں</button>
+      </div>
+      <div class="mb-opacity-row">
+        <span>شفافیت</span>
+        <input type="range" id="refOpacity" min="10" max="100" value="45" oninput="setRefOpacity(this.value)">
+      </div>
+    </div>
+
+    <div class="mb-panel">
+      <h3>🔷 بنیادی شکلیں و اوزار</h3>
+      <div class="mb-shape-grid">
+        <div class="mb-shape-btn" draggable="true" data-shape="rect" data-w="140" data-h="90" data-color="#CBD5E1" data-label="Rectangle">
+          <span class="ic">▭</span>Rectangle
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-shape="rect" data-w="90" data-h="90" data-color="#CBD5E1" data-label="Square">
+          <span class="ic">▢</span>Square
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-shape="circle" data-w="90" data-h="90" data-color="#CBD5E1" data-label="Circle Area">
+          <span class="ic">◯</span>Circle
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-shape="rect" data-w="220" data-h="46" data-color="#E2E8F0" data-label="Corridor / برآمدہ">
+          <span class="ic">▬</span>برآمدہ
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-shape="rect" data-w="150" data-h="150" data-color="#FFFFFF" data-dashed="1" data-label="Open Space / خالی جگہہ">
+          <span class="ic">▨</span>خالی جگہہ
+        </div>
+        <div class="mb-shape-btn" onclick="setTool('wall')">
+          <span class="ic">📐</span>دیوار/باؤنڈری
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-item="door" data-w="34" data-h="10" data-color="#78350F" data-label="Door / دروازہ">
+          <span class="ic">🚪</span>دروازہ
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-item="window" data-w="40" data-h="8" data-color="#0369A1" data-label="Window / کھڑکی">
+          <span class="ic">🪟</span>کھڑکی
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-item="north" data-w="56" data-h="56" data-color="#152238" data-label="North / قطب نما">
+          <span class="ic">🧭</span>قطب نما
+        </div>
+        <div class="mb-shape-btn" onclick="setTool('dimension')">
+          <span class="ic">📏</span>ڈائمینشن
+        </div>
+        <div class="mb-shape-btn" onclick="setTool('route')">
+          <span class="ic">🚨</span>حفاظتی راستہ
+        </div>
+        <div class="mb-shape-btn" draggable="true" data-shape="rect" data-w="40" data-h="40" data-color="#DC2626" data-label="🚨 Fire Exit / ہنگامی راستہ">
+          <span class="ic">🔥</span>Fire Exit
+        </div>
+      </div>
+
+      <div class="mb-cat-tabs">
+        <div class="mb-cat-tab active" id="tabHome" onclick="switchCategory('home')">🏠 گھر</div>
+        <div class="mb-cat-tab" id="tabSchool" onclick="switchCategory('school')">🏫 اسکول</div>
+        <div class="mb-cat-tab" id="tabFurn" onclick="switchCategory('furniture')">🪑 فرنیچر</div>
+        <div class="mb-cat-tab" id="tabGeneral" onclick="switchCategory('general')">🧩 عمومی</div>
+      </div>
+      <div class="mb-room-list" id="roomPalette"></div>
+
+      <div class="mb-add-room-row">
+        <input type="text" id="newRoomName" placeholder="نیا نام (مثلاً: Lab 1)">
+        <button onclick="addCustomRoomType()">+ شامل</button>
+      </div>
+      <p class="mb-hint">کارڈ کھینچ کر نقشے پر چھوڑ دیں۔</p>
+    </div>
+
+    <details class="mb-panel" id="accountPanel" open>
+      <summary>👤 اکاؤنٹ (اپنا ڈیٹا محفوظ رکھنے کے لیے)</summary>
+      <div id="authLoggedOut">
+        <p class="mb-hint" style="margin-bottom:8px; text-align:right;">اپنا فری اکاؤنٹ بنائیں تاکہ آپ کا نقشہ خودکار آن لائن محفوظ ہو جائے اور کسی بھی ڈیوائس سے لاگ اِن کر کے واپس مل جائے۔ ہمیں کچھ بتانے کی ضرورت نہیں۔</p>
+        <div class="mb-cloud-row">
+          <input type="email" id="authEmail" placeholder="ای میل">
+          <input type="password" id="authPassword" placeholder="پاس ورڈ (کم از کم 6 حروف)">
+          <div style="display:flex; gap:6px;">
+            <button class="mb-tbtn primary" style="flex:1;" onclick="authSignUp()">🆕 اکاؤنٹ بنائیں</button>
+            <button class="mb-tbtn" style="flex:1;" onclick="authLogIn()">🔑 لاگ اِن</button>
+          </div>
+          <p class="mb-hint" id="authMsg"></p>
+        </div>
+      </div>
+      <div id="authLoggedIn" style="display:none;">
+        <div class="mb-checkbox-row" style="justify-content:space-between;">
+          <span id="authEmailDisplay" style="font-weight:700; font-size:12.5px;"></span>
+          <button class="mb-tbtn" onclick="authLogOut()">🚪 لاگ آؤٹ</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="mb-panel">
+      <summary>📁 میرے پراجیکٹس</summary>
+      <div class="mb-checkbox-row">
+        <input type="checkbox" id="autosaveChk" onchange="toggleAutosave(this.checked)">
+        <label for="autosaveChk">خودکار محفوظ (ہر 1 منٹ)</label>
+      </div>
+      <button class="mb-tbtn primary" style="width:100%; margin-bottom:6px;" onclick="saveProject(false)">💾 محفوظ کریں (موجودہ پراجیکٹ)</button>
+      <button class="mb-tbtn" style="width:100%; margin-bottom:10px;" onclick="saveProject(true)">➕ نئے نام سے محفوظ کریں</button>
+      <p class="mb-hint" id="projectsScopeNote" style="margin-bottom:6px;">لاگ اِن نہیں — پراجیکٹس صرف اسی براؤزر میں محفوظ ہو رہے ہیں۔</p>
+      <div id="projectsList"></div>
+    </details>
+  </div>
+
+  <div class="mb-canvas-wrap">
+    <div id="printHeader">
+      <h2 id="printProjName">School Map</h2>
+      <p id="printMeta"></p>
+    </div>
+    <div class="mb-canvas-outer">
+      <div class="mb-floor-tabs" id="floorTabs"></div>
+      <div class="mb-wall-hint" id="wallHint"></div>
+      <div class="mb-toolbar">
+        <button class="mb-tbtn active-tool" onclick="setTool('select')" id="toolSelect">🖱️ منتخب</button>
+        <button class="mb-tbtn" onclick="setTool('wall')" id="toolWall">📐 دیوار</button>
+        <button class="mb-tbtn" onclick="setTool('dimension')" id="toolDim">📏 ڈائمینشن</button>
+        <button class="mb-tbtn" onclick="setTool('route')" id="toolRoute">🚨 راستہ</button>
+        <button class="mb-tbtn" onclick="openElevation()">📐 Elevation</button>
+        <button class="mb-tbtn" onclick="duplicateSelected()">📄 نقل</button>
+        <button class="mb-tbtn danger" onclick="deleteSelected()">🗑️ حذف</button>
+        <button class="mb-tbtn" onclick="undo()">↩️</button>
+        <button class="mb-tbtn" onclick="redo()">↪️</button>
+        <button class="mb-tbtn" onclick="toggleGridSnap()" id="snapBtn">🧲 اسنیپ: آن</button>
+        <div class="mb-spacer"></div>
+        <button class="mb-tbtn" onclick="zoomOut()">➖</button>
+        <span class="mb-zoom-label" id="zoomLabel">100%</span>
+        <button class="mb-tbtn" onclick="zoomIn()">➕</button>
+      </div>
+      <div class="mb-canvas-scroll">
+        <canvas id="mapCanvas" width="1400" height="1000"></canvas>
+      </div>
+      <p class="mb-hint">ٹِپ: Shift+کلک یا خالی جگہ سے کھینچ کر کئی عناصر منتخب کریں۔</p>
+    </div>
+
+    <div class="mb-toolbar" style="margin-top:12px;">
+      <button class="mb-tbtn primary" onclick="saveMap()">💾 محفوظ</button>
+      <button class="mb-tbtn" onclick="loadMap()">📂 کھولیں</button>
+      <button class="mb-tbtn" onclick="exportPNG()">🖼️ PNG</button>
+      <button class="mb-tbtn" onclick="exportPDF()">📄 PDF</button>
+      <button class="mb-tbtn" onclick="exportExcel()">📊 Excel</button>
+      <button class="mb-tbtn" onclick="doPrint()">🖨️ پرنٹ</button>
+      <button class="mb-tbtn" onclick="makeShareLink()">🔗 شیئر لنک</button>
+      <button class="mb-tbtn" onclick="exportJSON()">⬇️ JSON</button>
+      <button class="mb-tbtn" onclick="importJSONPrompt()">⬆️ JSON اپلوڈ</button>
+      <button class="mb-tbtn danger" onclick="clearMap()">🧹 نیا نقشہ</button>
+    </div>
+  </div>
+
+  <div class="mb-props">
+    <div class="mb-panel">
+      <h3>📊 خلاصہ (اس منزل کا)</h3>
+      <div class="mb-summary-box"><span>کل عناصر</span><span id="sumCount">0</span></div>
+      <div class="mb-summary-box"><span>کل رقبہ</span><span id="sumArea">0</span></div>
+    </div>
+
+    <div class="mb-panel">
+      <h3>⚙️ خصوصیات</h3>
+      <div id="propsEmpty" class="mb-empty-note">کسی عنصر پر کلک کریں۔</div>
+      <div id="propsMulti" class="mb-empty-note" style="display:none;"></div>
+      <div id="propsForm" style="display:none;">
+        <div class="mb-prop-row">
+          <label>لیبل / نام</label>
+          <input type="text" id="propLabel" oninput="updateSelectedLabel(this.value)">
+        </div>
+        <div class="mb-prop-row">
+          <label>رنگ</label>
+          <div class="mb-color-swatches" id="colorSwatches"></div>
+        </div>
+        <div class="mb-prop-row" id="sizeRow">
+          <label>سائز (px)</label>
+          <div class="mb-prop-grid2">
+            <input type="text" id="propW" oninput="updateSelectedSize()">
+            <input type="text" id="propH" oninput="updateSelectedSize()">
+          </div>
+        </div>
+        <div class="mb-prop-row" id="rotateRow">
+          <label>گھمائیں</label>
+          <div class="mb-rotate-row">
+            <input type="range" id="propRotate" min="0" max="360" value="0" oninput="updateSelectedRotation(this.value)">
+            <input type="number" id="propRotateNum" min="0" max="360" value="0" oninput="updateSelectedRotation(this.value)">
+          </div>
+          <div class="mb-prop-grid3" style="margin-top:6px;">
+            <button class="mb-tbtn" onclick="updateSelectedRotation(0)">0°</button>
+            <button class="mb-tbtn" onclick="updateSelectedRotation(45)">45°</button>
+            <button class="mb-tbtn" onclick="updateSelectedRotation(90)">90°</button>
+            <button class="mb-tbtn" onclick="updateSelectedRotation(180)">180°</button>
+          </div>
+        </div>
+        <div class="mb-prop-row" id="dashedRow">
+          <div class="mb-checkbox-row">
+            <input type="checkbox" id="propDashed" onchange="updateSelectedDashed(this.checked)">
+            <label for="propDashed">خالی جگہہ کا انداز (ہیچ/ڈیش)</label>
+          </div>
+        </div>
+        <div class="mb-prop-row">
+          <label>تہہ ترتیب</label>
+          <div class="mb-prop-grid2">
+            <button class="mb-tbtn" onclick="bringForward()">⬆️ اوپر</button>
+            <button class="mb-tbtn" onclick="sendBackward()">⬇️ نیچے</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="alignBox" style="display:none;">
+        <h4>مجموعی ترتیب</h4>
+        <div class="mb-prop-grid3">
+          <button class="mb-tbtn" onclick="alignGroup('left')">⬅️</button>
+          <button class="mb-tbtn" onclick="alignGroup('right')">➡️</button>
+          <button class="mb-tbtn" onclick="alignGroup('top')">⬆️</button>
+          <button class="mb-tbtn" onclick="alignGroup('bottom')">⬇️</button>
+          <button class="mb-tbtn" onclick="alignGroup('centerH')">↔️</button>
+          <button class="mb-tbtn" onclick="alignGroup('centerV')">↕️</button>
+        </div>
+        <div class="mb-prop-grid2" style="margin-top:6px;">
+          <button class="mb-tbtn" onclick="distributeGroup('h')">↔️ فاصلہ</button>
+          <button class="mb-tbtn" onclick="distributeGroup('v')">↕️ فاصلہ</button>
+        </div>
+        <div class="mb-prop-grid2" style="margin-top:6px;">
+          <button class="mb-tbtn" onclick="duplicateSelected()">📄 نقل</button>
+          <button class="mb-tbtn danger" onclick="deleteSelected()">🗑️ حذف</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-panel">
+      <h3>📋 عناصر کی فہرست</h3>
+      <div class="mb-room-list" id="elementList" style="max-height:220px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mb-modal-bg" id="jsonModalBg">
+  <div class="mb-modal">
+    <h3 id="jsonModalTitle">JSON</h3>
+    <textarea id="jsonModalText"></textarea>
+    <div class="mb-modal-actions">
+      <button class="mb-tbtn" onclick="closeJsonModal()">بند کریں</button>
+      <button class="mb-tbtn primary" id="jsonModalActionBtn" onclick="jsonModalAction()">لوڈ کریں</button>
+    </div>
+  </div>
+</div>
+
+<div class="mb-modal-bg" id="shortcutsModalBg">
+  <div class="mb-modal">
+    <h3>⌨️ Keyboard Shortcuts</h3>
+    <div class="mb-shortcut-row"><span>محفوظ حالت واپس (Undo)</span><kbd>Ctrl+Z</kbd></div>
+    <div class="mb-shortcut-row"><span>دوبارہ (Redo)</span><kbd>Ctrl+Y</kbd></div>
+    <div class="mb-shortcut-row"><span>نقل (Duplicate)</span><kbd>Ctrl+D</kbd></div>
+    <div class="mb-shortcut-row"><span>حذف کریں</span><kbd>Delete</kbd></div>
+    <div class="mb-shortcut-row"><span>باریک حرکت</span><kbd>Arrow Keys</kbd></div>
+    <div class="mb-shortcut-row"><span>گرڈ والی حرکت</span><kbd>Shift + Arrow</kbd></div>
+    <div class="mb-shortcut-row"><span>کئی عناصر منتخب</span><kbd>Shift + Click</kbd></div>
+    <div class="mb-shortcut-row"><span>سب کچھ منتخب کریں</span><kbd>Ctrl+A</kbd></div>
+    <div class="mb-shortcut-row"><span>دیوار/راستہ ختم کریں</span><kbd>Enter</kbd></div>
+    <div class="mb-shortcut-row"><span>منسوخ</span><kbd>Escape</kbd></div>
+    <div class="mb-modal-actions"><button class="mb-tbtn primary" onclick="document.getElementById('shortcutsModalBg').classList.remove('show')">بند کریں</button></div>
+  </div>
+</div>
+
+<div class="mb-modal-bg" id="elevationModalBg">
+  <div class="mb-modal" style="max-width:820px;">
+    <h3>📐 Front Elevation (سادہ سامنے کا نظارہ)</h3>
+    <p class="mb-hint" style="margin-bottom:10px; text-align:right;">کوئی دیوار منتخب کریں — اس دیوار پر موجود دروازے/کھڑکیاں خودکار پہچان کر Elevation میں لگا دی جائیں گی۔ یہ ایک سادہ flat elevation ہے، مکمل 3D/آرکیٹیکچرل ڈرائنگ نہیں۔</p>
+    <div class="mb-scale-row" style="margin-bottom:8px;">
+      <span>دیوار منتخب کریں</span>
+      <select id="elevWallSelect" style="flex:1;"></select>
+    </div>
+    <div class="mb-prop-grid3" style="margin-bottom:10px;">
+      <div><label style="font-size:11px;color:var(--mute);">دیوار کی اونچائی (ft)</label><input type="number" id="elevWallHeight" value="9" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px;background:var(--panel);color:var(--ink);"></div>
+      <div><label style="font-size:11px;color:var(--mute);">دروازے کی اونچائی (ft)</label><input type="number" id="elevDoorHeight" value="7" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px;background:var(--panel);color:var(--ink);"></div>
+      <div><label style="font-size:11px;color:var(--mute);">کھڑکی سِل اونچائی (ft)</label><input type="number" id="elevSillHeight" value="3" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px;background:var(--panel);color:var(--ink);"></div>
+    </div>
+    <div style="overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:#EFF3F6;">
+      <canvas id="elevCanvas" width="800" height="380" style="display:block;"></canvas>
+    </div>
+    <div class="mb-modal-actions">
+      <button class="mb-tbtn" onclick="document.getElementById('elevationModalBg').classList.remove('show')">بند کریں</button>
+      <button class="mb-tbtn" onclick="generateElevation()">🔄 بنائیں</button>
+      <button class="mb-tbtn primary" onclick="downloadElevation()">⬇️ PNG ڈاؤن لوڈ</button>
+    </div>
+  </div>
+</div>
+
+<div class="mb-modal-bg" id="templatesModalBg">
+  <div class="mb-modal">
+    <h3>📁 تیار ٹیمپلیٹس</h3>
+    <p class="mb-hint" style="margin-bottom:10px;">منتخب ٹیمپلیٹ موجودہ منزل کے تمام عناصر کی جگہ لے لے گا۔</p>
+    <button class="mb-tbtn primary" style="width:100%; margin-bottom:8px;" onclick="applyTemplate('school')">🏫 بنیادی اسکول لے آؤٹ</button>
+    <button class="mb-tbtn primary" style="width:100%; margin-bottom:8px;" onclick="applyTemplate('home')">🏠 بنیادی گھر لے آؤٹ</button>
+    <div class="mb-modal-actions"><button class="mb-tbtn" onclick="document.getElementById('templatesModalBg').classList.remove('show')">بند کریں</button></div>
+  </div>
+</div>
+
+<div class="mb-toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   2D SCHOOL / HOME MAP BUILDER — full feature single file
+   ========================================================= */
+const canvas = document.getElementById('mapCanvas');
+const ctx = canvas.getContext('2d');
+const CANVAS_W = 1400, CANVAS_H = 1000;
+const GRID = 20;
+
+let zoom = 1;
+let snapEnabled = true;
+let toolMode = 'select';
+let showMeasurements = true;
+let showLegend = false;
+let scaleFeetPerGrid = 5;
+let scaleUnit = 'ft';
+let areaUnit = 'sqft';
+let wallThicknessInches = 9;
+let showCapacity = false;
+let capacityPerStudentSqft = 10;
+let showRoomNumbers = false;
+
+let nextId = 1;
+let selectedIds = [];
+let wallPoints = [];
+let dimPoints = [];
+let lastMouse = {x:0,y:0};
+
+let floors = [ newFloor('Ground Floor / گراؤنڈ فلور') ];
+let currentFloorIdx = 0;
+let elements = floors[0].elements;
+let refImage = floors[0].refImage;
+
+let history = [];
+let redoStack = [];
+let currentProjectId = null;
+let autosaveTimer = null;
+
+const COLOR_CHOICES = ['#93C5FD','#FCA5A5','#FCD34D','#A7F3D0','#C4B5FD','#7DD3FC','#D6D3D1','#BEF264','#FDBA74','#E2E8F0','#CBD5E1','#F9A8D4'];
+
+function newFloor(name){
+  return { id: Date.now()+Math.random(), name, elements: [], refImage:{img:null,opacity:0.45,visible:true} };
+}
+
+let roomPresets = {
+  home: [
+    {name:'Bedroom / بیڈ روم', color:'#93C5FD', w:120, h:110},
+    {name:'Drawing Room / ڈرائنگ روم', color:'#C4B5FD', w:150, h:120},
+    {name:'Living/Lounge / لاؤنج', color:'#A7F3D0', w:170, h:130},
+    {name:'Dining Room / ڈائننگ روم', color:'#FDBA74', w:130, h:110},
+    {name:'Kitchen / کچن', color:'#FCA5A5', w:110, h:90},
+    {name:'Store / اسٹور', color:'#FCD34D', w:90, h:80},
+    {name:'Garage / گیراج', color:'#D6D3D1', w:160, h:130},
+    {name:'Lawn/Garden / لان', color:'#BEF264', w:220, h:160},
+    {name:'Washroom / واش روم', color:'#7DD3FC', w:70, h:70},
+    {name:'Stairs / سیڑھی', color:'#CBD5E1', w:60, h:100},
+    {name:'Balcony / بالکونی', color:'#F9A8D4', w:150, h:60},
+    {name:'Terrace / ٹیرس', color:'#93C5FD', w:200, h:120},
+    {name:'Servant Quarter / سرونٹ کوارٹر', color:'#E2E8F0', w:100, h:90},
+  ],
+  school: [
+    {name:'Classroom / کلاس روم', color:'#93C5FD', w:130, h:110},
+    {name:'Office / آفس', color:'#C4B5FD', w:110, h:90},
+    {name:'Principal Office / پرنسپل آفس', color:'#FDBA74', w:120, h:100},
+    {name:'Staff Room / اسٹاف روم', color:'#A7F3D0', w:140, h:100},
+    {name:'Library / لائبریری', color:'#A7F3D0', w:170, h:130},
+    {name:'Laboratory / لیبارٹری', color:'#7DD3FC', w:150, h:110},
+    {name:'Playground / کھیل کا میدان', color:'#BEF264', w:260, h:180},
+    {name:'Assembly Hall / اسمبلی ہال', color:'#FDBA74', w:240, h:160},
+    {name:'Canteen / کینٹین', color:'#FCA5A5', w:130, h:100},
+    {name:'Washroom / واش روم', color:'#7DD3FC', w:70, h:70},
+    {name:'Store / اسٹور', color:'#FCD34D', w:90, h:80},
+    {name:'Corridor / برآمدہ', color:'#E2E8F0', w:220, h:46},
+    {name:'Reception / ریسیپشن', color:'#F9A8D4', w:100, h:80},
+    {name:'Main Gate / مین گیٹ', color:'#D6D3D1', w:80, h:40},
+  ],
+  furniture: [
+    {name:'🛏️ Bed / بیڈ', color:'#FDE68A', w:70, h:110},
+    {name:'🛋️ Sofa Set / صوفہ', color:'#C4B5FD', w:130, h:60},
+    {name:'🪑 Chair / کرسی', color:'#D6D3D1', w:30, h:30},
+    {name:'🖥️ Desk / ڈیسک', color:'#93C5FD', w:90, h:45},
+    {name:'📏 School Bench / بینچ', color:'#A7F3D0', w:100, h:35},
+    {name:'🧑‍🏫 Teacher Table / ٹیچر ٹیبل', color:'#FCA5A5', w:70, h:40},
+    {name:'⬜ Whiteboard / وائٹ بورڈ', color:'#F1F5F9', w:100, h:12},
+    {name:'🗄️ Cupboard / الماری', color:'#D6D3D1', w:60, h:35},
+    {name:'📺 TV/Projector Screen', color:'#152238', w:60, h:10},
+    {name:'🍽️ Dining Table / ڈائننگ ٹیبل', color:'#FDBA74', w:110, h:65},
+  ],
+  general: [
+    {name:'Open Space / خالی جگہہ', color:'#FFFFFF', w:150, h:150, dashed:true},
+    {name:'Parking / پارکنگ', color:'#D6D3D1', w:180, h:120},
+    {name:'Water Tank / واٹر ٹینک', color:'#7DD3FC', w:60, h:60},
+    {name:'Boundary Plot / پلاٹ حد', color:'#CBD5E1', w:280, h:220, dashed:true},
+  ]
+};
+let activeCategory = 'home';
+
+/* ================= HISTORY ================= */
+function snapshot(){
+  floors[currentFloorIdx].elements = elements;
+  return JSON.stringify({floors: floors.map(f=>({id:f.id,name:f.name,elements:f.elements})), currentFloorIdx});
+}
+function pushHistory(){
+  history.push(snapshot());
+  if(history.length>60) history.shift();
+  redoStack = [];
+}
+function restoreSnapshot(json){
+  const data = JSON.parse(json);
+  data.floors.forEach((f,i)=>{ if(floors[i]) floors[i].elements = f.elements; else floors[i]={id:f.id,name:f.name,elements:f.elements,refImage:{img:null,opacity:.45,visible:true}}; });
+  floors.length = data.floors.length;
+  currentFloorIdx = data.currentFloorIdx;
+  elements = floors[currentFloorIdx].elements;
+  refImage = floors[currentFloorIdx].refImage;
+  selectedIds = [];
+  renderFloorTabs();
+  refreshAll();
+}
+function undo(){ if(history.length===0) return; redoStack.push(snapshot()); restoreSnapshot(history.pop()); }
+function redo(){ if(redoStack.length===0) return; history.push(snapshot()); restoreSnapshot(redoStack.pop()); }
+
+/* ================= FLOORS ================= */
+function renderFloorTabs(){
+  const wrap = document.getElementById('floorTabs');
+  wrap.innerHTML = '';
+  floors.forEach((f,i)=>{
+    const tab = document.createElement('div');
+    tab.className = 'mb-floor-tab' + (i===currentFloorIdx ? ' active':'');
+    tab.textContent = f.name;
+    tab.ondblclick = ()=>{ const name = prompt('منزل کا نام:', f.name); if(name){ f.name = name.trim(); renderFloorTabs(); } };
+    tab.onclick = ()=> switchFloor(i);
+    wrap.appendChild(tab);
+  });
+  const addBtn = document.createElement('div');
+  addBtn.className = 'mb-floor-add'; addBtn.textContent = '+ نئی منزل'; addBtn.onclick = addFloor;
+  wrap.appendChild(addBtn);
+  if(floors.length>1){
+    const delBtn = document.createElement('div');
+    delBtn.className = 'mb-floor-add'; delBtn.textContent = '🗑️ منزل حذف کریں'; delBtn.onclick = deleteCurrentFloor;
+    wrap.appendChild(delBtn);
+  }
+}
+function switchFloor(i){
+  floors[currentFloorIdx].elements = elements;
+  currentFloorIdx = i;
+  elements = floors[i].elements;
+  refImage = floors[i].refImage;
+  document.getElementById('refOpacity').value = Math.round(refImage.opacity*100);
+  selectedIds = [];
+  renderFloorTabs();
+  refreshAll();
+}
+function addFloor(){
+  floors[currentFloorIdx].elements = elements;
+  floors.push(newFloor('Floor ' + (floors.length+1)));
+  switchFloor(floors.length-1);
+  pushHistory();
+  toast('نئی منزل شامل ہو گئی');
+}
+function deleteCurrentFloor(){
+  if(floors.length<=1) return;
+  if(!confirm('یہ پوری منزل حذف کرنا چاہتے ہیں؟')) return;
+  floors.splice(currentFloorIdx,1);
+  currentFloorIdx = Math.max(0, currentFloorIdx-1);
+  elements = floors[currentFloorIdx].elements;
+  refImage = floors[currentFloorIdx].refImage;
+  selectedIds = [];
+  renderFloorTabs(); pushHistory(); refreshAll();
+}
+
+/* ================= SCALE / AREA ================= */
+function updateScale(){
+  scaleFeetPerGrid = parseFloat(document.getElementById('scaleValue').value) || 5;
+  scaleUnit = document.getElementById('scaleUnit').value;
+  draw();
+}
+function pxToUnit(px){
+  let feet = (px/GRID) * scaleFeetPerGrid;
+  return scaleUnit==='m' ? feet*0.3048 : feet;
+}
+function unitLabel(){ return scaleUnit==='m' ? 'm' : 'ft'; }
+function pxAreaToSqft(areaPx){ return (areaPx/(GRID*GRID)) * (scaleFeetPerGrid**2); }
+function formatArea(sqft){
+  if(areaUnit==='marla') return (sqft/225).toFixed(2) + ' مرلہ';
+  if(areaUnit==='kanal') return (sqft/4500).toFixed(2) + ' کنال';
+  if(areaUnit==='sqm') return (sqft*0.092903).toFixed(1) + ' m²';
+  return sqft.toFixed(1) + ' ft²';
+}
+function wallPx(){ const feet = wallThicknessInches/12; return Math.max(2, (feet/scaleFeetPerGrid)*GRID); }
+
+/* ================= REFERENCE IMAGE ================= */
+function loadRefImage(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      refImage.img = img; refImage.opacity = document.getElementById('refOpacity').value/100; refImage.visible = true;
+      draw(); toast('رف نقشہ لوڈ ہو گیا');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removeRefImage(){ refImage.img=null; draw(); }
+function setRefOpacity(v){ refImage.opacity = v/100; draw(); }
+
+/* ================= RENDER ================= */
+function draw(){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save();
+  ctx.scale(zoom,zoom);
+
+  if(refImage.img && refImage.visible){
+    ctx.save(); ctx.globalAlpha = refImage.opacity;
+    const scale = Math.min(CANVAS_W/refImage.img.width, CANVAS_H/refImage.img.height);
+    ctx.drawImage(refImage.img, 0, 0, refImage.img.width*scale, refImage.img.height*scale);
+    ctx.restore();
+  }
+
+  const sorted = [...elements].sort((a,b)=>a.z-b.z);
+  for(const el of sorted){
+    if(el.kind==='polygon') drawPolygon(el);
+    else if(el.kind==='dimline') drawDimLine(el);
+    else if(el.kind==='route') drawRoute(el);
+    else drawShape(el);
+  }
+
+  if(toolMode==='wall' && wallPoints.length>0) drawWallPreview('#0F8A5F');
+  if(toolMode==='route' && wallPoints.length>0) drawWallPreview('#EA580C');
+  if(toolMode==='dimension' && dimPoints.length>0) drawDimPreview();
+  if(dragState && dragState.mode==='resize') drawResizeLiveBadge(dragState.el);
+  if(rubberBand) drawRubberBand();
+  if(showLegend) drawLegend();
+
+  ctx.restore();
+  updateSummary();
+}
+
+function drawWallPreview(color){
+  ctx.save();
+  ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(wallPoints[0].x, wallPoints[0].y);
+  for(let i=1;i<wallPoints.length;i++) ctx.lineTo(wallPoints[i].x, wallPoints[i].y);
+  ctx.lineTo(lastMouse.x, lastMouse.y);
+  ctx.stroke(); ctx.setLineDash([]);
+  wallPoints.forEach(p=>{ ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill(); });
+
+  // permanent length label on each already-placed segment
+  for(let i=0;i<wallPoints.length-1;i++) drawSegmentLength(wallPoints[i], wallPoints[i+1], color, false);
+  // LIVE length label on the segment currently being drawn (last point -> cursor)
+  const from = wallPoints[wallPoints.length-1];
+  drawSegmentLength(from, lastMouse, color, true);
+  ctx.restore();
+}
+function drawSegmentLength(p1, p2, color, live){
+  const len = Math.hypot(p2.x-p1.x, p2.y-p1.y);
+  if(len<2) return;
+  const mid = {x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
+  const txt = pxToUnit(len).toFixed(1) + ' ' + unitLabel();
+  ctx.save();
+  ctx.font = live ? '800 14px Inter, sans-serif' : '700 11px Inter, sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const tw = ctx.measureText(txt).width;
+  const padY = live ? 20 : 14;
+  ctx.fillStyle = live ? '#152238' : 'rgba(255,255,255,.95)';
+  roundRect(ctx, mid.x-tw/2-6, mid.y-padY/2-8, tw+12, padY, 6);
+  ctx.fill();
+  if(!live){ ctx.strokeStyle='rgba(15,34,56,.15)'; ctx.lineWidth=1; ctx.stroke(); }
+  ctx.fillStyle = live ? '#FDE68A' : color;
+  ctx.fillText(txt, mid.x, mid.y-8);
+  ctx.restore();
+}
+function drawDimPreview(){
+  ctx.save();
+  ctx.strokeStyle = '#DC2626'; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(dimPoints[0].x,dimPoints[0].y); ctx.lineTo(lastMouse.x,lastMouse.y); ctx.stroke();
+  ctx.setLineDash([]);
+  drawSegmentLength(dimPoints[0], lastMouse, '#DC2626', true);
+  ctx.restore();
+}
+function drawResizeLiveBadge(el){
+  const txt = `L: ${pxToUnit(el.w).toFixed(1)} ${unitLabel()}   W: ${pxToUnit(el.h).toFixed(1)} ${unitLabel()}`;
+  const x = el.x + el.w, y = el.y + el.h;
+  ctx.save();
+  ctx.font = '800 14px Inter, sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const tw = ctx.measureText(txt).width;
+  ctx.fillStyle = '#152238';
+  roundRect(ctx, x - tw/2 - 8, y + 12, tw+16, 26, 7);
+  ctx.fill();
+  ctx.fillStyle = '#FDE68A';
+  ctx.fillText(txt, x, y + 25);
+  ctx.restore();
+}
+function drawRubberBand(){
+  ctx.save();
+  ctx.strokeStyle='#0F8A5F'; ctx.fillStyle='rgba(15,138,95,.1)'; ctx.lineWidth=1.5;
+  const x=Math.min(rubberBand.x1,rubberBand.x2), y=Math.min(rubberBand.y1,rubberBand.y2);
+  const w=Math.abs(rubberBand.x2-rubberBand.x1), h=Math.abs(rubberBand.y2-rubberBand.y1);
+  ctx.fillRect(x,y,w,h); ctx.strokeRect(x,y,w,h);
+  ctx.restore();
+}
+
+function composedLabel(el){
+  if(showRoomNumbers && el.roomNumber) return el.roomNumber + ' - ' + el.label;
+  return el.label;
+}
+
+function drawShape(el){
+  ctx.save();
+  ctx.translate(el.x + el.w/2, el.y + el.h/2);
+  ctx.rotate((el.rotation||0) * Math.PI/180);
+  ctx.translate(-el.w/2, -el.h/2);
+
+  const isSel = selectedIds.includes(el.id);
+
+  if(el.itemType==='door'){
+    ctx.strokeStyle = isSel ? '#0F8A5F' : '#78350F'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0,el.h); ctx.lineTo(0,0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,el.h,el.w,-Math.PI/2,0); ctx.stroke();
+    ctx.restore(); if(isSel) drawSelHandle(el); return;
+  }
+  if(el.itemType==='window'){
+    ctx.strokeStyle = isSel ? '#0F8A5F' : '#0369A1'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(0,el.h/2); ctx.lineTo(el.w,el.h/2); ctx.stroke();
+    ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(el.w,0); ctx.moveTo(0,el.h); ctx.lineTo(el.w,el.h); ctx.stroke();
+    ctx.restore(); if(isSel) drawSelHandle(el); return;
+  }
+  if(el.itemType==='north'){
+    ctx.strokeStyle = isSel ? '#0F8A5F' : '#152238'; ctx.fillStyle = '#152238'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(el.w/2,el.h/2,el.w/2-3,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(el.w/2, 4); ctx.lineTo(el.w/2-8, el.h/2); ctx.lineTo(el.w/2+8, el.h/2); ctx.closePath(); ctx.fill();
+    ctx.font='700 11px Inter'; ctx.textAlign='center'; ctx.fillText('N', el.w/2, el.h/2+16);
+    ctx.restore(); if(isSel) drawSelHandle(el); return;
+  }
+
+  ctx.fillStyle = el.color;
+  ctx.strokeStyle = isSel ? '#0F8A5F' : 'rgba(15,34,56,.35)';
+  ctx.lineWidth = isSel ? 3 : 1.5;
+  if(el.dashed) ctx.setLineDash([6,4]);
+
+  if(el.shape==='circle'){
+    ctx.beginPath(); ctx.ellipse(el.w/2, el.h/2, el.w/2, el.h/2, 0, 0, Math.PI*2);
+    if(!el.dashed) ctx.fill(); ctx.stroke();
+  } else {
+    roundRect(ctx,0,0,el.w,el.h,8);
+    if(!el.dashed) ctx.fill(); else fillHatch(ctx,0,0,el.w,el.h);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  const label = composedLabel(el);
+  const extraLines = [];
+  if(showMeasurements){
+    extraLines.push(`Length: ${pxToUnit(el.w).toFixed(1)} ${unitLabel()}`);
+    extraLines.push(`Width: ${pxToUnit(el.h).toFixed(1)} ${unitLabel()}`);
+  }
+  if(showCapacity && !el.itemType && !el.dashed){
+    const areaSqft = (el.w/GRID*scaleFeetPerGrid)*(el.h/GRID*scaleFeetPerGrid);
+    extraLines.push(`~${Math.max(0,Math.floor(areaSqft/capacityPerStudentSqft))} طلبہ`);
+  }
+  ctx.fillStyle = '#152238';
+  ctx.font = '600 13px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const labelY = el.h/2 - (extraLines.length ? extraLines.length*6 : 0);
+  wrapText(ctx, label, el.w/2, labelY, el.w-10, 15);
+
+  ctx.font = '500 10px Inter, sans-serif'; ctx.fillStyle = '#475569';
+  extraLines.forEach((t,i)=> ctx.fillText(t, el.w/2, labelY + 14 + i*12));
+
+  ctx.restore();
+  if(isSel) drawSelHandle(el);
+}
+function drawSelHandle(el){
+  if(el.itemType) return;
+  ctx.save(); ctx.translate(el.x, el.y);
+  ctx.fillStyle = '#0F8A5F'; ctx.fillRect(el.w-8, el.h-8, 16, 16);
+  ctx.restore();
+}
+
+function drawPolygon(el){
+  const pts = el.points;
+  const isSel = selectedIds.includes(el.id);
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle = hexToRgba(el.color, 0.35);
+  ctx.strokeStyle = isSel ? '#0F8A5F' : (el.color || '#475569');
+  ctx.lineWidth = isSel ? wallPx()+1.5 : wallPx();
+  ctx.fill(); ctx.stroke();
+
+  const c = polyCentroid(pts);
+  ctx.fillStyle = '#152238'; ctx.font = '700 13px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  wrapText(ctx, el.label, c.x, c.y - (showMeasurements?7:0), 160, 15);
+
+  if(showMeasurements){
+    const areaPx = Math.abs(shoelaceArea(pts));
+    ctx.font = '500 10.5px Inter, sans-serif'; ctx.fillStyle = '#475569';
+    ctx.fillText(formatArea(pxAreaToSqft(areaPx)), c.x, c.y + 11);
+    // per-wall/edge length label — stays visible after drawing is finished
+    for(let i=0;i<pts.length;i++){
+      const p1 = pts[i], p2 = pts[(i+1)%pts.length];
+      drawSegmentLength(p1, p2, isSel ? '#0F8A5F' : (el.color||'#475569'), false);
+    }
+  }
+  if(isSel){
+    pts.forEach(p=>{ ctx.fillStyle = '#0F8A5F'; ctx.beginPath(); ctx.arc(p.x,p.y,6,0,Math.PI*2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth=1.5; ctx.stroke(); });
+  }
+  ctx.restore();
+}
+
+function drawRoute(el){
+  const pts = el.points;
+  const isSel = selectedIds.includes(el.id);
+  ctx.save();
+  ctx.strokeStyle = isSel ? '#0F8A5F' : '#EA580C';
+  ctx.lineWidth = isSel ? 4.5 : 4;
+  ctx.setLineDash([10,6]);
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.stroke(); ctx.setLineDash([]);
+  const last = pts[pts.length-1], prev = pts[pts.length-2] || pts[0];
+  const ang = Math.atan2(last.y-prev.y, last.x-prev.x);
+  ctx.fillStyle = isSel ? '#0F8A5F' : '#EA580C';
+  ctx.beginPath();
+  ctx.moveTo(last.x, last.y);
+  ctx.lineTo(last.x - 14*Math.cos(ang-0.4), last.y - 14*Math.sin(ang-0.4));
+  ctx.lineTo(last.x - 14*Math.cos(ang+0.4), last.y - 14*Math.sin(ang+0.4));
+  ctx.closePath(); ctx.fill();
+  const mid = pts[Math.floor(pts.length/2)];
+  ctx.font='700 11px Inter'; ctx.textAlign='center'; ctx.fillStyle='#EA580C';
+  ctx.fillText('🚨 Evacuation Route', mid.x, mid.y-10);
+  if(isSel) pts.forEach(p=>{ ctx.fillStyle='#0F8A5F'; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fill(); });
+  ctx.restore();
+}
+
+function drawDimLine(el){
+  const isSel = selectedIds.includes(el.id);
+  const {p1,p2} = el;
+  const dx=p2.x-p1.x, dy=p2.y-p1.y;
+  const len = Math.hypot(dx,dy);
+  const nx = -dy/len, ny = dx/len;
+  ctx.save();
+  ctx.strokeStyle = isSel ? '#0F8A5F' : '#DC2626';
+  ctx.lineWidth = isSel?2.5:2;
+  ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.moveTo(p.x-nx*6,p.y-ny*6); ctx.lineTo(p.x+nx*6,p.y+ny*6); ctx.stroke(); });
+  const mid = {x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
+  const lengthUnit = pxToUnit(len).toFixed(1) + ' ' + unitLabel();
+  ctx.font = '700 11px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle = '#fff';
+  const tw = ctx.measureText(lengthUnit).width;
+  ctx.fillRect(mid.x-tw/2-4, mid.y-8, tw+8, 16);
+  ctx.fillStyle = isSel ? '#0F8A5F' : '#DC2626';
+  ctx.fillText(lengthUnit, mid.x, mid.y);
+  ctx.restore();
+}
+
+function drawLegend(){
+  const seen = new Map();
+  elements.forEach(el=>{
+    if(el.kind==='dimline' || el.kind==='route' || el.itemType) return;
+    const key = el.color+'|'+el.label;
+    if(!seen.has(key)) seen.set(key, {color:el.color, label:el.label});
+  });
+  const items = [...seen.values()].slice(0,14);
+  if(items.length===0) return;
+  const boxW = 190, lineH = 18, boxH = items.length*lineH + 30;
+  const x0 = CANVAS_W - boxW - 20, y0 = 20;
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.strokeStyle = 'rgba(15,34,56,.2)';
+  roundRect(ctx,x0,y0,boxW,boxH,10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#152238'; ctx.font='700 12px Inter'; ctx.textAlign='right'; ctx.textBaseline='top';
+  ctx.fillText('Legend', x0+boxW-12, y0+8);
+  items.forEach((it,i)=>{
+    const y = y0+30+i*lineH;
+    ctx.fillStyle = it.color; ctx.fillRect(x0+boxW-22, y+3, 12, 12);
+    ctx.strokeStyle='rgba(0,0,0,.2)'; ctx.strokeRect(x0+boxW-22,y+3,12,12);
+    ctx.fillStyle = '#152238'; ctx.font='500 11px Inter'; ctx.textAlign='right';
+    ctx.fillText(it.label, x0+boxW-38, y+4);
+  });
+  ctx.restore();
+}
+
+function hexToRgba(hex, a){
+  if(!hex || hex[0]!=='#') return `rgba(148,163,184,${a})`;
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function fillHatch(ctx,x,y,w,h){
+  ctx.save(); ctx.beginPath(); roundRect(ctx,x,y,w,h,8); ctx.clip();
+  ctx.strokeStyle = 'rgba(100,116,139,.5)'; ctx.lineWidth = 1.2;
+  for(let i=-h;i<w;i+=9){ ctx.beginPath(); ctx.moveTo(x+i,y); ctx.lineTo(x+i+h,y+h); ctx.stroke(); }
+  ctx.restore();
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function wrapText(ctx,text,cx,cy,maxWidth,lineHeight){
+  const words = (text||'').split(' ');
+  let lines = [], cur = '';
+  for(const w of words){
+    const test = cur ? cur+' '+w : w;
+    if(ctx.measureText(test).width > maxWidth && cur){ lines.push(cur); cur = w; } else cur = test;
+  }
+  if(cur) lines.push(cur);
+  const startY = cy - ((lines.length-1)*lineHeight)/2;
+  lines.forEach((line,i)=> ctx.fillText(line, cx, startY + i*lineHeight));
+}
+function polyCentroid(pts){ let x=0,y=0; pts.forEach(p=>{x+=p.x;y+=p.y;}); return {x:x/pts.length,y:y/pts.length}; }
+function shoelaceArea(pts){
+  let a=0;
+  for(let i=0;i<pts.length;i++){ const p1=pts[i],p2=pts[(i+1)%pts.length]; a += (p1.x*p2.y - p2.x*p1.y); }
+  return a/2;
+}
+
+/* ================= ELEMENT CREATE ================= */
+function addElement(opts){
+  const el = {
+    id: nextId++, kind:'shape', shape: opts.shape || 'rect',
+    x: opts.x, y: opts.y, w: opts.w, h: opts.h, rotation: 0,
+    color: opts.color, label: opts.label, dashed: !!opts.dashed,
+    itemType: opts.itemType || null, z: elements.length
+  };
+  elements.push(el); selectedIds = [el.id]; pushHistory(); refreshAll();
+}
+function snap(v){ return snapEnabled ? Math.round(v/GRID)*GRID : v; }
+
+/* ================= PALETTE DRAG ================= */
+document.querySelectorAll('.mb-shape-btn[draggable="true"]').forEach(btn=>{
+  btn.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      shape: btn.dataset.shape || 'rect', w:+btn.dataset.w, h:+btn.dataset.h,
+      color: btn.dataset.color, label: btn.dataset.label, dashed: btn.dataset.dashed==='1',
+      itemType: btn.dataset.item || null
+    }));
+  });
+});
+const scrollWrap = document.querySelector('.mb-canvas-scroll');
+scrollWrap.addEventListener('dragover', e=> e.preventDefault());
+scrollWrap.addEventListener('drop', e=>{
+  e.preventDefault();
+  const raw = e.dataTransfer.getData('text/plain'); if(!raw) return;
+  const data = JSON.parse(raw);
+  const rect = canvas.getBoundingClientRect();
+  const x = snap((e.clientX - rect.left)/zoom - data.w/2);
+  const y = snap((e.clientY - rect.top)/zoom - data.h/2);
+  addElement({shape:data.shape, x, y, w:data.w, h:data.h, color:data.color, label:data.label, dashed:data.dashed, itemType:data.itemType});
+  toast('عنصر شامل ہو گیا');
+});
+
+/* ================= ROOM CATEGORIES ================= */
+function switchCategory(cat){
+  activeCategory = cat;
+  document.getElementById('tabHome').classList.toggle('active', cat==='home');
+  document.getElementById('tabSchool').classList.toggle('active', cat==='school');
+  document.getElementById('tabFurn').classList.toggle('active', cat==='furniture');
+  document.getElementById('tabGeneral').classList.toggle('active', cat==='general');
+  renderRoomPalette();
+}
+function renderRoomPalette(){
+  const wrap = document.getElementById('roomPalette');
+  wrap.innerHTML = '';
+  roomPresets[activeCategory].forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'mb-room-item'; div.draggable = true;
+    div.innerHTML = `<span class="mb-room-swatch ${r.dashed?'hatch':''}" style="background:${r.dashed?'':r.color}"></span>${r.name}`;
+    div.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('text/plain', JSON.stringify({shape:'rect', w:r.w, h:r.h, color:r.color, label:r.name, dashed:!!r.dashed}));
+    });
+    wrap.appendChild(div);
+  });
+}
+function addCustomRoomType(){
+  const input = document.getElementById('newRoomName');
+  const name = input.value.trim();
+  if(!name){ toast('پہلے نام لکھیں'); return; }
+  const list = roomPresets[activeCategory];
+  const color = COLOR_CHOICES[list.length % COLOR_CHOICES.length];
+  list.push({name, color, w:110, h:90});
+  input.value = ''; renderRoomPalette(); toast('نیا آئٹم شامل ہو گیا');
+}
+
+/* ================= TOOL SWITCH ================= */
+function setTool(mode){
+  toolMode = mode; wallPoints = []; dimPoints = [];
+  document.getElementById('toolSelect').classList.toggle('active-tool', mode==='select');
+  document.getElementById('toolWall').classList.toggle('active-tool', mode==='wall');
+  document.getElementById('toolDim').classList.toggle('active-tool', mode==='dimension');
+  document.getElementById('toolRoute').classList.toggle('active-tool', mode==='route');
+  const hint = document.getElementById('wallHint');
+  if(mode==='wall'){ hint.textContent='📐 دیوار موڈ: نقطے کے لیے کلک کریں۔ ختم کے لیے ڈبل کلک/Enter، منسوخ کے لیے Esc۔'; hint.classList.add('show'); }
+  else if(mode==='dimension'){ hint.textContent='📏 ڈائمینشن موڈ: پہلا اور دوسرا نقطہ کلک کریں۔'; hint.classList.add('show'); }
+  else if(mode==='route'){ hint.textContent='🚨 حفاظتی راستہ: نقطے کلک کریں، ختم کے لیے ڈبل کلک/Enter۔'; hint.classList.add('show'); }
+  else hint.classList.remove('show');
+  canvas.style.cursor = mode==='select' ? 'default' : 'copy';
+  draw();
+}
+function finishPath(){
+  if(toolMode==='wall'){
+    if(wallPoints.length>=3){
+      const el = { id: nextId++, kind:'polygon', points: wallPoints.map(p=>({x:p.x,y:p.y})), color:'#94A3B8', label:'Wall / دیوار', z: elements.length };
+      elements.push(el); selectedIds=[el.id]; pushHistory();
+    } else toast('کم از کم 3 نقطے درکار ہیں');
+  } else if(toolMode==='route'){
+    if(wallPoints.length>=2){
+      const el = { id: nextId++, kind:'route', points: wallPoints.map(p=>({x:p.x,y:p.y})), color:'#EA580C', label:'Route', z: elements.length };
+      elements.push(el); selectedIds=[el.id]; pushHistory();
+    } else toast('کم از کم 2 نقطے درکار ہیں');
+  }
+  wallPoints = []; setTool('select'); refreshAll();
+}
+function cancelWall(){ wallPoints = []; setTool('select'); }
+
+/* ================= POINTER HELPERS ================= */
+function canvasPos(e){
+  const rect = canvas.getBoundingClientRect();
+  const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  return {x: cx/zoom, y: cy/zoom};
+}
+function elBBox(el){
+  if(el.kind==='polygon' || el.kind==='route'){
+    const xs=el.points.map(p=>p.x), ys=el.points.map(p=>p.y);
+    return {x:Math.min(...xs), y:Math.min(...ys), w:Math.max(...xs)-Math.min(...xs), h:Math.max(...ys)-Math.min(...ys)};
+  }
+  if(el.kind==='dimline'){
+    const xs=[el.p1.x,el.p2.x], ys=[el.p1.y,el.p2.y];
+    return {x:Math.min(...xs), y:Math.min(...ys), w:Math.max(...xs)-Math.min(...xs), h:Math.max(...ys)-Math.min(...ys)};
+  }
+  return {x:el.x, y:el.y, w:el.w, h:el.h};
+}
+function hitTest(x,y){
+  const sorted = [...elements].sort((a,b)=>b.z-a.z);
+  for(const el of sorted){
+    if(el.kind==='polygon'){ if(pointInPolygon(el.points,x,y)) return el; }
+    else if(el.kind==='route'){
+      for(let i=0;i<el.points.length-1;i++){ if(distToSegment({x,y}, el.points[i], el.points[i+1]) < 8/zoom) return el; }
+    }
+    else if(el.kind==='dimline'){ if(distToSegment({x,y}, el.p1, el.p2) < 8/zoom) return el; }
+    else { if(x>=el.x && x<=el.x+el.w && y>=el.y && y<=el.y+el.h) return el; }
+  }
+  return null;
+}
+function distToSegment(p, a, b){
+  const l2 = (b.x-a.x)**2+(b.y-a.y)**2;
+  if(l2===0) return Math.hypot(p.x-a.x,p.y-a.y);
+  let t = ((p.x-a.x)*(b.x-a.x)+(p.y-a.y)*(b.y-a.y))/l2;
+  t = Math.max(0,Math.min(1,t));
+  return Math.hypot(p.x-(a.x+t*(b.x-a.x)), p.y-(a.y+t*(b.y-a.y)));
+}
+function pointInPolygon(pts,x,y){
+  let inside=false;
+  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+    const xi=pts[i].x, yi=pts[i].y, xj=pts[j].x, yj=pts[j].y;
+    const intersect = ((yi>y)!=(yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi);
+    if(intersect) inside = !inside;
+  }
+  return inside;
+}
+function hitResizeHandle(el,x,y){
+  if(!el || el.kind==='polygon' || el.kind==='dimline' || el.kind==='route' || el.itemType) return false;
+  return x>=el.x+el.w-10 && x<=el.x+el.w+6 && y>=el.y+el.h-10 && y<=el.y+el.h+6;
+}
+function hitVertex(el,x,y){
+  if(!el || (el.kind!=='polygon' && el.kind!=='route')) return -1;
+  const thresh = 9/zoom;
+  for(let i=0;i<el.points.length;i++){ const p=el.points[i]; if(Math.hypot(p.x-x,p.y-y)<thresh) return i; }
+  return -1;
+}
+
+/* ================= POINTER EVENTS ================= */
+let dragState = null;
+let rubberBand = null;
+
+canvas.addEventListener('mousedown', onDown);
+canvas.addEventListener('touchstart', onDown, {passive:false});
+window.addEventListener('mousemove', onMove);
+window.addEventListener('touchmove', onMove, {passive:false});
+window.addEventListener('mouseup', onUp);
+window.addEventListener('touchend', onUp);
+
+function onDown(e){
+  e.preventDefault();
+  const p = canvasPos(e);
+
+  if(toolMode==='wall' || toolMode==='route'){
+    const pt = e.shiftKey ? p : {x:snap(p.x), y:snap(p.y)};
+    wallPoints.push(pt); draw(); return;
+  }
+  if(toolMode==='dimension'){
+    const pt = e.shiftKey ? p : {x:snap(p.x), y:snap(p.y)};
+    dimPoints.push(pt);
+    if(dimPoints.length===2){
+      const el = {id:nextId++, kind:'dimline', p1:dimPoints[0], p2:dimPoints[1], z:elements.length};
+      elements.push(el); selectedIds=[el.id]; pushHistory();
+      dimPoints=[]; setTool('select'); refreshAll();
+    }
+    draw(); return;
+  }
+
+  const primary = elements.find(el=>el.id===selectedIds[0]);
+  const vIdx = hitVertex(primary, p.x, p.y);
+  if(vIdx>=0 && selectedIds.length===1){ dragState = {mode:'vertex', el:primary, vIdx, shift:e.shiftKey}; return; }
+  if(primary && selectedIds.length===1 && hitResizeHandle(primary,p.x,p.y)){
+    dragState = {mode:'resize', el:primary, startX:p.x, startY:p.y, origW:primary.w, origH:primary.h}; return;
+  }
+
+  const el = hitTest(p.x,p.y);
+  if(el){
+    if(e.shiftKey){
+      selectedIds = selectedIds.includes(el.id) ? selectedIds.filter(id=>id!==el.id) : [...selectedIds, el.id];
+    } else if(!selectedIds.includes(el.id)){ selectedIds = [el.id]; }
+    const group = elements.filter(x=>selectedIds.includes(x.id));
+    dragState = {mode:'move-group', group, startX:p.x, startY:p.y,
+      orig: group.map(g=> (g.kind==='polygon'||g.kind==='route') ? {points:g.points.map(pt=>({x:pt.x,y:pt.y}))} :
+                        g.kind==='dimline' ? {p1:{...g.p1}, p2:{...g.p2}} : {x:g.x,y:g.y}) };
+  } else {
+    if(!e.shiftKey) selectedIds = [];
+    rubberBand = {x1:p.x,y1:p.y,x2:p.x,y2:p.y, additive:e.shiftKey};
+  }
+  refreshAll();
+}
+function onMove(e){
+  const p = canvasPos(e); lastMouse = p;
+  if(toolMode==='wall' || toolMode==='dimension' || toolMode==='route'){ draw(); return; }
+  if(rubberBand){ rubberBand.x2=p.x; rubberBand.y2=p.y; draw(); return; }
+  if(!dragState) return;
+  e.preventDefault();
+  const d = dragState;
+  if(d.mode==='move-group'){
+    const dx = p.x-d.startX, dy = p.y-d.startY;
+    d.group.forEach((g,i)=>{
+      const o = d.orig[i];
+      if(g.kind==='polygon' || g.kind==='route') g.points = o.points.map(pt=>({x:snap(pt.x+dx), y:snap(pt.y+dy)}));
+      else if(g.kind==='dimline'){ g.p1 = {x:snap(o.p1.x+dx),y:snap(o.p1.y+dy)}; g.p2 = {x:snap(o.p2.x+dx),y:snap(o.p2.y+dy)}; }
+      else { g.x = snap(o.x+dx); g.y = snap(o.y+dy); }
+    });
+  } else if(d.mode==='resize'){
+    d.el.w = Math.max(10, snap(d.origW + (p.x - d.startX)));
+    d.el.h = Math.max(10, snap(d.origH + (p.y - d.startY)));
+  } else if(d.mode==='vertex'){
+    const np = d.shift ? p : {x:snap(p.x), y:snap(p.y)};
+    d.el.points[d.vIdx] = np;
+  }
+  draw();
+}
+function onUp(){
+  if(rubberBand){
+    const x1=Math.min(rubberBand.x1,rubberBand.x2), x2=Math.max(rubberBand.x1,rubberBand.x2);
+    const y1=Math.min(rubberBand.y1,rubberBand.y2), y2=Math.max(rubberBand.y1,rubberBand.y2);
+    if(Math.abs(x2-x1)>4 && Math.abs(y2-y1)>4){
+      const hits = elements.filter(el=>{ const b=elBBox(el); return b.x<x2 && b.x+b.w>x1 && b.y<y2 && b.y+b.h>y1; }).map(el=>el.id);
+      selectedIds = rubberBand.additive ? [...new Set([...selectedIds, ...hits])] : hits;
+    }
+    rubberBand = null; refreshAll();
+  }
+  if(dragState){ dragState=null; pushHistory(); refreshAll(); }
+}
+canvas.addEventListener('dblclick', e=>{
+  if(toolMode==='wall' || toolMode==='route'){ finishPath(); return; }
+  const p = canvasPos(e);
+  const el = hitTest(p.x,p.y);
+  if(el && el.kind!=='dimline'){
+    const name = prompt('نیا نام درج کریں:', el.label);
+    if(name!==null){ el.label = name.trim() || el.label; pushHistory(); refreshAll(); }
+  }
+});
+
+document.addEventListener('keydown', e=>{
+  const inInput = document.activeElement.tagName==='INPUT' || document.activeElement.tagName==='TEXTAREA';
+  if(toolMode==='wall' || toolMode==='route'){ if(e.key==='Enter') finishPath(); if(e.key==='Escape') cancelWall(); return; }
+  if(toolMode==='dimension'){ if(e.key==='Escape'){ dimPoints=[]; setTool('select'); } return; }
+  if(inInput) return;
+  if((e.key==='Delete'||e.key==='Backspace') && selectedIds.length){ e.preventDefault(); deleteSelected(); }
+  if(e.ctrlKey && e.key==='z'){ e.preventDefault(); undo(); }
+  if(e.ctrlKey && (e.key==='y' || (e.shiftKey&&e.key==='Z'))){ e.preventDefault(); redo(); }
+  if(e.ctrlKey && e.key==='d'){ e.preventDefault(); duplicateSelected(); }
+  if(e.ctrlKey && e.key==='a'){ e.preventDefault(); selectedIds = elements.map(el=>el.id); refreshAll(); }
+  if(selectedIds.length===1 && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    e.preventDefault();
+    const el = elements.find(x=>x.id===selectedIds[0]);
+    if(!el || el.kind==='polygon' || el.kind==='dimline' || el.kind==='route') return;
+    const step = e.shiftKey ? GRID : 2;
+    if(e.key==='ArrowUp') el.y -= step; if(e.key==='ArrowDown') el.y += step;
+    if(e.key==='ArrowLeft') el.x -= step; if(e.key==='ArrowRight') el.x += step;
+    draw();
+  }
+});
+
+/* ================= PROPS PANEL ================= */
+function refreshAll(){ draw(); renderProps(); renderElementList(); }
+function renderProps(){
+  const empty = document.getElementById('propsEmpty');
+  const multi = document.getElementById('propsMulti');
+  const form = document.getElementById('propsForm');
+  const alignBox = document.getElementById('alignBox');
+
+  if(selectedIds.length===0){ empty.style.display='block'; multi.style.display='none'; form.style.display='none'; alignBox.style.display='none'; return; }
+  if(selectedIds.length>1){
+    empty.style.display='none'; form.style.display='none';
+    multi.style.display='block'; multi.textContent = selectedIds.length + ' عناصر منتخب ہیں';
+    alignBox.style.display='block'; return;
+  }
+  alignBox.style.display='none';
+  const el = elements.find(e=>e.id===selectedIds[0]);
+  if(!el){ empty.style.display='block'; form.style.display='none'; multi.style.display='none'; return; }
+  empty.style.display='none'; multi.style.display='none'; form.style.display='block';
+  document.getElementById('propLabel').value = el.label || '';
+
+  const isPoly = el.kind==='polygon' || el.kind==='route';
+  const isDim = el.kind==='dimline';
+  const isItem = !!el.itemType;
+  document.getElementById('sizeRow').style.display = (isPoly||isDim) ? 'none' : 'block';
+  document.getElementById('rotateRow').style.display = (isPoly||isDim) ? 'none' : 'block';
+  document.getElementById('dashedRow').style.display = (isPoly||isDim||isItem) ? 'none' : 'block';
+
+  if(!isPoly && !isDim){
+    document.getElementById('propW').value = Math.round(el.w);
+    document.getElementById('propH').value = Math.round(el.h);
+    document.getElementById('propRotate').value = el.rotation||0;
+    document.getElementById('propRotateNum').value = el.rotation||0;
+    document.getElementById('propDashed').checked = !!el.dashed;
+  }
+
+  const sw = document.getElementById('colorSwatches'); sw.innerHTML = '';
+  if(!isDim){
+    COLOR_CHOICES.forEach(c=>{
+      const s = document.createElement('div');
+      s.className = 'mb-cswatch' + (c===el.color ? ' active':'');
+      s.style.background = c;
+      s.onclick = ()=>{ el.color = c; pushHistory(); refreshAll(); };
+      sw.appendChild(s);
+    });
+  }
+}
+function updateSelectedLabel(v){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]);
+  if(el){ el.label = v; draw(); renderElementList(); }
+}
+function updateSelectedSize(){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]);
+  if(!el || el.kind==='polygon' || el.kind==='dimline' || el.kind==='route') return;
+  const w = parseInt(document.getElementById('propW').value)||el.w;
+  const h = parseInt(document.getElementById('propH').value)||el.h;
+  el.w = Math.max(6,w); el.h = Math.max(6,h);
+  draw();
+}
+function updateSelectedRotation(v){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]);
+  if(!el || el.kind==='polygon' || el.kind==='dimline' || el.kind==='route') return;
+  el.rotation = ((+v)%360+360)%360;
+  document.getElementById('propRotate').value = el.rotation;
+  document.getElementById('propRotateNum').value = el.rotation;
+  draw();
+}
+function updateSelectedDashed(checked){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]);
+  if(el){ el.dashed = checked; pushHistory(); draw(); }
+}
+function renderElementList(){
+  const wrap = document.getElementById('elementList'); wrap.innerHTML = '';
+  if(elements.length===0){ wrap.innerHTML = '<div class="mb-empty-note" style="padding:10px;">ابھی کوئی عنصر شامل نہیں</div>'; return; }
+  [...elements].sort((a,b)=>b.z-a.z).forEach(el=>{
+    const div = document.createElement('div');
+    div.className = 'mb-room-item'; div.style.cursor = 'pointer';
+    div.style.borderColor = selectedIds.includes(el.id) ? '#0F8A5F' : '';
+    let label;
+    if(el.kind==='dimline') label = 'Dimension: ' + pxToUnit(Math.hypot(el.p2.x-el.p1.x, el.p2.y-el.p1.y)).toFixed(1) + unitLabel();
+    else if(el.kind==='route') label = '🚨 Evacuation Route';
+    else label = composedLabel(el);
+    div.innerHTML = `<span class="mb-room-swatch" style="background:${el.color||'#94A3B8'}"></span>${label}`;
+    div.onclick = (ev)=>{ if(ev.shiftKey){ selectedIds = selectedIds.includes(el.id) ? selectedIds.filter(id=>id!==el.id) : [...selectedIds, el.id]; } else { selectedIds=[el.id]; } refreshAll(); };
+    wrap.appendChild(div);
+  });
+}
+function updateSummary(){
+  document.getElementById('sumCount').textContent = elements.length;
+  let totalSqft = 0;
+  elements.forEach(el=>{
+    if(el.kind==='polygon'){ totalSqft += pxAreaToSqft(Math.abs(shoelaceArea(el.points))); }
+    else if(el.kind==='shape' && !el.dashed && !el.itemType){ totalSqft += pxToUnit(el.w)*pxToUnit(el.h) * (scaleUnit==='m' ? (1/0.3048/0.3048) : 1); }
+  });
+  document.getElementById('sumArea').textContent = formatArea(totalSqft);
+}
+
+/* ================= ACTIONS ================= */
+function duplicateSelected(){
+  if(selectedIds.length===0) return;
+  const group = elements.filter(e=>selectedIds.includes(e.id));
+  const newIds = [];
+  group.forEach(el=>{
+    let ne;
+    if(el.kind==='polygon' || el.kind==='route') ne = {...el, id:nextId++, points: el.points.map(p=>({x:p.x+20,y:p.y+20}))};
+    else if(el.kind==='dimline') ne = {...el, id:nextId++, p1:{x:el.p1.x+20,y:el.p1.y+20}, p2:{x:el.p2.x+20,y:el.p2.y+20}};
+    else ne = {...el, id:nextId++, x:el.x+20, y:el.y+20};
+    ne.z = elements.length; elements.push(ne); newIds.push(ne.id);
+  });
+  selectedIds = newIds; pushHistory(); refreshAll();
+}
+function deleteSelected(){
+  if(selectedIds.length===0){ toast('پہلے کوئی عنصر منتخب کریں'); return; }
+  elements = elements.filter(e=>!selectedIds.includes(e.id));
+  floors[currentFloorIdx].elements = elements;
+  selectedIds = []; pushHistory(); refreshAll();
+}
+function bringForward(){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]); if(!el) return;
+  el.z = Math.max(0,...elements.map(e=>e.z)) + 1; pushHistory(); refreshAll();
+}
+function sendBackward(){
+  if(selectedIds.length!==1) return;
+  const el = elements.find(e=>e.id===selectedIds[0]); if(!el) return;
+  el.z = Math.min(0,...elements.map(e=>e.z)) - 1; pushHistory(); refreshAll();
+}
+function toggleGridSnap(){
+  snapEnabled = !snapEnabled;
+  document.getElementById('snapBtn').textContent = '🧲 اسنیپ: ' + (snapEnabled?'آن':'آف');
+}
+function zoomIn(){ zoom = Math.min(2, +(zoom+0.1).toFixed(2)); applyZoom(); }
+function zoomOut(){ zoom = Math.max(0.4, +(zoom-0.1).toFixed(2)); applyZoom(); }
+function applyZoom(){
+  document.getElementById('zoomLabel').textContent = Math.round(zoom*100)+'%';
+  canvas.style.width = (CANVAS_W*zoom)+'px'; canvas.style.height = (CANVAS_H*zoom)+'px';
+  draw();
+}
+
+/* ================= ALIGN / DISTRIBUTE ================= */
+function groupRectEls(){ return elements.filter(e=>selectedIds.includes(e.id) && e.kind==='shape'); }
+function alignGroup(mode){
+  const group = groupRectEls(); if(group.length<2) return;
+  const boxes = group.map(g=>({el:g, ...elBBox(g)}));
+  if(mode==='left'){ const min = Math.min(...boxes.map(b=>b.x)); group.forEach(g=>g.x=min); }
+  if(mode==='right'){ const max = Math.max(...boxes.map(b=>b.x+b.w)); group.forEach(g=>g.x=max-g.w); }
+  if(mode==='top'){ const min = Math.min(...boxes.map(b=>b.y)); group.forEach(g=>g.y=min); }
+  if(mode==='bottom'){ const max = Math.max(...boxes.map(b=>b.y+b.h)); group.forEach(g=>g.y=max-g.h); }
+  if(mode==='centerH'){ const avg = boxes.reduce((s,b)=>s+b.x+b.w/2,0)/boxes.length; group.forEach(g=>g.x=avg-g.w/2); }
+  if(mode==='centerV'){ const avg = boxes.reduce((s,b)=>s+b.y+b.h/2,0)/boxes.length; group.forEach(g=>g.y=avg-g.h/2); }
+  pushHistory(); refreshAll();
+}
+function distributeGroup(axis){
+  const group = groupRectEls(); if(group.length<3){ toast('کم از کم 3 عناصر درکار ہیں'); return; }
+  if(axis==='h'){
+    group.sort((a,b)=>a.x-b.x);
+    const min = group[0].x, max = group[group.length-1].x + group[group.length-1].w;
+    const totalW = group.reduce((s,g)=>s+g.w,0);
+    const gap = (max-min-totalW)/(group.length-1);
+    let cx = min; group.forEach(g=>{ g.x = cx; cx += g.w + gap; });
+  } else {
+    group.sort((a,b)=>a.y-b.y);
+    const min = group[0].y, max = group[group.length-1].y + group[group.length-1].h;
+    const totalH = group.reduce((s,g)=>s+g.h,0);
+    const gap = (max-min-totalH)/(group.length-1);
+    let cy = min; group.forEach(g=>{ g.y = cy; cy += g.h + gap; });
+  }
+  pushHistory(); refreshAll();
+}
+
+/* ================= ROOM NUMBERING ================= */
+function autoNumberRooms(){
+  let n = parseInt(document.getElementById('numStart').value)||101;
+  elements.filter(e=>e.kind==='shape' && !e.itemType && !e.dashed).sort((a,b)=>a.id-b.id).forEach(e=>{ e.roomNumber = n++; });
+  showRoomNumbers = true; document.getElementById('showNumChk').checked = true;
+  pushHistory(); refreshAll(); toast('نمبرنگ لگا دی گئی');
+}
+
+/* ================= DARK MODE ================= */
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('mfj_map_dark', isDark ? '1':'0');
+  document.getElementById('darkBtn').textContent = isDark ? '☀️ لائٹ' : '🌙 ڈارک';
+}
+if(localStorage.getItem('mfj_map_dark')==='1'){ document.body.classList.add('dark'); }
+
+/* ================= SHORTCUTS / TEMPLATES MODALS ================= */
+function openShortcuts(){ document.getElementById('shortcutsModalBg').classList.add('show'); }
+function openTemplates(){ document.getElementById('templatesModalBg').classList.add('show'); }
+
+/* ================= ELEVATION VIEW (simple flat front elevation) ================= */
+function getWallEdges(){
+  const edges = [];
+  elements.filter(e=>e.kind==='polygon').forEach((poly, wi)=>{
+    for(let i=0;i<poly.points.length;i++){
+      const p1 = poly.points[i], p2 = poly.points[(i+1)%poly.points.length];
+      const lenFt = pxToUnit(Math.hypot(p2.x-p1.x, p2.y-p1.y));
+      edges.push({ id: wi+'_'+i, wallLabel: poly.label||'Wall', p1, p2, lenFt });
+    }
+  });
+  return edges;
+}
+function openElevation(){
+  const sel = document.getElementById('elevWallSelect');
+  const edges = getWallEdges();
+  if(edges.length===0){ toast('پہلے کم از کم ایک دیوار (Wall tool) بنائیں'); return; }
+  sel.innerHTML = edges.map((e,i)=> `<option value="${i}">${e.wallLabel} — Edge ${ (i%20)+1 } (${e.lenFt.toFixed(1)} ${unitLabel()})</option>`).join('');
+  document.getElementById('elevationModalBg').classList.add('show');
+  generateElevation();
+}
+function generateElevation(){
+  const edges = getWallEdges();
+  const idx = +document.getElementById('elevWallSelect').value || 0;
+  const edge = edges[idx];
+  if(!edge) return;
+  const wallHFt = parseFloat(document.getElementById('elevWallHeight').value)||9;
+  const doorHFt = parseFloat(document.getElementById('elevDoorHeight').value)||7;
+  const sillHFt = parseFloat(document.getElementById('elevSillHeight').value)||3;
+
+  const ec = document.getElementById('elevCanvas');
+  const ex = ec.getContext('2d');
+  const PPF = 22; // pixels per foot for elevation
+  const marginX = 60, marginBottom = 40, marginTop = 30;
+  const wallLenFt = edge.lenFt;
+  ec.width = Math.max(500, wallLenFt*PPF + marginX*2);
+  ec.height = (wallHFt+2)*PPF + marginBottom + marginTop;
+  ex.clearRect(0,0,ec.width,ec.height);
+  ex.fillStyle = '#EFF3F6'; ex.fillRect(0,0,ec.width,ec.height);
+
+  const groundY = ec.height - marginBottom;
+  const wallTopY = groundY - wallHFt*PPF;
+  const wallW = wallLenFt*PPF;
+
+  // ground line
+  ex.strokeStyle = '#94A3B8'; ex.lineWidth=2;
+  ex.beginPath(); ex.moveTo(marginX-20, groundY); ex.lineTo(marginX+wallW+20, groundY); ex.stroke();
+
+  // wall rectangle
+  ex.fillStyle = '#E2E8F0'; ex.strokeStyle='#334155'; ex.lineWidth=2;
+  ex.fillRect(marginX, wallTopY, wallW, wallHFt*PPF);
+  ex.strokeRect(marginX, wallTopY, wallW, wallHFt*PPF);
+
+  // simple flat roof line (small triangular cap)
+  ex.beginPath();
+  ex.moveTo(marginX-14, wallTopY);
+  ex.lineTo(marginX+wallW/2, wallTopY-24);
+  ex.lineTo(marginX+wallW+14, wallTopY);
+  ex.closePath();
+  ex.fillStyle = '#94A3B8'; ex.fill(); ex.strokeStyle='#334155'; ex.stroke();
+
+  // project doors/windows onto this wall edge
+  const dx = edge.p2.x-edge.p1.x, dy = edge.p2.y-edge.p1.y;
+  const lenPx = Math.hypot(dx,dy) || 1;
+  const items = elements.filter(e=> e.itemType==='door' || e.itemType==='window');
+  items.forEach(el=>{
+    const cx = el.x + el.w/2, cy = el.y + el.h/2;
+    const t = ((cx-edge.p1.x)*dx + (cy-edge.p1.y)*dy) / (lenPx*lenPx);
+    const distPerp = Math.abs((cy-edge.p1.y)*dx - (cx-edge.p1.x)*dy)/lenPx;
+    if(t<-0.05 || t>1.05 || distPerp>40) return; // not on this wall
+    const posFt = Math.max(0,Math.min(1,t)) * wallLenFt;
+    const wFt = Math.max(1.5, pxToUnit(el.w));
+    const xC = marginX + posFt*PPF;
+    if(el.itemType==='door'){
+      const w = wFt*PPF;
+      ex.fillStyle = '#DEB887'; ex.strokeStyle='#78350F'; ex.lineWidth=1.5;
+      ex.fillRect(xC-w/2, groundY-doorHFt*PPF, w, doorHFt*PPF);
+      ex.strokeRect(xC-w/2, groundY-doorHFt*PPF, w, doorHFt*PPF);
+    } else {
+      const w = wFt*PPF, hFt = Math.max(1, pxToUnit(el.h)*3||4);
+      const winHFt = 4;
+      ex.fillStyle = '#BAE6FD'; ex.strokeStyle='#0369A1'; ex.lineWidth=1.5;
+      ex.fillRect(xC-w/2, groundY-(sillHFt+winHFt)*PPF, w, winHFt*PPF);
+      ex.strokeRect(xC-w/2, groundY-(sillHFt+winHFt)*PPF, w, winHFt*PPF);
+      ex.beginPath(); ex.moveTo(xC, groundY-(sillHFt+winHFt)*PPF); ex.lineTo(xC, groundY-sillHFt*PPF); ex.stroke();
+    }
+  });
+
+  // height label
+  ex.fillStyle='#152238'; ex.font='700 12px Inter'; ex.textAlign='center';
+  ex.fillText(`${edge.wallLabel} — ${wallLenFt.toFixed(1)} ${unitLabel()} لمبی، ${wallHFt} ft اونچی`, ec.width/2, 16);
+}
+function downloadElevation(){
+  const ec = document.getElementById('elevCanvas');
+  const link = document.createElement('a');
+  link.download = (document.getElementById('projectName').value || 'elevation') + '-elevation.png';
+  link.href = ec.toDataURL('image/png');
+  link.click();
+}
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='elevWallSelect') generateElevation();
+});
+function applyTemplate(type){
+  if(!confirm('موجودہ منزل کے تمام عناصر بدل جائیں گے۔ جاری رکھیں؟')) return;
+  elements.length = 0;
+  const mk = (shape,x,y,w,h,color,label,dashed)=>{ elements.push({id:nextId++, kind:'shape', shape, x,y,w,h, rotation:0, color, label, dashed:!!dashed, itemType:null, z:elements.length}); };
+  if(type==='school'){
+    mk('rect',40,40,120,100,'#93C5FD','Classroom 1');
+    mk('rect',180,40,120,100,'#93C5FD','Classroom 2');
+    mk('rect',320,40,120,100,'#93C5FD','Classroom 3');
+    mk('rect',460,40,120,100,'#93C5FD','Classroom 4');
+    mk('rect',40,160,540,46,'#E2E8F0','Corridor / برآمدہ');
+    mk('rect',620,40,130,100,'#FDBA74','Principal Office');
+    mk('rect',620,160,130,90,'#A7F3D0','Staff Room');
+    mk('rect',40,230,150,120,'#A7F3D0','Library');
+    mk('rect',220,230,180,140,'#BEF264','Playground');
+    mk('rect',440,230,90,80,'#7DD3FC','Washroom');
+  } else {
+    mk('rect',40,40,150,120,'#C4B5FD','Drawing Room');
+    mk('rect',210,40,170,130,'#A7F3D0','Lounge');
+    mk('rect',400,40,110,90,'#FCA5A5','Kitchen');
+    mk('rect',40,180,120,110,'#93C5FD','Bedroom 1');
+    mk('rect',180,180,120,110,'#93C5FD','Bedroom 2');
+    mk('rect',320,180,70,70,'#7DD3FC','Washroom');
+    mk('rect',410,180,220,160,'#BEF264','Lawn/Garden');
+  }
+  document.getElementById('templatesModalBg').classList.remove('show');
+  selectedIds = []; pushHistory(); refreshAll(); toast('ٹیمپلیٹ لگا دیا گیا');
+}
+
+/* ================= SAVE / LOAD / EXPORT ================= */
+const STORAGE_KEY = 'mfj_school_map_v3';
+const PROJECTS_KEY = 'mfj_map_projects_v1';
+function packAll(){
+  floors[currentFloorIdx].elements = elements;
+  return {
+    floors: floors.map(f=>({id:f.id, name:f.name, elements:f.elements})),
+    currentFloorIdx, roomPresets, scaleFeetPerGrid, scaleUnit, areaUnit, wallThicknessInches,
+    projectName: document.getElementById('projectName').value
+  };
+}
+function unpackAll(data){
+  floors = (data.floors||[]).map(f=>({id:f.id, name:f.name, elements:f.elements||[], refImage:{img:null,opacity:.45,visible:true}}));
+  if(floors.length===0) floors = [newFloor('Ground Floor / گراؤنڈ فلور')];
+  currentFloorIdx = Math.min(data.currentFloorIdx||0, floors.length-1);
+  elements = floors[currentFloorIdx].elements;
+  refImage = floors[currentFloorIdx].refImage;
+  nextId = Math.max(0, ...floors.flatMap(f=>f.elements.map(e=>e.id||0))) + 1;
+  if(data.roomPresets) roomPresets = data.roomPresets;
+  if(data.scaleFeetPerGrid){ scaleFeetPerGrid = data.scaleFeetPerGrid; document.getElementById('scaleValue').value = scaleFeetPerGrid; }
+  if(data.scaleUnit){ scaleUnit = data.scaleUnit; document.getElementById('scaleUnit').value = scaleUnit; }
+  if(data.areaUnit){ areaUnit = data.areaUnit; document.getElementById('areaUnit').value = areaUnit; }
+  if(data.wallThicknessInches){ wallThicknessInches = data.wallThicknessInches; document.getElementById('wallThickness').value = wallThicknessInches; }
+  if(data.projectName) document.getElementById('projectName').value = data.projectName;
+  selectedIds = [];
+  renderRoomPalette(); renderFloorTabs(); refreshAll();
+}
+function saveMap(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(packAll())); toast('نقشہ محفوظ ہو گیا ✅'); }
+function loadMap(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw){ toast('کوئی محفوظ شدہ نقشہ نہیں ملا'); return; }
+  unpackAll(JSON.parse(raw)); toast('نقشہ لوڈ ہو گیا ✅');
+}
+function clearMap(){
+  if(!confirm('کیا آپ پورا نقشہ صاف کرنا چاہتے ہیں؟')) return;
+  floors = [newFloor('Ground Floor / گراؤنڈ فلور')];
+  currentFloorIdx = 0; elements = floors[0].elements; refImage = floors[0].refImage;
+  selectedIds = []; renderFloorTabs(); pushHistory(); refreshAll();
+}
+function exportPNG(){
+  const link = document.createElement('a');
+  link.download = (document.getElementById('projectName').value || 'map') + '.png';
+  link.href = canvas.toDataURL('image/png'); link.click();
+}
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(packAll(), null, 2)], {type:'application/json'});
+  const link = document.createElement('a');
+  link.download = (document.getElementById('projectName').value || 'map') + '.json';
+  link.href = URL.createObjectURL(blob); link.click();
+}
+function importJSONPrompt(){
+  document.getElementById('jsonModalTitle').textContent = 'JSON یہاں پیسٹ کریں';
+  document.getElementById('jsonModalText').value = '';
+  document.getElementById('jsonModalActionBtn').textContent = 'لوڈ کریں';
+  document.getElementById('jsonModalActionBtn').onclick = ()=>{
+    try{
+      const data = JSON.parse(document.getElementById('jsonModalText').value);
+      unpackAll(data); pushHistory(); closeJsonModal(); toast('JSON درآمد ہو گیا ✅');
+    }catch(err){ alert('غلط JSON فارمیٹ'); }
+  };
+  document.getElementById('jsonModalBg').classList.add('show');
+}
+function closeJsonModal(){ document.getElementById('jsonModalBg').classList.remove('show'); }
+function jsonModalAction(){}
+
+/* ---- Multiple saved projects (local browser storage, used when not logged in) ---- */
+function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || {}; }catch(e){ return {}; } }
+function setProjects(p){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(p)); }
+function saveProject(asNew){
+  if(currentUser){ cloudSaveProject(asNew); return; }
+  const name = document.getElementById('projectName').value.trim() || 'Untitled Project';
+  const projects = getProjects();
+  const id = (asNew || !currentProjectId) ? ('p_'+Date.now()) : currentProjectId;
+  projects[id] = { name, data: packAll(), savedAt: new Date().toISOString() };
+  setProjects(projects);
+  currentProjectId = id;
+  renderProjectsList();
+  toast('پراجیکٹ محفوظ ہو گیا ✅ (صرف اسی براؤزر میں — اکاؤنٹ بنائیں تو ہمیشہ کے لیے محفوظ رہے گا)');
+}
+function loadProject(id){
+  if(currentUser){ cloudLoadProject(id); return; }
+  const projects = getProjects();
+  if(!projects[id]) return;
+  unpackAll(projects[id].data);
+  currentProjectId = id;
+  pushHistory();
+  toast('پراجیکٹ لوڈ ہو گیا ✅');
+}
+function deleteProject(id){
+  if(currentUser){ cloudDeleteProject(id); return; }
+  if(!confirm('یہ پراجیکٹ حذف کرنا چاہتے ہیں؟')) return;
+  const projects = getProjects();
+  delete projects[id];
+  setProjects(projects);
+  if(currentProjectId===id) currentProjectId = null;
+  renderProjectsList();
+}
+function renderProjectsList(){
+  if(currentUser){ renderCloudProjectsList(); return; }
+  const wrap = document.getElementById('projectsList');
+  const projects = getProjects();
+  const ids = Object.keys(projects);
+  if(ids.length===0){ wrap.innerHTML = '<p class="mb-hint">ابھی کوئی پراجیکٹ محفوظ نہیں</p>'; return; }
+  wrap.innerHTML = '';
+  ids.sort((a,b)=> new Date(projects[b].savedAt) - new Date(projects[a].savedAt)).forEach(id=>{
+    const div = document.createElement('div');
+    div.className = 'mb-proj-item';
+    div.innerHTML = `<span class="name">${projects[id].name}</span><button title="لوڈ کریں">📂</button><button title="حذف کریں">🗑️</button>`;
+    div.querySelector('.name').onclick = ()=> loadProject(id);
+    div.querySelectorAll('button')[0].onclick = ()=> loadProject(id);
+    div.querySelectorAll('button')[1].onclick = ()=> deleteProject(id);
+    wrap.appendChild(div);
+  });
+}
+function toggleAutosave(on){
+  if(on){ autosaveTimer = setInterval(()=>{ if(currentProjectId || currentUser) saveProject(false); else saveMap(); }, 60000); }
+  else if(autosaveTimer){ clearInterval(autosaveTimer); autosaveTimer=null; }
+}
+
+
+/* ---- Print ---- */
+function doPrint(){
+  document.getElementById('printProjName').textContent = document.getElementById('projectName').value || 'School / Home Map';
+  document.getElementById('printMeta').textContent = floors[currentFloorIdx].name + ' — ' + new Date().toLocaleDateString();
+  window.print();
+}
+
+/* ---- PDF export ---- */
+function exportPDF(){
+  if(typeof window.jspdf === 'undefined'){ toast('PDF لائبریری لوڈ نہیں ہوئی'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  doc.setFontSize(16);
+  doc.text(document.getElementById('projectName').value || 'School / Home Map', pageW/2, 30, {align:'center'});
+  doc.setFontSize(10);
+  doc.text(floors[currentFloorIdx].name + '  |  ' + new Date().toLocaleDateString(), pageW/2, 46, {align:'center'});
+  const img = canvas.toDataURL('image/png');
+  const imgW = pageW - 60, imgH = imgW * (CANVAS_H/CANVAS_W);
+  doc.addImage(img, 'PNG', 30, 60, imgW, Math.min(imgH, pageH-90));
+  doc.save((document.getElementById('projectName').value || 'map') + '.pdf');
+  toast('PDF تیار ہو گئی ✅');
+}
+
+/* ---- Excel export ---- */
+function exportExcel(){
+  if(typeof XLSX === 'undefined'){ toast('Excel لائبریری لوڈ نہیں ہوئی'); return; }
+  floors[currentFloorIdx].elements = elements;
+  const rows = [];
+  floors.forEach(f=>{
+    f.elements.forEach(el=>{
+      if(el.kind==='shape'){
+        rows.push({
+          Floor: f.name,
+          Type: el.itemType ? el.itemType : (el.dashed ? 'Open Space' : 'Room'),
+          Label: el.label,
+          'Width': pxToUnit(el.w).toFixed(1) + ' ' + unitLabel(),
+          'Height': pxToUnit(el.h).toFixed(1) + ' ' + unitLabel(),
+          'Area': el.itemType ? '' : formatArea(pxToUnit(el.w)*pxToUnit(el.h)*(scaleUnit==='m'?(1/0.3048/0.3048):1))
+        });
+      } else if(el.kind==='polygon'){
+        rows.push({ Floor:f.name, Type:'Wall/Boundary', Label:el.label, Width:'', Height:'', Area: formatArea(pxAreaToSqft(Math.abs(shoelaceArea(el.points)))) });
+      }
+    });
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Map Data');
+  XLSX.writeFile(wb, (document.getElementById('projectName').value || 'map') + '.xlsx');
+  toast('Excel فائل تیار ہو گئی ✅');
+}
+
+/* ---- Share link ---- */
+function makeShareLink(){
+  try{
+    const json = JSON.stringify(packAll());
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    const url = location.origin + location.pathname + '#data=' + b64;
+    document.getElementById('jsonModalTitle').textContent = 'شیئر لنک (کاپی کریں)';
+    document.getElementById('jsonModalText').value = url;
+    document.getElementById('jsonModalActionBtn').textContent = 'کاپی کریں';
+    document.getElementById('jsonModalActionBtn').onclick = ()=>{ navigator.clipboard.writeText(url).then(()=>toast('لنک کاپی ہو گیا ✅')); };
+    document.getElementById('jsonModalBg').classList.add('show');
+  }catch(err){ toast('نقشہ بہت بڑا ہے، JSON فائل استعمال کریں'); }
+}
+function loadFromHashIfPresent(){
+  if(location.hash.startsWith('#data=')){
+    try{
+      const json = decodeURIComponent(escape(atob(location.hash.slice(6))));
+      unpackAll(JSON.parse(json));
+      toast('شیئر کردہ نقشہ لوڈ ہو گیا ✅');
+    }catch(err){ console.warn('Bad share link', err); }
+  }
+}
+
+/* ---- Auth (self-service signup/login) + Cloud Projects (Supabase) ----
+   Uses the same Supabase project as the rest of the MFJ site.
+   Table needed (run once in Supabase SQL editor):
+
+   create table map_projects (
+     id uuid primary key default gen_random_uuid(),
+     user_id uuid references auth.users(id) not null,
+     name text,
+     data jsonb,
+     updated_at timestamptz default now()
+   );
+   alter table map_projects enable row level security;
+   create policy "own rows only" on map_projects for all
+     using (auth.uid() = user_id) with check (auth.uid() = user_id);
+*/
+const mapSupa = window.supabase.createClient(
+  'https://ixgsartlktmgqfnzzatv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8'
+);
+let currentUser = null;
+
+async function initAuth(){
+  const { data } = await mapSupa.auth.getSession();
+  currentUser = data.session ? data.session.user : null;
+  updateAuthUI();
+  renderProjectsList();
+  mapSupa.auth.onAuthStateChange((_event, session)=>{
+    currentUser = session ? session.user : null;
+    updateAuthUI();
+    renderProjectsList();
+  });
+}
+function updateAuthUI(){
+  document.getElementById('authLoggedOut').style.display = currentUser ? 'none' : 'block';
+  document.getElementById('authLoggedIn').style.display = currentUser ? 'block' : 'none';
+  if(currentUser) document.getElementById('authEmailDisplay').textContent = '✅ ' + currentUser.email;
+  document.getElementById('projectsScopeNote').style.display = currentUser ? 'none' : 'block';
+}
+async function authSignUp(){
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const msg = document.getElementById('authMsg');
+  if(!email || password.length<6){ msg.textContent = 'درست ای میل اور کم از کم 6 حروف کا پاس ورڈ درج کریں'; return; }
+  msg.textContent = 'اکاؤنٹ بن رہا ہے...';
+  const { data, error } = await mapSupa.auth.signUp({ email, password });
+  if(error){ msg.textContent = 'ناکام: ' + error.message; return; }
+  if(data.session){ msg.textContent = ''; toast('اکاؤنٹ بن گیا ✅'); }
+  else { msg.textContent = 'اکاؤنٹ بن گیا — اگر تصدیقی ای میل آئے تو اسے کھول کر تصدیق کریں، پھر لاگ اِن کریں۔'; }
+}
+async function authLogIn(){
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const msg = document.getElementById('authMsg');
+  if(!email || !password){ msg.textContent = 'ای میل اور پاس ورڈ درج کریں'; return; }
+  msg.textContent = 'لاگ اِن ہو رہا ہے...';
+  const { error } = await mapSupa.auth.signInWithPassword({ email, password });
+  if(error){ msg.textContent = 'ناکام: ' + error.message; return; }
+  msg.textContent = '';
+  toast('لاگ اِن ہو گیا ✅');
+}
+async function authLogOut(){
+  await mapSupa.auth.signOut();
+  currentUser = null;
+  currentProjectId = null;
+  updateAuthUI();
+  renderProjectsList();
+  toast('لاگ آؤٹ ہو گیا');
+}
+
+/* Cloud-backed project list (replaces localStorage version when logged in) */
+async function cloudSaveProject(asNew){
+  const name = document.getElementById('projectName').value.trim() || 'Untitled Project';
+  const row = { user_id: currentUser.id, name, data: packAll(), updated_at: new Date().toISOString() };
+  if(!asNew && currentProjectId){ row.id = currentProjectId; }
+  const { data, error } = await mapSupa.from('map_projects').upsert(row).select().single();
+  if(error){ toast('محفوظ نہیں ہوا: ' + error.message); return; }
+  currentProjectId = data.id;
+  renderProjectsList();
+  toast('کلاؤڈ میں محفوظ ہو گیا ✅');
+}
+async function cloudLoadProject(id){
+  const { data, error } = await mapSupa.from('map_projects').select('id,data').eq('id', id).single();
+  if(error || !data){ toast('لوڈ نہیں ہو سکا'); return; }
+  unpackAll(data.data);
+  currentProjectId = data.id;
+  pushHistory();
+  toast('پراجیکٹ لوڈ ہو گیا ✅');
+}
+async function cloudDeleteProject(id){
+  if(!confirm('یہ پراجیکٹ حذف کرنا چاہتے ہیں؟')) return;
+  const { error } = await mapSupa.from('map_projects').delete().eq('id', id);
+  if(error){ toast('حذف نہیں ہوا'); return; }
+  if(currentProjectId===id) currentProjectId = null;
+  renderProjectsList();
+}
+async function renderCloudProjectsList(){
+  const wrap = document.getElementById('projectsList');
+  const { data, error } = await mapSupa.from('map_projects').select('id,name,updated_at').eq('user_id', currentUser.id).order('updated_at', {ascending:false});
+  if(error || !data || data.length===0){ wrap.innerHTML = '<p class="mb-hint">ابھی کوئی پراجیکٹ محفوظ نہیں</p>'; return; }
+  wrap.innerHTML = '';
+  data.forEach(row=>{
+    const div = document.createElement('div');
+    div.className = 'mb-proj-item';
+    div.innerHTML = `<span class="name">${row.name}</span><button title="لوڈ کریں">📂</button><button title="حذف کریں">🗑️</button>`;
+    div.querySelector('.name').onclick = ()=> cloudLoadProject(row.id);
+    div.querySelectorAll('button')[0].onclick = ()=> cloudLoadProject(row.id);
+    div.querySelectorAll('button')[1].onclick = ()=> cloudDeleteProject(row.id);
+    wrap.appendChild(div);
+  });
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=> t.classList.remove('show'), 2400);
+}
+
+initAuth();
+
+
+/* ================= INIT ================= */
+renderRoomPalette();
+renderFloorTabs();
+applyZoom();
+loadFromHashIfPresent();
+renderProjectsList();
+refreshAll();
+pushHistory();
+</script>
+
+<!-- Feature-flag gate: admin can take this whole page offline instantly from
+     Supabase (table: site_settings, row key='school_map_enabled', value boolean).
+     Fails open — if the check fails, the tool stays usable. -->
+<script>
+(async function(){
+  try{
+    const client = window.supabase.createClient('https://ixgsartlktmgqfnzzatv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8');
+    const { data, error } = await client.from('site_settings').select('value').eq('key','school_map_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">2D میپ بلڈر عارضی طور پر آف لائن ہے۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

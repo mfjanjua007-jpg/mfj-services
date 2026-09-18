@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Image Tools | MFJ Service</title>
+<meta name="description" content="Resize, Compress, Crop, Rotate, Convert, Watermark, Passport Photo، Collage اور مزید — سب مفت، آپ کے براؤزر میں۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.im-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.im-brand{font-weight:700; font-size:16px;}
+.im-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.im-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.im-back:hover{background:rgba(255,255,255,.22);}
+
+.im-app{display:grid; grid-template-columns:220px 1fr; gap:16px; padding:16px; max-width:1200px; margin:0 auto; align-items:start;}
+@media (max-width:820px){ .im-app{grid-template-columns:1fr;} }
+
+.im-nav{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; position:sticky; top:16px; max-height:85vh; overflow-y:auto;}
+.im-nav-item{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);}
+.im-nav-item:hover{background:var(--green-light);}
+.im-nav-item.active{background:var(--navy); color:#fff;}
+
+.im-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; min-height:60vh;}
+.im-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.im-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:18px;}
+
+.im-drop{border:2px dashed var(--border); border-radius:12px; padding:26px; text-align:center; cursor:pointer; background:var(--bg); margin-bottom:14px;}
+.im-drop:hover,.im-drop.drag{border-color:var(--green); background:var(--green-light);}
+.im-drop input{display:none;}
+.im-drop .ic{font-size:28px; display:block; margin-bottom:6px;}
+.im-filelist{display:flex; flex-direction:column; gap:6px; margin-bottom:12px;}
+.im-fileitem{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12px;}
+.im-fileitem img{width:30px; height:30px; object-fit:cover; border-radius:5px;}
+.im-fileitem button{margin-inline-start:auto; background:none; border:none; cursor:pointer; color:#DC2626; font-size:13px;}
+
+.im-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+.im-row label{font-size:12.5px; font-weight:700; color:var(--mute);}
+.im-row input[type=text],.im-row input[type=number],.im-row select{border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px;}
+.im-row input[type=range]{width:150px;}
+.im-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer;}
+.im-btn:hover{background:var(--green-dark);}
+.im-btn.outline{background:#fff; color:var(--ink); border:1.5px solid var(--border);}
+.im-result{margin-top:16px; padding:14px 16px; background:var(--green-light); border-radius:12px; display:none;}
+.im-result a{color:var(--green-dark); font-weight:700; text-decoration:none;}
+.im-preview-wrap{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;}
+.im-preview-box{flex:1; min-width:220px;}
+.im-preview-box h4{font-size:11.5px; color:var(--mute); margin-bottom:6px;}
+.im-preview-box canvas,.im-preview-box img{max-width:100%; border:1px solid var(--border); border-radius:8px; background:repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 50%/16px 16px;}
+.im-grid-thumbs{display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin:14px 0;}
+.im-grid-thumbs img{width:100%; border-radius:8px; border:1px solid var(--border);}
+#cropCanvas{cursor:crosshair; max-width:100%; touch-action:none;}
+.im-crop-wrap{position:relative; display:inline-block; max-width:100%;}
+</style>
+</head>
+<body>
+
+<div class="im-topbar">
+  <div class="im-brand">🖼️ Image Tools <span class="sub">by MFJ Service — مفت، آپ کے براؤزر میں</span></div>
+  <a href="index.html" class="im-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="im-app">
+  <div class="im-nav" id="imNav">
+    <div class="im-nav-item active" data-tool="resize">📐 Resize</div>
+    <div class="im-nav-item" data-tool="compress">🗜️ Compress</div>
+    <div class="im-nav-item" data-tool="crop">✂️ Crop</div>
+    <div class="im-nav-item" data-tool="rotate">🔄 Rotate/Flip</div>
+    <div class="im-nav-item" data-tool="convert">🔁 Format Converter</div>
+    <div class="im-nav-item" data-tool="watermark">💧 Watermark</div>
+    <div class="im-nav-item" data-tool="enhance">✨ Basic Enhancer</div>
+    <div class="im-nav-item" data-tool="blur">🌫️ Background Blur</div>
+    <div class="im-nav-item" data-tool="bgremove">🪄 Background Remover (Beta)</div>
+    <div class="im-nav-item" data-tool="upscale">🔍 Basic Upscaler</div>
+    <div class="im-nav-item" data-tool="passport">🪪 Passport/ID Photo Sheet</div>
+    <div class="im-nav-item" data-tool="a4sheet">📄 Photos → A4 Sheet</div>
+    <div class="im-nav-item" data-tool="collage">🧩 Collage Maker</div>
+    <div class="im-nav-item" data-tool="logo">🎨 Logo Maker</div>
+    <div class="im-nav-item" data-tool="signature">✍️ Signature Maker</div>
+  </div>
+
+  <div class="im-panel" id="imPanel"></div>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+/* Adds a small "made with MFJ Service" credit line to the bottom of every page. Call right before doc.output('blob'). */
+function addMfjFooterJsPdf(doc){
+  try{
+    const pages = doc.internal.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+      doc.setFontSize(7); doc.setTextColor(170,170,170); doc.setFont(undefined,'normal');
+      doc.text('Generated via MFJ Service — mfjservice.netlify.app', w/2, h-10, {align:'center'});
+    }
+  }catch(e){ /* non-critical */ }
+}
+let activeTool = 'resize';
+document.querySelectorAll('.im-nav-item[data-tool]').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.im-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    activeTool = item.dataset.tool;
+    renderTool(activeTool);
+  });
+});
+function fmtSize(b){ return b<1024 ? b+' B' : b<1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(1)+' MB'; }
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+function showResult(id, html){ const el=document.getElementById(id); el.innerHTML=html; el.style.display='block'; }
+function loadImageFile(file){
+  return new Promise(res=>{
+    const reader = new FileReader();
+    reader.onload = e=>{ const img=new Image(); img.onload=()=>res(img); img.src=e.target.result; };
+    reader.readAsDataURL(file);
+  });
+}
+function canvasToBlob(canvas, type, quality){
+  return new Promise(res=> canvas.toBlob(b=>res(b), type, quality));
+}
+function dropZoneHTML(id, multiple, label){
+  return `
+    <div class="im-drop" id="${id}_drop">
+      <span class="ic">🖼️</span>
+      <div>${label}</div>
+      <input type="file" id="${id}" accept="image/*" ${multiple?'multiple':''}>
+    </div>
+    <div class="im-filelist" id="${id}_list"></div>`;
+}
+function wireDropZone(id, onFiles){
+  const drop = document.getElementById(id+'_drop');
+  const input = document.getElementById(id);
+  let files = [];
+  drop.addEventListener('click', ()=> input.click());
+  input.addEventListener('change', ()=>{ files=Array.from(input.files); renderList(); onFiles(files); });
+  ['dragover','dragleave','drop'].forEach(evt=>{
+    drop.addEventListener(evt, e=>{
+      e.preventDefault(); drop.classList.toggle('drag', evt==='dragover');
+      if(evt==='drop'){ files=Array.from(e.dataTransfer.files); renderList(); onFiles(files); }
+    });
+  });
+  function renderList(){
+    const list = document.getElementById(id+'_list');
+    list.innerHTML = files.map((f,i)=>{
+      const url = URL.createObjectURL(f);
+      return `<div class="im-fileitem"><img src="${url}">${f.name} <span style="color:var(--faint)">(${fmtSize(f.size)})</span><button onclick="window['__rm_${id}'](${i})">✕</button></div>`;
+    }).join('');
+  }
+  window['__rm_'+id] = (i)=>{ files.splice(i,1); renderList(); onFiles(files); };
+  return { getFiles: ()=>files };
+}
+
+/* ===================== Tool bodies ===================== */
+const TOOL_META = {
+  resize:{title:'📐 Image Resize', desc:'تصویر کا سائز (چوڑائی/اونچائی) تبدیل کریں۔'},
+  compress:{title:'🗜️ Image Compress', desc:'کوالٹی کم کر کے فائل سائز چھوٹا کریں۔'},
+  crop:{title:'✂️ Image Crop', desc:'تصویر کا مطلوبہ حصہ کاٹیں۔'},
+  rotate:{title:'🔄 Rotate / Flip', desc:'تصویر گھمائیں یا آئینہ (flip) کریں۔'},
+  convert:{title:'🔁 Format Converter', desc:'JPG ↔ PNG ↔ WEBP میں تبدیل کریں۔'},
+  watermark:{title:'💧 Image Watermark', desc:'تصویر پر ٹیکسٹ واٹر مارک لگائیں۔'},
+  enhance:{title:'✨ Basic Enhancer', desc:'برائٹنس، کنٹراسٹ، سیچوریشن ایڈجسٹ کریں۔'},
+  blur:{title:'🌫️ Background Blur', desc:'مرکزی حصہ صاف، باقی تصویر دھندلی — پورٹریٹ اثر۔'},
+  bgremove:{title:'🪄 Background Remover (Beta)', desc:'یکساں (solid) رنگ کے پس منظر کو شفاف بنائیں — پیچیدہ تصاویر پر مکمل درست نہیں ہوگا۔'},
+  upscale:{title:'🔍 Basic Upscaler', desc:'تصویر کو بڑا کریں (اسمارٹ انٹرپولیشن) — یہ حقیقی AI اپ اسکیلنگ نہیں۔'},
+  passport:{title:'🪪 Passport/ID Photo Sheet', desc:'تصویر کو معیاری پاسپورٹ سائز میں کاٹیں اور A4 شیٹ پر کئی کاپیاں بنائیں۔'},
+  a4sheet:{title:'📄 Multiple Photos → A4 Sheet', desc:'کئی تصاویر ایک A4 صفحے پر ترتیب دیں۔'},
+  collage:{title:'🧩 Photo Collage Maker', desc:'کئی تصاویر کو ایک گرڈ کولاژ میں جوڑیں۔'},
+  logo:{title:'🎨 Logo Maker', desc:'ٹیکسٹ اور بنیادی شکل سے سادہ لوگو بنائیں۔'},
+  signature:{title:'✍️ Signature Maker', desc:'ماؤس/انگلی سے دستخط بنائیں اور شفاف PNG کے طور پر محفوظ کریں۔'},
+};
+
+function renderTool(tool){
+  const meta = TOOL_META[tool];
+  document.getElementById('imPanel').innerHTML = `<h2>${meta.title}</h2><p class="desc">${meta.desc}</p><div id="toolBody"></div>`;
+  document.getElementById('toolBody').innerHTML = TOOL_BODIES[tool]();
+  TOOL_INIT[tool] && TOOL_INIT[tool]();
+}
+
+const TOOL_BODIES = {
+  resize: ()=> dropZoneHTML('rsInput',false,'تصویر چنیں') +
+    `<div class="im-row">
+      <label>چوڑائی (px)</label><input type="number" id="rsW" value="800">
+      <label>اونچائی (px)</label><input type="number" id="rsH" value="600">
+      <label><input type="checkbox" id="rsLock" checked> تناسب برقرار رکھیں</label>
+     </div>
+     <button class="im-btn" onclick="runResize()">📐 Resize کریں</button>
+     <div class="im-result" id="rsResult"></div>`,
+
+  compress: ()=> dropZoneHTML('cpInput',false,'تصویر چنیں') +
+    `<div class="im-row"><label>کوالٹی</label><input type="range" id="cpQuality" min="0.1" max="1" step="0.05" value="0.7" oninput="document.getElementById('cpQVal').textContent=Math.round(this.value*100)+'%'"><span id="cpQVal">70%</span></div>
+     <button class="im-btn" onclick="runCompress()">🗜️ Compress کریں</button>
+     <div class="im-result" id="cpResult"></div>`,
+
+  crop: ()=> dropZoneHTML('crInput',false,'تصویر چنیں') +
+    `<p class="desc">تصویر پر کھینچ کر مطلوبہ حصہ منتخب کریں۔</p>
+     <div class="im-crop-wrap"><canvas id="cropCanvas"></canvas></div>
+     <div style="margin-top:10px;"><button class="im-btn" onclick="runCrop()">✂️ Crop کریں</button></div>
+     <div class="im-result" id="crResult"></div>`,
+
+  rotate: ()=> dropZoneHTML('rtInput',false,'تصویر چنیں') +
+    `<div class="im-row">
+       <button class="im-btn outline" onclick="rotateBy(90)">🔄 90°</button>
+       <button class="im-btn outline" onclick="rotateBy(180)">🔄 180°</button>
+       <button class="im-btn outline" onclick="rotateBy(270)">🔄 270°</button>
+       <button class="im-btn outline" onclick="flipImg('h')">↔️ Flip Horizontal</button>
+       <button class="im-btn outline" onclick="flipImg('v')">↕️ Flip Vertical</button>
+     </div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="rtCanvas"></canvas></div></div>
+     <button class="im-btn" onclick="downloadCanvas('rtCanvas','rotated.png')">⬇️ ڈاؤن لوڈ کریں</button>`,
+
+  convert: ()=> dropZoneHTML('cvInput',true,'ایک یا کئی تصاویر چنیں') +
+    `<div class="im-row"><label>نیا فارمیٹ</label>
+       <select id="cvFmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WEBP</option></select>
+     </div>
+     <button class="im-btn" onclick="runConvert()">🔁 تبدیل کریں</button>
+     <div class="im-progress" style="margin:10px 0; color:var(--mute); font-size:12.5px;" id="cvStatus"></div>
+     <div class="im-result" id="cvResult"></div>`,
+
+  watermark: ()=> dropZoneHTML('wmInput',false,'تصویر چنیں') +
+    `<div class="im-row">
+       <label>ٹیکسٹ</label><input type="text" id="wmText" value="MFJ Service">
+       <label>شفافیت</label><input type="range" id="wmOpacity" min="0.1" max="1" step="0.05" value="0.4">
+       <label>سائز</label><input type="range" id="wmSize" min="16" max="80" value="36">
+     </div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="wmCanvas"></canvas></div></div>
+     <button class="im-btn" onclick="applyWatermark()">💧 لگائیں</button>
+     <button class="im-btn outline" onclick="downloadCanvas('wmCanvas','watermarked.png')">⬇️ ڈاؤن لوڈ</button>`,
+
+  enhance: ()=> dropZoneHTML('enInput',false,'تصویر چنیں') +
+    `<div class="im-row">
+       <label>برائٹنس</label><input type="range" id="enBright" min="50" max="150" value="100" oninput="applyEnhance()">
+       <label>کنٹراسٹ</label><input type="range" id="enContrast" min="50" max="150" value="100" oninput="applyEnhance()">
+       <label>سیچوریشن</label><input type="range" id="enSaturate" min="0" max="200" value="100" oninput="applyEnhance()">
+     </div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="enCanvas"></canvas></div></div>
+     <button class="im-btn" onclick="downloadCanvas('enCanvas','enhanced.jpg')">⬇️ ڈاؤن لوڈ</button>`,
+
+  blur: ()=> dropZoneHTML('blInput',false,'تصویر چنیں') +
+    `<div class="im-row"><label>Blur شدت</label><input type="range" id="blAmount" min="2" max="25" value="10" oninput="applyBgBlur()"></div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ (مرکزی دائرہ صاف)</h4><canvas id="blCanvas"></canvas></div></div>
+     <button class="im-btn" onclick="downloadCanvas('blCanvas','blurred.jpg')">⬇️ ڈاؤن لوڈ</button>`,
+
+  bgremove: ()=> dropZoneHTML('bgInput',false,'یکساں رنگ کے پس منظر والی تصویر چنیں (مثلاً سفید/نیلا پس منظر)') +
+    `<div class="im-row"><label>حساسیت (Tolerance)</label><input type="range" id="bgTolerance" min="10" max="100" value="35" oninput="applyBgRemove()"></div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="bgCanvas"></canvas></div></div>
+     <button class="im-btn" onclick="downloadCanvas('bgCanvas','no-bg.png')">⬇️ PNG ڈاؤن لوڈ (شفاف)</button>`,
+
+  upscale: ()=> dropZoneHTML('upInput',false,'تصویر چنیں') +
+    `<div class="im-row"><label>گنا (Scale)</label><select id="upScale"><option value="2">2×</option><option value="3">3×</option></select></div>
+     <button class="im-btn" onclick="runUpscale()">🔍 بڑا کریں</button>
+     <div class="im-result" id="upResult"></div>`,
+
+  passport: ()=> dropZoneHTML('ppInput',false,'تصویر چنیں') +
+    `<div class="im-row">
+       <label>سائز</label>
+       <select id="ppSize"><option value="35,45">پاسپورٹ (35×45mm)</option><option value="51,51">CNIC/ID (51×51mm)</option></select>
+       <label>شیٹ پر کاپیاں</label><input type="number" id="ppCount" value="8" min="1" max="20">
+     </div>
+     <div class="im-crop-wrap"><canvas id="ppCropCanvas"></canvas></div>
+     <p class="desc" style="margin-top:8px;">تصویر پر چہرے کے گرد ڈبہ کھینچ کر منتخب کریں۔</p>
+     <button class="im-btn" onclick="runPassportSheet()">🪪 A4 شیٹ بنائیں</button>
+     <div class="im-result" id="ppResult"></div>`,
+
+  a4sheet: ()=> dropZoneHTML('a4Input',true,'کئی تصاویر چنیں') +
+    `<div class="im-row"><label>ہر قطار میں تصاویر</label><input type="number" id="a4Cols" value="3" min="1" max="6"></div>
+     <button class="im-btn" onclick="runA4Sheet()">📄 A4 شیٹ بنائیں</button>
+     <div class="im-result" id="a4Result"></div>`,
+
+  collage: ()=> dropZoneHTML('coInput',true,'2 سے 9 تصاویر چنیں') +
+    `<div class="im-row"><label>گرڈ</label><select id="coGrid"><option value="2x1">2 (ایک قطار)</option><option value="2x2" selected>2×2</option><option value="3x3">3×3</option></select></div>
+     <button class="im-btn" onclick="runCollage()">🧩 کولاژ بنائیں</button>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="coCanvas"></canvas></div></div>
+     <button class="im-btn outline" onclick="downloadCanvas('coCanvas','collage.jpg')">⬇️ ڈاؤن لوڈ</button>`,
+
+  logo: ()=> `
+     <div class="im-row">
+       <label>لوگو ٹیکسٹ</label><input type="text" id="lgText" value="MFJ" oninput="drawLogo()">
+       <label>ذیلی ٹیکسٹ</label><input type="text" id="lgSub" value="Service" oninput="drawLogo()">
+     </div>
+     <div class="im-row">
+       <label>رنگ 1</label><input type="text" id="lgColor1" value="#0F2A3D" oninput="drawLogo()">
+       <label>رنگ 2</label><input type="text" id="lgColor2" value="#0F8A5F" oninput="drawLogo()">
+       <label>شکل</label><select id="lgShape" onchange="drawLogo()"><option value="circle">دائرہ</option><option value="square">مربع</option><option value="none">بغیر پس منظر</option></select>
+     </div>
+     <div class="im-preview-wrap"><div class="im-preview-box"><h4>نتیجہ</h4><canvas id="lgCanvas" width="400" height="400"></canvas></div></div>
+     <button class="im-btn" onclick="downloadCanvas('lgCanvas','logo.png')">⬇️ PNG ڈاؤن لوڈ</button>`,
+
+  signature: ()=> `
+     <canvas id="sigCanvas" width="500" height="200" style="border:1.5px dashed var(--border); border-radius:10px; background:#fff; touch-action:none; width:100%; max-width:500px; height:200px;"></canvas>
+     <div class="im-row" style="margin-top:10px;">
+       <button class="im-btn outline" onclick="clearSignature()">صاف کریں</button>
+       <button class="im-btn" onclick="downloadSignature()">⬇️ شفاف PNG ڈاؤن لوڈ</button>
+     </div>`,
+};
+
+const TOOL_INIT = {
+  resize: ()=>{ window.__rsZone = wireDropZone('rsInput', fs=>{ if(fs[0]) window.__rsFile=fs[0]; }); },
+  compress: ()=>{ window.__cpZone = wireDropZone('cpInput', fs=>{ if(fs[0]) window.__cpFile=fs[0]; }); },
+  crop: ()=>{ window.__crZone = wireDropZone('crInput', async fs=>{ if(fs[0]) await initCrop(fs[0], 'cropCanvas'); }); },
+  rotate: ()=>{ window.__rtZone = wireDropZone('rtInput', async fs=>{ if(fs[0]) await initRotate(fs[0]); }); },
+  convert: ()=>{ window.__cvZone = wireDropZone('cvInput', ()=>{}); },
+  watermark: ()=>{ window.__wmZone = wireDropZone('wmInput', async fs=>{ if(fs[0]){ window.__wmImg = await loadImageFile(fs[0]); applyWatermark(); } }); },
+  enhance: ()=>{ window.__enZone = wireDropZone('enInput', async fs=>{ if(fs[0]){ window.__enImg = await loadImageFile(fs[0]); applyEnhance(); } }); },
+  blur: ()=>{ window.__blZone = wireDropZone('blInput', async fs=>{ if(fs[0]){ window.__blImg = await loadImageFile(fs[0]); applyBgBlur(); } }); },
+  bgremove: ()=>{ window.__bgZone = wireDropZone('bgInput', async fs=>{ if(fs[0]){ window.__bgImg = await loadImageFile(fs[0]); applyBgRemove(); } }); },
+  upscale: ()=>{ window.__upZone = wireDropZone('upInput', fs=>{ if(fs[0]) window.__upFile=fs[0]; }); },
+  passport: ()=>{ window.__ppZone = wireDropZone('ppInput', async fs=>{ if(fs[0]) await initCrop(fs[0], 'ppCropCanvas'); }); },
+  a4sheet: ()=>{ window.__a4Zone = wireDropZone('a4Input', ()=>{}); },
+  collage: ()=>{ window.__coZone = wireDropZone('coInput', ()=>{}); },
+  logo: ()=> drawLogo(),
+  signature: ()=> initSignaturePad(),
+};
+
+/* Adds a tiny "MFJ Service" credit in the bottom-right corner of a generated composition canvas. */
+function addMfjWatermarkCanvas(canvas){
+  const ctx = canvas.getContext('2d');
+  const text = 'MFJ Service';
+  ctx.save();
+  ctx.font = `${Math.max(10, canvas.width*0.014)}px Inter, sans-serif`;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+  const pad = canvas.width*0.015;
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.fillText(text, canvas.width-pad+1, canvas.height-pad+1);
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.fillText(text, canvas.width-pad, canvas.height-pad);
+  ctx.restore();
+}
+function downloadCanvas(id, filename){
+  document.getElementById(id).toBlob(blob=> downloadBlob(blob, filename), filename.endsWith('.png')?'image/png':'image/jpeg', 0.92);
+}
+
+/* ===================== RESIZE ===================== */
+async function runResize(){
+  const files = window.__rsZone.getFiles();
+  if(!files.length){ alert('تصویر چنیں'); return; }
+  const img = await loadImageFile(files[0]);
+  let w = +document.getElementById('rsW').value, h = +document.getElementById('rsH').value;
+  if(document.getElementById('rsLock').checked){ h = Math.round(w * img.height/img.width); document.getElementById('rsH').value=h; }
+  const canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h;
+  canvas.getContext('2d').drawImage(img,0,0,w,h);
+  const blob = await canvasToBlob(canvas,'image/jpeg',0.92);
+  showResult('rsResult', `<a href="#" onclick="downloadBlob(window.__rsBlob,'resized.jpg');return false;">⬇️ resized.jpg ڈاؤن لوڈ کریں (${w}×${h}px, ${fmtSize(blob.size)})</a>`);
+  window.__rsBlob = blob;
+}
+
+/* ===================== COMPRESS ===================== */
+async function runCompress(){
+  const files = window.__cpZone.getFiles();
+  if(!files.length){ alert('تصویر چنیں'); return; }
+  const img = await loadImageFile(files[0]);
+  const canvas = document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height;
+  canvas.getContext('2d').drawImage(img,0,0);
+  const q = +document.getElementById('cpQuality').value;
+  const blob = await canvasToBlob(canvas,'image/jpeg',q);
+  showResult('cpResult', `<a href="#" onclick="downloadBlob(window.__cpBlob,'compressed.jpg');return false;">⬇️ compressed.jpg ڈاؤن لوڈ کریں (اصل: ${fmtSize(files[0].size)} → نیا: ${fmtSize(blob.size)})</a>`);
+  window.__cpBlob = blob;
+}
+
+/* ===================== CROP (shared by Crop tool + Passport tool) ===================== */
+let cropState = {};
+async function initCrop(file, canvasId){
+  const img = await loadImageFile(file);
+  const canvas = document.getElementById(canvasId);
+  const maxW = 560; const scale = Math.min(1, maxW/img.width);
+  canvas.width = img.width*scale; canvas.height = img.height*scale;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  cropState[canvasId] = {img, scale, sel:null, dragging:false};
+  function pos(e){ const r=canvas.getBoundingClientRect(); const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left; const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top; return {x:cx,y:cy}; }
+  function redraw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    const s = cropState[canvasId].sel;
+    if(s){ ctx.strokeStyle='#0F8A5F'; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.strokeRect(s.x,s.y,s.w,s.h); ctx.setLineDash([]);
+      ctx.fillStyle='rgba(15,138,95,.15)'; ctx.fillRect(s.x,s.y,s.w,s.h); }
+  }
+  function start(e){ e.preventDefault(); const p=pos(e); cropState[canvasId].dragging=true; cropState[canvasId].start=p; cropState[canvasId].sel={x:p.x,y:p.y,w:0,h:0}; }
+  function move(e){ if(!cropState[canvasId].dragging) return; e.preventDefault(); const p=pos(e); const st=cropState[canvasId].start;
+    cropState[canvasId].sel = {x:Math.min(st.x,p.x), y:Math.min(st.y,p.y), w:Math.abs(p.x-st.x), h:Math.abs(p.y-st.y)}; redraw(); }
+  function end(){ cropState[canvasId].dragging=false; }
+  canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',end);
+}
+function getCroppedCanvas(canvasId){
+  const st = cropState[canvasId];
+  if(!st || !st.sel || st.sel.w<5 || st.sel.h<5){ return null; }
+  const out = document.createElement('canvas');
+  out.width = st.sel.w/st.scale; out.height = st.sel.h/st.scale;
+  out.getContext('2d').drawImage(st.img, st.sel.x/st.scale, st.sel.y/st.scale, st.sel.w/st.scale, st.sel.h/st.scale, 0,0, out.width, out.height);
+  return out;
+}
+async function runCrop(){
+  const out = getCroppedCanvas('cropCanvas');
+  if(!out){ alert('پہلے تصویر پر ڈبہ کھینچ کر منتخب کریں'); return; }
+  const blob = await canvasToBlob(out,'image/jpeg',0.92);
+  showResult('crResult', `<a href="#" onclick="downloadBlob(window.__crBlob,'cropped.jpg');return false;">⬇️ cropped.jpg ڈاؤن لوڈ کریں</a>`);
+  window.__crBlob = blob;
+}
+
+/* ===================== ROTATE / FLIP ===================== */
+let rotateImg = null, rotateAngle=0, rotateFlipH=false, rotateFlipV=false;
+async function initRotate(file){ rotateImg = await loadImageFile(file); rotateAngle=0; rotateFlipH=false; rotateFlipV=false; drawRotate(); }
+function rotateBy(deg){ rotateAngle = (rotateAngle+deg)%360; drawRotate(); }
+function flipImg(dir){ if(dir==='h') rotateFlipH=!rotateFlipH; else rotateFlipV=!rotateFlipV; drawRotate(); }
+function drawRotate(){
+  if(!rotateImg) return;
+  const canvas = document.getElementById('rtCanvas');
+  const rad = rotateAngle*Math.PI/180;
+  const swapped = (rotateAngle===90||rotateAngle===270);
+  canvas.width = swapped ? rotateImg.height : rotateImg.width;
+  canvas.height = swapped ? rotateImg.width : rotateImg.height;
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.translate(canvas.width/2, canvas.height/2);
+  ctx.rotate(rad);
+  ctx.scale(rotateFlipH?-1:1, rotateFlipV?-1:1);
+  ctx.drawImage(rotateImg, -rotateImg.width/2, -rotateImg.height/2);
+  ctx.restore();
+}
+
+/* ===================== CONVERT ===================== */
+async function runConvert(){
+  const files = window.__cvZone.getFiles();
+  if(!files.length){ alert('تصویر چنیں'); return; }
+  const fmt = document.getElementById('cvFmt').value;
+  const ext = fmt==='image/png'?'png':fmt==='image/webp'?'webp':'jpg';
+  const status = document.getElementById('cvStatus');
+  if(files.length===1){
+    const img = await loadImageFile(files[0]);
+    const canvas = document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height;
+    canvas.getContext('2d').drawImage(img,0,0);
+    const blob = await canvasToBlob(canvas, fmt, 0.92);
+    showResult('cvResult', `<a href="#" onclick="downloadBlob(window.__cvBlob,'converted.${ext}');return false;">⬇️ converted.${ext} ڈاؤن لوڈ کریں</a>`);
+    window.__cvBlob = blob;
+    return;
+  }
+  const zip = new JSZip();
+  for(let i=0;i<files.length;i++){
+    status.textContent = `${i+1}/${files.length} پر کام ہو رہا ہے...`;
+    const img = await loadImageFile(files[i]);
+    const canvas = document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height;
+    canvas.getContext('2d').drawImage(img,0,0);
+    const blob = await canvasToBlob(canvas, fmt, 0.92);
+    zip.file(`image-${i+1}.${ext}`, blob);
+  }
+  status.textContent='';
+  const zipBlob = await zip.generateAsync({type:'blob'});
+  showResult('cvResult', `<a href="#" onclick="downloadBlob(window.__cvBlob,'converted.zip');return false;">⬇️ سب ZIP میں ڈاؤن لوڈ کریں</a>`);
+  window.__cvBlob = zipBlob;
+}
+
+/* ===================== WATERMARK ===================== */
+function applyWatermark(){
+  if(!window.__wmImg) return;
+  const img = window.__wmImg;
+  const canvas = document.getElementById('wmCanvas');
+  canvas.width=img.width; canvas.height=img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img,0,0);
+  const text = document.getElementById('wmText').value || 'Watermark';
+  const opacity = +document.getElementById('wmOpacity').value;
+  const size = +document.getElementById('wmSize').value;
+  ctx.font = `bold ${size}px Inter, sans-serif`;
+  ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.save();
+  ctx.translate(img.width/2, img.height/2);
+  ctx.rotate(-Math.PI/8);
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
+
+/* ===================== ENHANCE ===================== */
+function applyEnhance(){
+  if(!window.__enImg) return;
+  const img = window.__enImg;
+  const canvas = document.getElementById('enCanvas');
+  canvas.width=img.width; canvas.height=img.height;
+  const ctx = canvas.getContext('2d');
+  const b=document.getElementById('enBright').value, c=document.getElementById('enContrast').value, s=document.getElementById('enSaturate').value;
+  ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
+  ctx.drawImage(img,0,0);
+  ctx.filter='none';
+}
+
+/* ===================== BACKGROUND BLUR (radial mask) ===================== */
+function applyBgBlur(){
+  if(!window.__blImg) return;
+  const img = window.__blImg;
+  const canvas = document.getElementById('blCanvas');
+  canvas.width=img.width; canvas.height=img.height;
+  const ctx = canvas.getContext('2d');
+  const amt = +document.getElementById('blAmount').value;
+  ctx.filter = `blur(${amt}px)`;
+  ctx.drawImage(img,0,0);
+  ctx.filter='none';
+  const r = Math.min(img.width,img.height)*0.32;
+  const grad = ctx.createRadialGradient(img.width/2,img.height/2, r*0.6, img.width/2,img.height/2, r);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(img.width/2, img.height/2, r, 0, Math.PI*2); ctx.clip();
+  ctx.drawImage(img,0,0);
+  ctx.restore();
+}
+
+/* ===================== BASIC BG REMOVE (chroma-key by corner color) ===================== */
+function applyBgRemove(){
+  if(!window.__bgImg) return;
+  const img = window.__bgImg;
+  const canvas = document.getElementById('bgCanvas');
+  canvas.width=img.width; canvas.height=img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img,0,0);
+  const data = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const d = data.data;
+  const tol = +document.getElementById('bgTolerance').value;
+  const cr=d[0], cg=d[1], cb=d[2]; // top-left corner color as reference
+  for(let i=0;i<d.length;i+=4){
+    const dist = Math.sqrt((d[i]-cr)**2+(d[i+1]-cg)**2+(d[i+2]-cb)**2);
+    if(dist < tol*2.2) d[i+3]=0;
+  }
+  ctx.putImageData(data,0,0);
+}
+
+/* ===================== BASIC UPSCALE ===================== */
+async function runUpscale(){
+  const files = window.__upZone.getFiles();
+  if(!files.length){ alert('تصویر چنیں'); return; }
+  const img = await loadImageFile(files[0]);
+  const scale = +document.getElementById('upScale').value;
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width*scale; canvas.height = img.height*scale;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  const blob = await canvasToBlob(canvas,'image/jpeg',0.92);
+  showResult('upResult', `<a href="#" onclick="downloadBlob(window.__upBlob,'upscaled.jpg');return false;">⬇️ upscaled.jpg ڈاؤن لوڈ کریں (${canvas.width}×${canvas.height}px)</a>`);
+  window.__upBlob = blob;
+}
+
+/* ===================== PASSPORT / ID SHEET ===================== */
+async function runPassportSheet(){
+  const cropped = getCroppedCanvas('ppCropCanvas');
+  if(!cropped){ alert('پہلے چہرے کے گرد ڈبہ کھینچیں'); return; }
+  const [wmm,hmm] = document.getElementById('ppSize').value.split(',').map(Number);
+  const count = +document.getElementById('ppCount').value;
+  const mmToPt = mm=>mm*2.8346;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const pw = mmToPt(wmm), ph = mmToPt(hmm);
+  const cols = Math.floor((W-40)/(pw+10)), rows = Math.floor((H-40)/(ph+10));
+  const dataUrl = cropped.toDataURL('image/jpeg',0.95);
+  let placed=0;
+  for(let r=0;r<rows && placed<count;r++){
+    for(let c=0;c<cols && placed<count;c++){
+      const x = 20+c*(pw+10), y=20+r*(ph+10);
+      doc.addImage(dataUrl,'JPEG',x,y,pw,ph);
+      doc.setDrawColor(200,200,200); doc.rect(x,y,pw,ph);
+      placed++;
+    }
+  }
+  addMfjFooterJsPdf(doc);
+  const blob = doc.output('blob');
+  showResult('ppResult', `<a href="#" onclick="downloadBlob(window.__ppBlob,'photo-sheet.pdf');return false;">⬇️ photo-sheet.pdf ڈاؤن لوڈ کریں (${placed} کاپیاں)</a>`);
+  window.__ppBlob = blob;
+}
+
+/* ===================== A4 SHEET ===================== */
+async function runA4Sheet(){
+  const files = window.__a4Zone.getFiles();
+  if(!files.length){ alert('تصاویر چنیں'); return; }
+  const cols = +document.getElementById('a4Cols').value;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  const margin=20, gap=10;
+  const cellW = (W-margin*2-gap*(cols-1))/cols;
+  let x=margin, y=margin, rowH=0, col=0;
+  for(const file of files){
+    const img = await loadImageFile(file);
+    const cellH = cellW * (img.height/img.width);
+    if(y+cellH > H-margin){ doc.addPage(); x=margin; y=margin; col=0; }
+    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+    doc.addImage(dataUrl,'JPEG',x,y,cellW,cellH);
+    col++;
+    if(col>=cols){ col=0; x=margin; y+=cellH+gap; } else { x+=cellW+gap; }
+  }
+  addMfjFooterJsPdf(doc);
+  const blob = doc.output('blob');
+  showResult('a4Result', `<a href="#" onclick="downloadBlob(window.__a4Blob,'photos-a4.pdf');return false;">⬇️ photos-a4.pdf ڈاؤن لوڈ کریں</a>`);
+  window.__a4Blob = blob;
+}
+
+/* ===================== COLLAGE ===================== */
+async function runCollage(){
+  const files = window.__coZone.getFiles();
+  if(files.length<2){ alert('کم از کم 2 تصاویر چنیں'); return; }
+  const gridSel = document.getElementById('coGrid').value;
+  const [cols, rows] = gridSel.split('x').map(Number);
+  const cellSize = 300;
+  const canvas = document.getElementById('coCanvas');
+  canvas.width = cols*cellSize; canvas.height = rows*cellSize;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  const max = cols*rows;
+  for(let i=0;i<Math.min(files.length,max);i++){
+    const img = await loadImageFile(files[i]);
+    const cx = (i%cols)*cellSize, cy = Math.floor(i/cols)*cellSize;
+    const scale = Math.max(cellSize/img.width, cellSize/img.height);
+    const dw=img.width*scale, dh=img.height*scale;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(cx,cy,cellSize,cellSize); ctx.clip();
+    ctx.drawImage(img, cx+(cellSize-dw)/2, cy+(cellSize-dh)/2, dw, dh);
+    ctx.restore();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=4; ctx.strokeRect(cx,cy,cellSize,cellSize);
+  }
+  addMfjWatermarkCanvas(canvas);
+}
+
+/* ===================== LOGO MAKER ===================== */
+function drawLogo(){
+  const canvas = document.getElementById('lgCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,400,400);
+  const c1 = document.getElementById('lgColor1').value;
+  const c2 = document.getElementById('lgColor2').value;
+  const shape = document.getElementById('lgShape').value;
+  if(shape!=='none'){
+    ctx.fillStyle = c1;
+    if(shape==='circle'){ ctx.beginPath(); ctx.arc(200,200,180,0,Math.PI*2); ctx.fill(); }
+    else { ctx.fillRect(20,20,360,360); }
+  }
+  ctx.fillStyle = shape==='none' ? c1 : '#fff';
+  ctx.textAlign='center'; ctx.font='800 70px Inter, sans-serif';
+  ctx.fillText(document.getElementById('lgText').value || 'LOGO', 200, 200);
+  ctx.font='600 22px Inter, sans-serif';
+  ctx.fillStyle = shape==='none' ? c2 : c2;
+  ctx.fillText(document.getElementById('lgSub').value || '', 200, 240);
+}
+
+/* ===================== SIGNATURE MAKER ===================== */
+let sigCtx2, sigDrawing2=false, sigHas2=false;
+function initSignaturePad(){
+  const c = document.getElementById('sigCanvas');
+  sigCtx2 = c.getContext('2d');
+  sigCtx2.lineWidth=3; sigCtx2.lineCap='round'; sigCtx2.strokeStyle='#152238';
+  function pos(e){ const r=c.getBoundingClientRect(); const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left; const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top; return {x:cx*(c.width/r.width), y:cy*(c.height/r.height)}; }
+  function start(e){ sigDrawing2=true; sigHas2=true; const p=pos(e); sigCtx2.beginPath(); sigCtx2.moveTo(p.x,p.y); }
+  function move(e){ if(!sigDrawing2) return; e.preventDefault(); const p=pos(e); sigCtx2.lineTo(p.x,p.y); sigCtx2.stroke(); }
+  function end(){ sigDrawing2=false; }
+  c.addEventListener('mousedown',start); c.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  c.addEventListener('touchstart',start,{passive:false}); c.addEventListener('touchmove',move,{passive:false}); c.addEventListener('touchend',end);
+}
+function clearSignature(){ sigCtx2.clearRect(0,0,500,200); sigHas2=false; }
+function downloadSignature(){
+  if(!sigHas2){ alert('پہلے دستخط بنائیں'); return; }
+  document.getElementById('sigCanvas').toBlob(blob=> downloadBlob(blob,'signature.png'), 'image/png');
+}
+
+/* ===================== INIT ===================== */
+const __qsTool = new URLSearchParams(location.search).get('tool');
+const __initTool = (__qsTool && TOOL_META[__qsTool]) ? __qsTool : 'resize';
+document.querySelectorAll('[data-tool]').forEach(el=> el.classList.toggle('active', el.dataset.tool===__initTool));
+renderTool(__initTool);
+</script>
+
+<!-- Feature-flag gate -->
+<script>
+(async function(){
+  try{
+    const client = window.supabase.createClient('https://ixgsartlktmgqfnzzatv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8');
+    const { data, error } = await client.from('site_settings').select('value').eq('key','image_tools_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">Image Tools عارضی طور پر آف لائن ہیں۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

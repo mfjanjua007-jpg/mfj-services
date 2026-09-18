@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Calculators | MFJ Service</title>
+<meta name="description" content="Age, Date/Time Difference, BMI, EMI, Zakat, Marla/Kanal, Islamic Date Converter، Unit Converters اور مزید — سب مفت۔">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.ct-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.ct-brand{font-weight:700; font-size:16px;}
+.ct-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.ct-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.ct-back:hover{background:rgba(255,255,255,.22);}
+
+.ct-app{display:grid; grid-template-columns:220px 1fr; gap:16px; padding:16px; max-width:1100px; margin:0 auto; align-items:start;}
+@media (max-width:820px){ .ct-app{grid-template-columns:1fr;} }
+
+.ct-nav{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; position:sticky; top:16px; max-height:85vh; overflow-y:auto;}
+.ct-nav h4{font-size:11.5px; color:var(--mute); padding:8px 8px 4px;}
+.ct-nav-item{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);}
+.ct-nav-item:hover{background:var(--green-light);}
+.ct-nav-item.active{background:var(--navy); color:#fff;}
+
+.ct-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; min-height:55vh;}
+.ct-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.ct-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:18px;}
+.ct-panel p.note{color:var(--faint); font-size:11.5px; margin-top:10px;}
+
+.ct-field{margin-bottom:12px;}
+.ct-field label{display:block; font-size:12.5px; font-weight:700; color:var(--mute); margin-bottom:5px;}
+.ct-field input,.ct-field select,.ct-field textarea{width:100%; border:1.5px solid var(--border); border-radius:8px; padding:9px 11px; font-size:14px; font-family:inherit;}
+.ct-grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.ct-grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;}
+@media (max-width:600px){ .ct-grid2,.ct-grid3{grid-template-columns:1fr;} }
+
+.ct-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer;}
+.ct-btn:hover{background:var(--green-dark);}
+.ct-out{background:var(--green-light); border-radius:12px; padding:18px; margin-top:16px; display:none;}
+.ct-out .big{font-size:24px; font-weight:800; color:var(--green-dark);}
+.ct-out .row{display:flex; justify-content:space-between; padding:5px 0; font-size:13.5px; border-bottom:1px solid rgba(0,0,0,.06);}
+.ct-out .row:last-child{border-bottom:none;}
+
+.ct-calc-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-width:320px;}
+.ct-calc-btn{background:var(--bg); border:1.5px solid var(--border); border-radius:9px; padding:14px 0; font-size:16px; font-weight:700; cursor:pointer;}
+.ct-calc-btn:hover{background:var(--green-light);}
+.ct-calc-btn.op{background:var(--navy); color:#fff;}
+.ct-calc-btn.eq{background:var(--green); color:#fff; grid-column:span 2;}
+.ct-calc-display{background:var(--navy); color:#fff; text-align:left; direction:ltr; font-size:28px; font-family:monospace; padding:16px; border-radius:10px; margin-bottom:12px; max-width:320px; overflow-x:auto;}
+</style>
+</head>
+<body>
+
+<div class="ct-topbar">
+  <div class="ct-brand">🧮 Calculators <span class="sub">by MFJ Service — عمومی اور پاکستان کے مخصوص کیلکولیٹرز</span></div>
+  <a href="index.html" class="ct-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="ct-app">
+  <div class="ct-nav">
+    <h4>عمومی</h4>
+    <div class="ct-nav-item active" data-tool="basic">🔢 Basic Calculator</div>
+    <div class="ct-nav-item" data-tool="percent">% Percentage Calculator</div>
+    <div class="ct-nav-item" data-tool="age">🎂 Age Calculator</div>
+    <div class="ct-nav-item" data-tool="datediff">📅 Date Difference</div>
+    <div class="ct-nav-item" data-tool="timediff">⏱️ Time Difference</div>
+    <div class="ct-nav-item" data-tool="bmi">⚖️ BMI Calculator</div>
+    <div class="ct-nav-item" data-tool="emi">🏦 EMI/Loan Calculator</div>
+    <div class="ct-nav-item" data-tool="area">📐 Area Calculator</div>
+    <h4>یونٹ کنورٹرز</h4>
+    <div class="ct-nav-item" data-tool="length">📏 Length Converter</div>
+    <div class="ct-nav-item" data-tool="weight">⚖️ Weight Converter</div>
+    <div class="ct-nav-item" data-tool="temp">🌡️ Temperature Converter</div>
+    <div class="ct-nav-item" data-tool="currency">💱 Currency Converter</div>
+    <h4>🇵🇰 پاکستان مخصوص</h4>
+    <div class="ct-nav-item" data-tool="zakat">🕌 Zakat Calculator</div>
+    <div class="ct-nav-item" data-tool="marla">🏠 Marla/Kanal ↔ Sq Ft</div>
+    <div class="ct-nav-item" data-tool="hijri">🌙 Islamic ↔ Gregorian Date</div>
+  </div>
+
+  <div class="ct-panel" id="ctPanel"></div>
+</div>
+
+<script>
+let activeTool = 'basic';
+document.querySelectorAll('.ct-nav-item[data-tool]').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.ct-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    activeTool = item.dataset.tool;
+    renderTool(activeTool);
+  });
+});
+
+const TOOL_META = {
+  basic:{title:'🔢 Basic Calculator', desc:'روزمرہ کے حساب کے لیے سادہ کیلکولیٹر۔'},
+  percent:{title:'% Percentage Calculator', desc:'فیصد نکالیں یا کسی عدد کا فیصد معلوم کریں۔'},
+  age:{title:'🎂 Age Calculator', desc:'تاریخ پیدائش سے عمر (سال، مہینے، دن) معلوم کریں۔'},
+  datediff:{title:'📅 Date Difference Calculator', desc:'دو تاریخوں کے درمیان دن/ہفتے/مہینے کا فرق۔'},
+  timediff:{title:'⏱️ Time Difference Calculator', desc:'دو اوقات کے درمیان فرق معلوم کریں۔'},
+  bmi:{title:'⚖️ BMI Calculator', desc:'قد اور وزن سے Body Mass Index نکالیں۔'},
+  emi:{title:'🏦 EMI / Loan Calculator', desc:'قرض کی ماہانہ قسط (EMI) کا حساب لگائیں۔'},
+  area:{title:'📐 Area Calculator', desc:'مربع، مستطیل، دائرہ یا مثلث کا رقبہ نکالیں۔'},
+  length:{title:'📏 Length Converter', desc:'میٹر، فٹ، انچ، کلومیٹر، میل وغیرہ۔'},
+  weight:{title:'⚖️ Weight Converter', desc:'کلوگرام، پاؤنڈ، من، تولہ وغیرہ۔'},
+  temp:{title:'🌡️ Temperature Converter', desc:'سیلسیس، فارن ہائیٹ، کیلون۔'},
+  currency:{title:'💱 Currency Converter', desc:'کرنسی تبدیل کریں (شرح خود درج کریں — لائیو ریٹ کے لیے انٹرنیٹ API درکار ہوتی ہے)۔'},
+  zakat:{title:'🕌 Zakat Calculator', desc:'سونا، چاندی، نقدی اور بچت کی بنیاد پر زکوٰۃ کا حساب۔'},
+  marla:{title:'🏠 Marla / Kanal ↔ Square Feet', desc:'پاکستانی رقبے کی اکائیاں آپس میں تبدیل کریں۔'},
+  hijri:{title:'🌙 Islamic (Hijri) ↔ Gregorian Date', desc:'تخمینی تبدیلی — چاند نظر آنے کی بنیاد پر ±1 دن کا فرق ممکن ہے۔'},
+};
+
+function renderTool(tool){
+  const meta = TOOL_META[tool];
+  document.getElementById('ctPanel').innerHTML = `<h2>${meta.title}</h2><p class="desc">${meta.desc}</p><div id="toolBody"></div>`;
+  document.getElementById('toolBody').innerHTML = TOOL_BODIES[tool]();
+  TOOL_INIT[tool] && TOOL_INIT[tool]();
+}
+
+const TOOL_BODIES = {
+  basic: ()=> `<div class="ct-calc-display" id="calcDisplay">0</div>
+    <div class="ct-calc-grid">
+      <button class="ct-calc-btn op" onclick="calcClear()">C</button>
+      <button class="ct-calc-btn op" onclick="calcBackspace()">⌫</button>
+      <button class="ct-calc-btn op" onclick="calcInput('%')">%</button>
+      <button class="ct-calc-btn op" onclick="calcInput('/')">÷</button>
+      <button class="ct-calc-btn" onclick="calcInput('7')">7</button>
+      <button class="ct-calc-btn" onclick="calcInput('8')">8</button>
+      <button class="ct-calc-btn" onclick="calcInput('9')">9</button>
+      <button class="ct-calc-btn op" onclick="calcInput('*')">×</button>
+      <button class="ct-calc-btn" onclick="calcInput('4')">4</button>
+      <button class="ct-calc-btn" onclick="calcInput('5')">5</button>
+      <button class="ct-calc-btn" onclick="calcInput('6')">6</button>
+      <button class="ct-calc-btn op" onclick="calcInput('-')">−</button>
+      <button class="ct-calc-btn" onclick="calcInput('1')">1</button>
+      <button class="ct-calc-btn" onclick="calcInput('2')">2</button>
+      <button class="ct-calc-btn" onclick="calcInput('3')">3</button>
+      <button class="ct-calc-btn op" onclick="calcInput('+')">+</button>
+      <button class="ct-calc-btn" onclick="calcInput('0')" style="grid-column:span 2;">0</button>
+      <button class="ct-calc-btn" onclick="calcInput('.')">.</button>
+      <button class="ct-calc-btn eq" onclick="calcEquals()">=</button>
+    </div>`,
+
+  percent: ()=> `
+    <div class="ct-grid2">
+      <div class="ct-field"><label>عدد (Number)</label><input type="number" id="pcNum" value="200"></div>
+      <div class="ct-field"><label>فیصد (%)</label><input type="number" id="pcPercent" value="15"></div>
+    </div>
+    <button class="ct-btn" onclick="calcPercent()">حساب کریں</button>
+    <div class="ct-out" id="pcOut"></div>`,
+
+  age: ()=> `
+    <div class="ct-field"><label>تاریخ پیدائش</label><input type="date" id="ageDob"></div>
+    <button class="ct-btn" onclick="calcAge()">🎂 حساب کریں</button>
+    <div class="ct-out" id="ageOut"></div>`,
+
+  datediff: ()=> `
+    <div class="ct-grid2">
+      <div class="ct-field"><label>پہلی تاریخ</label><input type="date" id="ddFrom"></div>
+      <div class="ct-field"><label>دوسری تاریخ</label><input type="date" id="ddTo"></div>
+    </div>
+    <button class="ct-btn" onclick="calcDateDiff()">📅 حساب کریں</button>
+    <div class="ct-out" id="ddOut"></div>`,
+
+  timediff: ()=> `
+    <div class="ct-grid2">
+      <div class="ct-field"><label>شروع وقت</label><input type="time" id="tdFrom"></div>
+      <div class="ct-field"><label>اختتامی وقت</label><input type="time" id="tdTo"></div>
+    </div>
+    <button class="ct-btn" onclick="calcTimeDiff()">⏱️ حساب کریں</button>
+    <div class="ct-out" id="tdOut"></div>`,
+
+  bmi: ()=> `
+    <div class="ct-grid2">
+      <div class="ct-field"><label>وزن (kg)</label><input type="number" id="bmiWeight" value="70"></div>
+      <div class="ct-field"><label>قد (cm)</label><input type="number" id="bmiHeight" value="170"></div>
+    </div>
+    <button class="ct-btn" onclick="calcBmi()">⚖️ حساب کریں</button>
+    <div class="ct-out" id="bmiOut"></div>`,
+
+  emi: ()=> `
+    <div class="ct-grid3">
+      <div class="ct-field"><label>قرض کی رقم (Rs.)</label><input type="number" id="emiAmount" value="1000000"></div>
+      <div class="ct-field"><label>سالانہ شرح سود %</label><input type="number" id="emiRate" value="12"></div>
+      <div class="ct-field"><label>مدت (مہینے)</label><input type="number" id="emiMonths" value="60"></div>
+    </div>
+    <button class="ct-btn" onclick="calcEmi()">🏦 حساب کریں</button>
+    <div class="ct-out" id="emiOut"></div>`,
+
+  area: ()=> `
+    <div class="ct-field"><label>شکل</label>
+      <select id="arShape" onchange="renderAreaFields()">
+        <option value="rect">مستطیل / مربع</option>
+        <option value="circle">دائرہ</option>
+        <option value="triangle">مثلث</option>
+      </select>
+    </div>
+    <div id="arFields"></div>
+    <button class="ct-btn" onclick="calcArea()">📐 حساب کریں</button>
+    <div class="ct-out" id="arOut"></div>`,
+
+  length: ()=> `
+    <div class="ct-grid3">
+      <div class="ct-field"><label>قدر</label><input type="number" id="lnVal" value="1" oninput="calcLength()"></div>
+      <div class="ct-field"><label>سے</label><select id="lnFrom" onchange="calcLength()">${unitOptions('length')}</select></div>
+      <div class="ct-field"><label>میں</label><select id="lnTo" onchange="calcLength()">${unitOptions('length',1)}</select></div>
+    </div>
+    <div class="ct-out" id="lnOut" style="display:block;"></div>`,
+
+  weight: ()=> `
+    <div class="ct-grid3">
+      <div class="ct-field"><label>قدر</label><input type="number" id="wtVal" value="1" oninput="calcWeight()"></div>
+      <div class="ct-field"><label>سے</label><select id="wtFrom" onchange="calcWeight()">${unitOptions('weight')}</select></div>
+      <div class="ct-field"><label>میں</label><select id="wtTo" onchange="calcWeight()">${unitOptions('weight',1)}</select></div>
+    </div>
+    <div class="ct-out" id="wtOut" style="display:block;"></div>`,
+
+  temp: ()=> `
+    <div class="ct-grid3">
+      <div class="ct-field"><label>قدر</label><input type="number" id="tpVal" value="37" oninput="calcTemp()"></div>
+      <div class="ct-field"><label>سے</label><select id="tpFrom" onchange="calcTemp()"><option value="c">Celsius</option><option value="f">Fahrenheit</option><option value="k">Kelvin</option></select></div>
+      <div class="ct-field"><label>میں</label><select id="tpTo" onchange="calcTemp()"><option value="f">Fahrenheit</option><option value="c">Celsius</option><option value="k">Kelvin</option></select></div>
+    </div>
+    <div class="ct-out" id="tpOut" style="display:block;"></div>`,
+
+  currency: ()=> `
+    <p class="desc">لائیو کرنسی ریٹ کے لیے ادا شدہ API درکار ہوتی ہے — یہاں آپ خود آج کی شرح درج کریں (اسٹیٹ بینک/گوگل سے چیک کر کے)، کیلکولیٹر باقی حساب کر دے گا۔</p>
+    <div class="ct-grid3">
+      <div class="ct-field"><label>رقم</label><input type="number" id="cuAmount" value="100" oninput="calcCurrency()"></div>
+      <div class="ct-field"><label>1 یونٹ کی قیمت (PKR میں)</label><input type="number" id="cuRate" value="278" oninput="calcCurrency()"></div>
+      <div class="ct-field"><label>کرنسی کا نام</label><input type="text" id="cuName" value="USD" oninput="calcCurrency()"></div>
+    </div>
+    <div class="ct-out" id="cuOut" style="display:block;"></div>`,
+
+  zakat: ()=> `
+    <div class="ct-grid2">
+      <div class="ct-field"><label>سونا (تولہ)</label><input type="number" id="zkGold" value="0"></div>
+      <div class="ct-field"><label>فی تولہ سونے کی قیمت (Rs.)</label><input type="number" id="zkGoldRate" value="0"></div>
+    </div>
+    <div class="ct-grid2">
+      <div class="ct-field"><label>چاندی (تولہ)</label><input type="number" id="zkSilver" value="0"></div>
+      <div class="ct-field"><label>فی تولہ چاندی کی قیمت (Rs.)</label><input type="number" id="zkSilverRate" value="0"></div>
+    </div>
+    <div class="ct-grid2">
+      <div class="ct-field"><label>نقدی + بینک بیلنس (Rs.)</label><input type="number" id="zkCash" value="0"></div>
+      <div class="ct-field"><label>قرضے (منہا ہوں گے) (Rs.)</label><input type="number" id="zkDebt" value="0"></div>
+    </div>
+    <button class="ct-btn" onclick="calcZakat()">🕌 حساب کریں</button>
+    <div class="ct-out" id="zkOut"></div>
+    <p class="note">شرح زکوٰۃ: کل قابلِ زکوٰۃ مال کا 2.5% — نصاب (کم از کم مقدار) کی تصدیق اپنے مقامی عالم سے کر لیں۔</p>`,
+
+  marla: ()=> `
+    <div class="ct-field"><label>تبدیلی کی سمت</label>
+      <select id="mkDir" onchange="calcMarla()">
+        <option value="marla2sqft">مرلہ → مربع فٹ</option>
+        <option value="sqft2marla">مربع فٹ → مرلہ</option>
+        <option value="kanal2marla">کنال → مرلہ</option>
+        <option value="marla2kanal">مرلہ → کنال</option>
+        <option value="kanal2sqft">کنال → مربع فٹ</option>
+      </select>
+    </div>
+    <div class="ct-field"><label>قدر</label><input type="number" id="mkVal" value="1" oninput="calcMarla()"></div>
+    <div class="ct-out" id="mkOut" style="display:block;"></div>
+    <p class="note">1 مرلہ = 225 مربع فٹ، 1 کنال = 20 مرلہ = 4500 مربع فٹ (عام رائج معیار)۔</p>`,
+
+  hijri: ()=> `
+    <div class="ct-field"><label>تبدیلی کی سمت</label>
+      <select id="hjDir" onchange="renderHijriFields()">
+        <option value="g2h">عیسوی → ہجری</option>
+        <option value="h2g">ہجری → عیسوی</option>
+      </select>
+    </div>
+    <div id="hjFields"></div>
+    <button class="ct-btn" onclick="calcHijri()">🌙 تبدیل کریں</button>
+    <div class="ct-out" id="hjOut"></div>`,
+};
+
+const TOOL_INIT = {
+  basic: ()=> calcState.display='0',
+  length: ()=> calcLength(),
+  weight: ()=> calcWeight(),
+  temp: ()=> calcTemp(),
+  currency: ()=> calcCurrency(),
+  area: ()=> renderAreaFields(),
+  hijri: ()=> renderHijriFields(),
+};
+
+/* ===================== BASIC CALCULATOR ===================== */
+let calcState = {display:'0', expr:''};
+function calcInput(v){
+  if(calcState.display==='0' && !'+-*/.%'.includes(v)) calcState.display='';
+  calcState.display += v;
+  document.getElementById('calcDisplay').textContent = calcState.display;
+}
+function calcClear(){ calcState.display='0'; document.getElementById('calcDisplay').textContent='0'; }
+function calcBackspace(){ calcState.display = calcState.display.slice(0,-1)||'0'; document.getElementById('calcDisplay').textContent=calcState.display; }
+function calcEquals(){
+  try{
+    const safe = calcState.display.replace(/[^0-9+\-*/.%() ]/g,'');
+    const result = Function('"use strict"; return (' + safe.replace(/%/g,'/100') + ')')();
+    calcState.display = String(Math.round(result*100000)/100000);
+    document.getElementById('calcDisplay').textContent = calcState.display;
+  }catch(e){ document.getElementById('calcDisplay').textContent = 'Error'; calcState.display='0'; }
+}
+
+/* ===================== PERCENTAGE ===================== */
+function calcPercent(){
+  const num = +document.getElementById('pcNum').value;
+  const pct = +document.getElementById('pcPercent').value;
+  const result = num*pct/100;
+  const out = document.getElementById('pcOut');
+  out.style.display='block';
+  out.innerHTML = `<div class="row"><span>${num} کا ${pct}%</span><span class="big">${result.toLocaleString()}</span></div>
+    <div class="row"><span>${num} + ${pct}%</span><span>${(num+result).toLocaleString()}</span></div>
+    <div class="row"><span>${num} − ${pct}%</span><span>${(num-result).toLocaleString()}</span></div>`;
+}
+
+/* ===================== AGE ===================== */
+function calcAge(){
+  const dob = document.getElementById('ageDob').value;
+  if(!dob){ alert('تاریخ پیدائش درج کریں'); return; }
+  const d = new Date(dob), n = new Date();
+  let y=n.getFullYear()-d.getFullYear(), m=n.getMonth()-d.getMonth(), days=n.getDate()-d.getDate();
+  if(days<0){ m--; days+=new Date(n.getFullYear(),n.getMonth(),0).getDate(); }
+  if(m<0){ y--; m+=12; }
+  const totalDays = Math.floor((n-d)/(1000*60*60*24));
+  const out = document.getElementById('ageOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">${y} سال، ${m} مہینے، ${days} دن</div>
+    <div class="row"><span>کل دن</span><span>${totalDays.toLocaleString()}</span></div>
+    <div class="row"><span>کل ہفتے</span><span>${Math.floor(totalDays/7).toLocaleString()}</span></div>`;
+}
+
+/* ===================== DATE DIFF ===================== */
+function calcDateDiff(){
+  const from = document.getElementById('ddFrom').value, to = document.getElementById('ddTo').value;
+  if(!from||!to){ alert('دونوں تاریخیں درج کریں'); return; }
+  const d1=new Date(from), d2=new Date(to);
+  const totalDays = Math.round(Math.abs(d2-d1)/(1000*60*60*24));
+  const out = document.getElementById('ddOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">${totalDays.toLocaleString()} دن</div>
+    <div class="row"><span>ہفتے</span><span>${Math.floor(totalDays/7)} ہفتے، ${totalDays%7} دن</span></div>
+    <div class="row"><span>تخمینی مہینے</span><span>~${(totalDays/30.44).toFixed(1)} مہینے</span></div>
+    <div class="row"><span>تخمینی سال</span><span>~${(totalDays/365.25).toFixed(2)} سال</span></div>`;
+}
+
+/* ===================== TIME DIFF ===================== */
+function calcTimeDiff(){
+  const from = document.getElementById('tdFrom').value, to = document.getElementById('tdTo').value;
+  if(!from||!to){ alert('دونوں اوقات درج کریں'); return; }
+  const [h1,m1]=from.split(':').map(Number), [h2,m2]=to.split(':').map(Number);
+  let mins = (h2*60+m2)-(h1*60+m1);
+  if(mins<0) mins+=24*60;
+  const out = document.getElementById('tdOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">${Math.floor(mins/60)} گھنٹے، ${mins%60} منٹ</div>
+    <div class="row"><span>کل منٹ</span><span>${mins}</span></div>`;
+}
+
+/* ===================== BMI ===================== */
+function calcBmi(){
+  const w = +document.getElementById('bmiWeight').value, h = (+document.getElementById('bmiHeight').value)/100;
+  if(!w||!h){ alert('وزن اور قد درج کریں'); return; }
+  const bmi = w/(h*h);
+  let cat = bmi<18.5?'کم وزن (Underweight)': bmi<25?'نارمل': bmi<30?'زائد وزن (Overweight)':'موٹاپا (Obese)';
+  const out = document.getElementById('bmiOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">${bmi.toFixed(1)}</div><div class="row"><span>زمرہ</span><span>${cat}</span></div>`;
+}
+
+/* ===================== EMI ===================== */
+function calcEmi(){
+  const P = +document.getElementById('emiAmount').value;
+  const annualRate = +document.getElementById('emiRate').value;
+  const n = +document.getElementById('emiMonths').value;
+  const r = annualRate/12/100;
+  const emi = r===0 ? P/n : P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  const total = emi*n, interest = total-P;
+  const out = document.getElementById('emiOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">ماہانہ قسط: Rs. ${emi.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+    <div class="row"><span>کل ادائیگی</span><span>Rs. ${total.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div>
+    <div class="row"><span>کل سود</span><span>Rs. ${interest.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div>`;
+}
+
+/* ===================== AREA ===================== */
+function renderAreaFields(){
+  const shape = document.getElementById('arShape').value;
+  const el = document.getElementById('arFields');
+  if(shape==='rect') el.innerHTML = `<div class="ct-grid2"><div class="ct-field"><label>لمبائی</label><input type="number" id="arA" value="10"></div><div class="ct-field"><label>چوڑائی</label><input type="number" id="arB" value="10"></div></div>`;
+  else if(shape==='circle') el.innerHTML = `<div class="ct-field"><label>رداس (Radius)</label><input type="number" id="arA" value="5"></div>`;
+  else el.innerHTML = `<div class="ct-grid2"><div class="ct-field"><label>بیس (Base)</label><input type="number" id="arA" value="10"></div><div class="ct-field"><label>اونچائی (Height)</label><input type="number" id="arB" value="6"></div></div>`;
+}
+function calcArea(){
+  const shape = document.getElementById('arShape').value;
+  const a = +document.getElementById('arA').value, b = document.getElementById('arB')? +document.getElementById('arB').value : 0;
+  let result;
+  if(shape==='rect') result = a*b;
+  else if(shape==='circle') result = Math.PI*a*a;
+  else result = 0.5*a*b;
+  const out = document.getElementById('arOut'); out.style.display='block';
+  out.innerHTML = `<div class="big">${result.toLocaleString(undefined,{maximumFractionDigits:2})} مربع اکائی</div>`;
+}
+
+/* ===================== UNIT CONVERTERS ===================== */
+const UNITS = {
+  length: {m:1, km:1000, cm:0.01, mm:0.001, ft:0.3048, inch:0.0254, mile:1609.34, yard:0.9144},
+  weight: {kg:1, g:0.001, ton:1000, lb:0.453592, oz:0.0283495, maund:37.3242, tola:0.0116638},
+};
+function unitOptions(kind, second){
+  const keys = Object.keys(UNITS[kind]);
+  return keys.map((k,i)=>`<option value="${k}" ${i===(second||0)?'selected':''}>${k}</option>`).join('');
+}
+function calcLength(){ convertUnit('length','lnVal','lnFrom','lnTo','lnOut'); }
+function calcWeight(){ convertUnit('weight','wtVal','wtFrom','wtTo','wtOut'); }
+function convertUnit(kind, valId, fromId, toId, outId){
+  const val = +document.getElementById(valId).value;
+  const from = document.getElementById(fromId).value, to = document.getElementById(toId).value;
+  const base = val * UNITS[kind][from];
+  const result = base / UNITS[kind][to];
+  document.getElementById(outId).innerHTML = `<div class="big">${val} ${from} = ${result.toLocaleString(undefined,{maximumFractionDigits:6})} ${to}</div>`;
+}
+function calcTemp(){
+  const val = +document.getElementById('tpVal').value;
+  const from = document.getElementById('tpFrom').value, to = document.getElementById('tpTo').value;
+  let c;
+  if(from==='c') c=val; else if(from==='f') c=(val-32)*5/9; else c=val-273.15;
+  let result;
+  if(to==='c') result=c; else if(to==='f') result=c*9/5+32; else result=c+273.15;
+  document.getElementById('tpOut').innerHTML = `<div class="big">${val}° ${from.toUpperCase()} = ${result.toFixed(2)}° ${to.toUpperCase()}</div>`;
+}
+function calcCurrency(){
+  const amount = +document.getElementById('cuAmount').value;
+  const rate = +document.getElementById('cuRate').value;
+  const name = document.getElementById('cuName').value || 'Unit';
+  document.getElementById('cuOut').innerHTML = `<div class="big">${amount} ${name} = Rs. ${(amount*rate).toLocaleString(undefined,{maximumFractionDigits:2})}</div>`;
+}
+
+/* ===================== ZAKAT ===================== */
+function calcZakat(){
+  const gold = (+document.getElementById('zkGold').value)*(+document.getElementById('zkGoldRate').value);
+  const silver = (+document.getElementById('zkSilver').value)*(+document.getElementById('zkSilverRate').value);
+  const cash = +document.getElementById('zkCash').value;
+  const debt = +document.getElementById('zkDebt').value;
+  const total = Math.max(0, gold+silver+cash-debt);
+  const zakat = total*0.025;
+  const out = document.getElementById('zkOut'); out.style.display='block';
+  out.innerHTML = `<div class="row"><span>کل قابلِ زکوٰۃ مال</span><span>Rs. ${total.toLocaleString()}</span></div>
+    <div class="big">واجب الادا زکوٰۃ: Rs. ${zakat.toLocaleString(undefined,{maximumFractionDigits:0})}</div>`;
+}
+
+/* ===================== MARLA/KANAL ===================== */
+const MARLA_SQFT = 225, KANAL_SQFT = 4500, KANAL_MARLA = 20;
+function calcMarla(){
+  const dir = document.getElementById('mkDir').value;
+  const val = +document.getElementById('mkVal').value;
+  let result, unit;
+  if(dir==='marla2sqft'){ result=val*MARLA_SQFT; unit='Sq Ft'; }
+  else if(dir==='sqft2marla'){ result=val/MARLA_SQFT; unit='مرلہ'; }
+  else if(dir==='kanal2marla'){ result=val*KANAL_MARLA; unit='مرلہ'; }
+  else if(dir==='marla2kanal'){ result=val/KANAL_MARLA; unit='کنال'; }
+  else { result=val*KANAL_SQFT; unit='Sq Ft'; }
+  document.getElementById('mkOut').innerHTML = `<div class="big">${result.toLocaleString(undefined,{maximumFractionDigits:3})} ${unit}</div>`;
+}
+
+/* ===================== HIJRI CONVERTER (tabular approximation) ===================== */
+function renderHijriFields(){
+  const dir = document.getElementById('hjDir').value;
+  document.getElementById('hjFields').innerHTML = dir==='g2h'
+    ? `<div class="ct-field"><label>عیسوی تاریخ</label><input type="date" id="hjInput"></div>`
+    : `<div class="ct-grid3">
+        <div class="ct-field"><label>دن</label><input type="number" id="hjDay" min="1" max="30" value="1"></div>
+        <div class="ct-field"><label>مہینہ (1-12)</label><input type="number" id="hjMonth" min="1" max="12" value="1"></div>
+        <div class="ct-field"><label>سال</label><input type="number" id="hjYear" value="1446"></div>
+       </div>`;
+}
+function gregorianToJD(y,m,d){
+  const a = Math.floor((14-m)/12), y2=y+4800-a, m2=m+12*a-3;
+  return d + Math.floor((153*m2+2)/5) + 365*y2 + Math.floor(y2/4) - Math.floor(y2/100) + Math.floor(y2/400) - 32045;
+}
+function jdToGregorian(jd){
+  const a = jd+32044, b=Math.floor((4*a+3)/146097), c=a-Math.floor(146097*b/4);
+  const d2=Math.floor((4*c+3)/1461), e=c-Math.floor(1461*d2/4), m2=Math.floor((5*e+2)/153);
+  const day=e-Math.floor((153*m2+2)/5)+1, month=m2+3-12*Math.floor(m2/10), year=100*b+d2-4800+Math.floor(m2/10);
+  return {year, month, day};
+}
+function hijriToJD(y,m,d){
+  return d + Math.ceil(29.5*(m-1)) + (y-1)*354 + Math.floor((3+11*y)/30) + 1948440 - 1;
+}
+function jdToHijri(jd){
+  let l = jd-1948440+10632;
+  const n = Math.floor((l-1)/10631);
+  l = l-10631*n+354;
+  const j = (Math.floor((10985-l)/5316))*(Math.floor((50*l)/17719)) + (Math.floor(l/5670))*(Math.floor((43*l)/15238));
+  l = l-(Math.floor((30-j)/15))*(Math.floor((17719*j)/50))-(Math.floor(j/16))*(Math.floor((15238*j)/43))+29;
+  const month = Math.floor((24*l)/709);
+  const day = l-Math.floor((709*month)/24);
+  const year = 30*n+j-30;
+  return {year, month, day};
+}
+const HIJRI_MONTHS = ['محرم','صفر','ربیع الاول','ربیع الثانی','جمادی الاول','جمادی الثانی','رجب','شعبان','رمضان','شوال','ذیقعد','ذیحجہ'];
+function calcHijri(){
+  const dir = document.getElementById('hjDir').value;
+  const out = document.getElementById('hjOut'); out.style.display='block';
+  if(dir==='g2h'){
+    const dateStr = document.getElementById('hjInput').value;
+    if(!dateStr){ alert('تاریخ درج کریں'); return; }
+    const [y,m,d] = dateStr.split('-').map(Number);
+    const jd = gregorianToJD(y,m,d);
+    const h = jdToHijri(jd);
+    out.innerHTML = `<div class="big">${h.day} ${HIJRI_MONTHS[h.month-1]} ${h.year} ہجری</div>`;
+  } else {
+    const d=+document.getElementById('hjDay').value, m=+document.getElementById('hjMonth').value, y=+document.getElementById('hjYear').value;
+    const jd = hijriToJD(y,m,d);
+    const g = jdToGregorian(jd);
+    out.innerHTML = `<div class="big">${String(g.day).padStart(2,'0')}-${String(g.month).padStart(2,'0')}-${g.year} عیسوی</div>`;
+  }
+}
+
+/* ===================== INIT ===================== */
+const __qsTool = new URLSearchParams(location.search).get('tool');
+const __initTool = (__qsTool && TOOL_META[__qsTool]) ? __qsTool : 'basic';
+document.querySelectorAll('[data-tool]').forEach(el=> el.classList.toggle('active', el.dataset.tool===__initTool));
+renderTool(__initTool);
+</script>
+
+<!-- Feature-flag gate -->
+<script>
+(async function(){
+  try{
+    const client = window.supabase.createClient('https://ixgsartlktmgqfnzzatv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8');
+    const { data, error } = await client.from('site_settings').select('value').eq('key','calculators_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">Calculators عارضی طور پر آف لائن ہیں۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PDF & Document Tools | MFJ Service</title>
+<meta name="description" content="PDF Merge, Split, Rotate, Watermark, Page Numbers, PDF↔Image, PDF↔Text, Word→PDF, Compress, E-Signature, OCR — سب مفت اور آپ کے براؤزر میں۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.pt-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.pt-brand{font-weight:700; font-size:16px;}
+.pt-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.pt-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.pt-back:hover{background:rgba(255,255,255,.22);}
+
+.pt-app{display:grid; grid-template-columns:230px 1fr; gap:16px; padding:16px; max-width:1200px; margin:0 auto; align-items:start;}
+@media (max-width:820px){ .pt-app{grid-template-columns:1fr;} }
+
+.pt-nav{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; position:sticky; top:16px; max-height:85vh; overflow-y:auto;}
+.pt-nav h4{font-size:11.5px; color:var(--mute); padding:8px 8px 4px;}
+.pt-nav-item{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);}
+.pt-nav-item:hover{background:var(--green-light);}
+.pt-nav-item.active{background:var(--navy); color:#fff;}
+.pt-nav-item .soon{margin-inline-start:auto; font-size:9.5px; background:#FEF3C7; color:#92400E; padding:2px 6px; border-radius:20px; font-weight:800;}
+.pt-nav-item.disabled{opacity:.55; cursor:not-allowed;}
+
+.pt-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; min-height:60vh;}
+.pt-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.pt-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:18px;}
+.pt-drop{border:2px dashed var(--border); border-radius:12px; padding:28px; text-align:center; cursor:pointer; background:var(--bg); margin-bottom:14px; transition:.15s;}
+.pt-drop:hover,.pt-drop.drag{border-color:var(--green); background:var(--green-light);}
+.pt-drop input{display:none;}
+.pt-drop .ic{font-size:30px; display:block; margin-bottom:8px;}
+.pt-filelist{display:flex; flex-direction:column; gap:6px; margin-bottom:14px;}
+.pt-fileitem{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12.5px;}
+.pt-fileitem button{margin-inline-start:auto; background:none; border:none; cursor:pointer; color:#DC2626; font-size:14px;}
+.pt-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+.pt-row label{font-size:12.5px; font-weight:700; color:var(--mute);}
+.pt-row input[type=text],.pt-row input[type=number],.pt-row select{border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px;}
+.pt-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer;}
+.pt-btn:hover{background:var(--green-dark);}
+.pt-btn:disabled{background:#CBD5E1; cursor:not-allowed;}
+.pt-btn.outline{background:#fff; color:var(--ink); border:1.5px solid var(--border);}
+.pt-progress{height:8px; background:var(--bg); border-radius:20px; overflow:hidden; margin:14px 0; display:none;}
+.pt-progress .bar{height:100%; width:0%; background:var(--green); transition:.2s;}
+.pt-status{font-size:13px; color:var(--mute); margin-bottom:10px;}
+.pt-result{margin-top:16px; padding:16px; background:var(--green-light); border-radius:12px; display:none;}
+.pt-result a{color:var(--green-dark); font-weight:700; text-decoration:none;}
+.pt-textarea{width:100%; min-height:220px; border:1.5px solid var(--border); border-radius:10px; padding:12px; font-size:13px; font-family:monospace;}
+.ed-toolbar{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
+.ed-pagenav{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+.ed-canvas-wrap{position:relative; display:inline-block; border:1px solid var(--border); border-radius:8px; overflow:auto; max-width:100%; max-height:70vh; background:#EFF3F6;}
+.ed-overlay{position:absolute; top:0; left:0; cursor:crosshair;}
+.ed-textbox{position:absolute; background:rgba(255,240,150,.35); border:1px dashed var(--green); padding:2px 16px 2px 16px; min-width:24px; cursor:default;}
+.ed-text{outline:none; white-space:pre-wrap; font-family:Arial,sans-serif; min-width:20px;}
+.ed-drag{position:absolute; top:-2px; right:-1px; cursor:move; font-size:11px; color:var(--green-dark); background:#fff; border-radius:3px; padding:0 2px; line-height:1.4;}
+.ed-del{position:absolute; top:-2px; left:-1px; cursor:pointer; font-size:11px; color:#DC2626; background:#fff; border-radius:3px; padding:0 2px; line-height:1.4;}
+.pt-grid-thumbs{display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin:14px 0;}
+.pt-grid-thumbs img{width:100%; border-radius:8px; border:1px solid var(--border);}
+.pt-soon-box{text-align:center; padding:40px 20px; color:var(--mute);}
+.pt-soon-box .ic{font-size:40px; margin-bottom:10px; display:block;}
+canvas.pt-sig{border:1.5px dashed var(--border); border-radius:10px; background:#fff; touch-action:none; width:100%; max-width:500px; height:180px;}
+</style>
+</head>
+<body>
+
+<div class="pt-topbar">
+  <div class="pt-brand">📄 PDF & Document Tools <span class="sub">by MFJ Service — مفت، محفوظ، آپ کے براؤزر میں</span></div>
+  <a href="index.html" class="pt-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="pt-app">
+  <div class="pt-nav" id="ptNav">
+    <h4>PDF Tools</h4>
+    <div class="pt-nav-item" data-tool="editor">✏️ PDF Editor (لکھیں/ایڈیٹ کریں)</div>
+    <div class="pt-nav-item active" data-tool="merge">🔗 Merge (جوڑیں)</div>
+    <div class="pt-nav-item" data-tool="split">✂️ Split (الگ کریں)</div>
+    <div class="pt-nav-item" data-tool="rotate">🔄 Rotate</div>
+    <div class="pt-nav-item" data-tool="watermark">💧 Watermark</div>
+    <div class="pt-nav-item" data-tool="pagenum">🔢 Page Numbers / Header-Footer</div>
+    <div class="pt-nav-item" data-tool="compress">🗜️ Compress</div>
+    <div class="pt-nav-item" data-tool="esign">✍️ E-Signature</div>
+    <h4>Convert</h4>
+    <div class="pt-nav-item" data-tool="pdf2img">🖼️ PDF → JPG/PNG</div>
+    <div class="pt-nav-item" data-tool="img2pdf">📥 JPG/PNG → PDF</div>
+    <div class="pt-nav-item" data-tool="pdf2text">📝 PDF → Text</div>
+    <div class="pt-nav-item" data-tool="text2pdf">📤 Text → PDF</div>
+    <div class="pt-nav-item" data-tool="word2pdf">📃 Word (docx) → PDF</div>
+    <div class="pt-nav-item" data-tool="ocr">🔍 OCR (تصویر/PDF → متن)</div>
+    <h4>جلد آ رہا ہے</h4>
+    <div class="pt-nav-item" data-tool="protect">🔒 Password Protect <span class="soon">SOON</span></div>
+    <div class="pt-nav-item" data-tool="unlock">🔓 Unlock <span class="soon">SOON</span></div>
+    <div class="pt-nav-item" data-tool="scanner">📷 Document Scanner <span class="soon">SOON</span></div>
+  </div>
+
+  <div class="pt-panel" id="ptPanel"></div>
+</div>
+
+<script>
+/* ===================== State ===================== */
+const { PDFDocument, rgb, degrees, StandardFonts } = PDFLib;
+
+/* Adds a small "made with MFJ Service" credit line to the bottom of every page
+   of a pdf-lib document. Call right before doc.save(). */
+async function addMfjFooterPdfLib(pdfDoc){
+  try{
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const credit = 'Generated via MFJ Service — mfjservice.netlify.app';
+    pdfDoc.getPages().forEach(p=>{
+      const {width} = p.getSize();
+      p.drawText(credit, { x: width/2 - (credit.length*1.6), y: 10, size: 6.5, font, color: rgb(0.6,0.6,0.6) });
+    });
+  }catch(e){ /* non-critical — skip silently if it fails */ }
+}
+/* Same idea for jsPDF documents. Call right before doc.output('blob'). */
+function addMfjFooterJsPdf(doc){
+  try{
+    const pages = doc.internal.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+      doc.setFontSize(7); doc.setTextColor(170,170,170); doc.setFont(undefined,'normal');
+      doc.text('Generated via MFJ Service — mfjservice.netlify.app', w/2, h-10, {align:'center'});
+    }
+  }catch(e){ /* non-critical */ }
+}
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let activeTool = 'merge';
+document.querySelectorAll('.pt-nav-item[data-tool]').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    if(item.classList.contains('disabled')) return;
+    document.querySelectorAll('.pt-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    activeTool = item.dataset.tool;
+    renderTool(activeTool);
+  });
+});
+
+function fmtSize(b){ return b<1024 ? b+' B' : b<1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(1)+' MB'; }
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+function showResult(panelId, html){
+  const el = document.getElementById(panelId);
+  el.innerHTML = html; el.style.display='block';
+}
+function setProgress(id, pct){
+  const wrap = document.getElementById(id);
+  wrap.style.display = pct===null ? 'none' : 'block';
+  if(pct!==null) wrap.querySelector('.bar').style.width = pct+'%';
+}
+
+/* ===================== Tool templates ===================== */
+const TOOL_META = {
+  editor:{title:'✏️ PDF Editor', desc:'PDF اپلوڈ کریں، صفحے پر کہیں بھی کلک کر کے متن لکھیں، اسے کھینچ کر رکھیں، پھر دوبارہ ڈاؤن لوڈ کریں۔'},
+  merge:{title:'🔗 PDF Merge', desc:'کئی PDF فائلیں چنیں (ترتیب سے) اور ایک فائل میں جوڑیں۔'},
+  split:{title:'✂️ PDF Split', desc:'ایک PDF سے مخصوص صفحات نکالیں یا ہر صفحہ الگ فائل بنائیں۔'},
+  rotate:{title:'🔄 PDF Rotate', desc:'PDF کے تمام صفحات گھمائیں۔'},
+  watermark:{title:'💧 PDF Watermark', desc:'ہر صفحے پر ٹیکسٹ واٹر مارک لگائیں۔'},
+  pagenum:{title:'🔢 Page Numbers / Header-Footer', desc:'ہر صفحے پر نمبر، ہیڈر یا فوٹر ٹیکسٹ شامل کریں۔'},
+  compress:{title:'🗜️ PDF Compress', desc:'PDF کا سائز کم کریں (تصویر والی PDFs پر زیادہ اثر دکھائے گا)۔'},
+  esign:{title:'✍️ E-Signature', desc:'دستخط بنائیں اور PDF پر مطلوبہ صفحے پر لگائیں۔'},
+  pdf2img:{title:'🖼️ PDF → JPG/PNG', desc:'ہر صفحے کو الگ تصویر میں تبدیل کریں۔'},
+  img2pdf:{title:'📥 JPG/PNG → PDF', desc:'کئی تصاویر کو ایک PDF میں جوڑیں۔'},
+  pdf2text:{title:'📝 PDF → Text', desc:'PDF میں موجود متن نکالیں۔'},
+  text2pdf:{title:'📤 Text → PDF', desc:'سادہ متن سے PDF بنائیں۔'},
+  word2pdf:{title:'📃 Word (docx) → PDF', desc:'ورڈ فائل کو PDF میں تبدیل کریں (بنیادی فارمیٹنگ محفوظ رہے گی)۔'},
+  ocr:{title:'🔍 OCR — تصویر/PDF سے متن', desc:'تصویر یا اسکین شدہ PDF میں موجود متن پہچانیں۔'},
+};
+
+function renderTool(tool){
+  if(['protect','unlock','scanner'].includes(tool)){
+    document.getElementById('ptPanel').innerHTML = `
+      <div class="pt-soon-box">
+        <span class="ic">🚧</span>
+        <h2 style="margin-bottom:6px;">جلد آ رہا ہے</h2>
+        <p>یہ فیچر ابھی زیرِ تعمیر ہے — قابلِ اعتماد اور محفوظ بنانے کے لیے تھوڑا مزید وقت درکار ہے۔</p>
+      </div>`;
+    return;
+  }
+  const meta = TOOL_META[tool];
+  const panel = document.getElementById('ptPanel');
+  panel.innerHTML = `<h2>${meta.title}</h2><p class="desc">${meta.desc}</p><div id="toolBody"></div>`;
+  const body = document.getElementById('toolBody');
+  body.innerHTML = TOOL_BODIES[tool]();
+  TOOL_INIT[tool] && TOOL_INIT[tool]();
+}
+
+function dropZoneHTML(id, accept, multiple, label){
+  return `
+    <div class="pt-drop" id="${id}_drop">
+      <span class="ic">📁</span>
+      <div>${label}</div>
+      <input type="file" id="${id}" accept="${accept}" ${multiple?'multiple':''}>
+    </div>
+    <div class="pt-filelist" id="${id}_list"></div>`;
+}
+function wireDropZone(id, onFiles){
+  const drop = document.getElementById(id+'_drop');
+  const input = document.getElementById(id);
+  let files = [];
+  drop.addEventListener('click', ()=> input.click());
+  input.addEventListener('change', ()=>{ files = Array.from(input.files); renderList(); onFiles(files); });
+  ['dragover','dragleave','drop'].forEach(evt=>{
+    drop.addEventListener(evt, e=>{
+      e.preventDefault();
+      drop.classList.toggle('drag', evt==='dragover');
+      if(evt==='drop'){ files = Array.from(e.dataTransfer.files); renderList(); onFiles(files); }
+    });
+  });
+  function renderList(){
+    const list = document.getElementById(id+'_list');
+    list.innerHTML = files.map((f,i)=>`<div class="pt-fileitem">📄 ${f.name} <span style="color:var(--faint)">(${fmtSize(f.size)})</span><button onclick="window['__rm_${id}'](${i})">✕</button></div>`).join('');
+  }
+  window['__rm_'+id] = (i)=>{ files.splice(i,1); renderList(); onFiles(files); };
+  return { getFiles: ()=>files };
+}
+
+/* ===================== Tool bodies (HTML) ===================== */
+const TOOL_BODIES = {
+  editor: ()=> `
+    <div id="edUploadZone">${dropZoneHTML('edInput','application/pdf',false,'PDF فائل چنیں جس میں لکھنا ہے')}</div>
+    <div id="edEditorArea" style="display:none;">
+      <div class="ed-toolbar">
+        <label>فونٹ سائز</label><select id="edFontSize"><option value="12">12</option><option value="14" selected>14</option><option value="18">18</option><option value="24">24</option><option value="32">32</option></select>
+        <label>رنگ</label><input type="color" id="edFontColor" value="#DC2626">
+        <button class="pt-btn outline" onclick="undoLastAnnotation()">↩️ آخری واپس لیں</button>
+      </div>
+      <div class="ed-pagenav">
+        <button class="pt-btn outline" onclick="edChangePage(-1)">◀ پچھلا</button>
+        <span id="edPageIndicator" style="font-weight:700; font-size:13px;"></span>
+        <button class="pt-btn outline" onclick="edChangePage(1)">اگلا ▶</button>
+      </div>
+      <p class="desc" style="margin-bottom:8px;">صفحے پر کہیں بھی کلک کریں تاکہ وہاں متن لکھ سکیں۔ ✕ سے حذف کریں، ⠿ کھینچ کر جگہ بدلیں۔</p>
+      <div class="ed-canvas-wrap">
+        <canvas id="edCanvas"></canvas>
+        <div class="ed-overlay" id="edOverlay"></div>
+      </div>
+      <div class="pt-row" style="margin-top:14px;">
+        <button class="pt-btn" onclick="saveEditedPdf()">💾 محفوظ کریں اور ڈاؤن لوڈ کریں</button>
+      </div>
+      <div class="pt-result" id="edResult"></div>
+    </div>`,
+
+  merge: ()=> dropZoneHTML('mergeInput','application/pdf',true,'PDF فائلیں یہاں چھوڑیں یا کلک کر کے چنیں (ترتیب سے جوڑی جائیں گی)') +
+    `<button class="pt-btn" onclick="runMerge()">🔗 Merge کریں</button>
+     <div class="pt-progress" id="mergeProg"><div class="bar"></div></div>
+     <div class="pt-result" id="mergeResult"></div>`,
+
+  split: ()=> dropZoneHTML('splitInput','application/pdf',false,'ایک PDF فائل چنیں') +
+    `<div class="pt-row"><label>صفحات (مثلاً 1-3,5) — خالی چھوڑیں تو ہر صفحہ الگ فائل بنے گی</label><input type="text" id="splitRange" placeholder="1-3,5"></div>
+     <button class="pt-btn" onclick="runSplit()">✂️ Split کریں</button>
+     <div class="pt-progress" id="splitProg"><div class="bar"></div></div>
+     <div class="pt-result" id="splitResult"></div>`,
+
+  rotate: ()=> dropZoneHTML('rotateInput','application/pdf',false,'PDF فائل چنیں') +
+    `<div class="pt-row"><label>زاویہ</label><select id="rotateDeg"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>
+     <button class="pt-btn" onclick="runRotate()">🔄 Rotate کریں</button>
+     <div class="pt-progress" id="rotateProg"><div class="bar"></div></div>
+     <div class="pt-result" id="rotateResult"></div>`,
+
+  watermark: ()=> dropZoneHTML('wmInput','application/pdf',false,'PDF فائل چنیں') +
+    `<div class="pt-row"><label>واٹر مارک ٹیکسٹ</label><input type="text" id="wmText" value="MFJ Service" style="min-width:200px;"></div>
+     <div class="pt-row"><label>شفافیت</label><input type="range" id="wmOpacity" min="0.05" max="0.6" step="0.05" value="0.2"></div>
+     <button class="pt-btn" onclick="runWatermark()">💧 لگائیں</button>
+     <div class="pt-progress" id="wmProg"><div class="bar"></div></div>
+     <div class="pt-result" id="wmResult"></div>`,
+
+  pagenum: ()=> dropZoneHTML('pnInput','application/pdf',false,'PDF فائل چنیں') +
+    `<div class="pt-row"><label>پوزیشن</label>
+      <select id="pnPos"><option value="bottom-center">نیچے درمیان</option><option value="bottom-right">نیچے دائیں</option><option value="top-center">اوپر درمیان</option></select>
+     </div>
+     <div class="pt-row"><label>اضافی ٹیکسٹ (اختیاری، مثلاً کمپنی نام)</label><input type="text" id="pnExtra" placeholder="MFJ Service" style="min-width:200px;"></div>
+     <button class="pt-btn" onclick="runPageNum()">🔢 شامل کریں</button>
+     <div class="pt-progress" id="pnProg"><div class="bar"></div></div>
+     <div class="pt-result" id="pnResult"></div>`,
+
+  compress: ()=> dropZoneHTML('cmInput','application/pdf',false,'PDF فائل چنیں') +
+    `<div class="pt-row"><label>کوالٹی</label><select id="cmQuality"><option value="0.5">زیادہ کمپریشن (کم کوالٹی)</option><option value="0.7" selected>درمیانہ</option><option value="0.85">کم کمپریشن (بہتر کوالٹی)</option></select></div>
+     <p class="pt-status">یہ ٹول ہر صفحے کو تصویر میں تبدیل کر کے دوبارہ PDF بناتا ہے — سائز کم ہوگا مگر متن اب copy-paste نہیں ہوگا (اسکین جیسی PDF بنے گی)۔</p>
+     <button class="pt-btn" onclick="runCompress()">🗜️ Compress کریں</button>
+     <div class="pt-progress" id="cmProg"><div class="bar"></div></div>
+     <div class="pt-result" id="cmResult"></div>`,
+
+  esign: ()=> `
+     <div class="pt-row"><label>دستخط بنائیں (ماؤس/انگلی سے)</label></div>
+     <canvas id="sigPad" class="pt-sig" width="500" height="180"></canvas>
+     <div style="margin:8px 0;"><button class="pt-btn outline" onclick="clearSig()">صاف کریں</button></div>
+     ` + dropZoneHTML('esignInput','application/pdf',false,'اب PDF فائل چنیں جس پر دستخط لگانے ہیں') +
+    `<div class="pt-row">
+       <label>صفحہ نمبر</label><input type="number" id="esignPage" value="1" min="1" style="width:70px;">
+       <label>پوزیشن</label><select id="esignPos"><option value="bottom-right">نیچے دائیں</option><option value="bottom-left">نیچے بائیں</option><option value="bottom-center">نیچے درمیان</option></select>
+     </div>
+     <button class="pt-btn" onclick="runEsign()">✍️ دستخط لگائیں</button>
+     <div class="pt-progress" id="esignProg"><div class="bar"></div></div>
+     <div class="pt-result" id="esignResult"></div>`,
+
+  pdf2img: ()=> dropZoneHTML('p2iInput','application/pdf',false,'PDF فائل چنیں') +
+    `<div class="pt-row"><label>فارمیٹ</label><select id="p2iFmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>
+     <button class="pt-btn" onclick="runPdf2Img()">🖼️ تبدیل کریں</button>
+     <div class="pt-progress" id="p2iProg"><div class="bar"></div></div>
+     <div class="pt-grid-thumbs" id="p2iThumbs"></div>
+     <div class="pt-result" id="p2iResult"></div>`,
+
+  img2pdf: ()=> dropZoneHTML('i2pInput','image/*',true,'ایک یا کئی تصاویر چنیں (ترتیب سے صفحات بنیں گی)') +
+    `<button class="pt-btn" onclick="runImg2Pdf()">📥 PDF بنائیں</button>
+     <div class="pt-progress" id="i2pProg"><div class="bar"></div></div>
+     <div class="pt-result" id="i2pResult"></div>`,
+
+  pdf2text: ()=> dropZoneHTML('p2tInput','application/pdf',false,'PDF فائل چنیں') +
+    `<button class="pt-btn" onclick="runPdf2Text()">📝 متن نکالیں</button>
+     <div class="pt-progress" id="p2tProg"><div class="bar"></div></div>
+     <textarea class="pt-textarea" id="p2tOut" placeholder="متن یہاں ظاہر ہوگا..." style="margin-top:10px;"></textarea>
+     <div style="margin-top:10px;"><button class="pt-btn outline" onclick="downloadTextArea('p2tOut','extracted.txt')">⬇️ TXT ڈاؤن لوڈ</button></div>`,
+
+  text2pdf: ()=> `
+     <textarea class="pt-textarea" id="t2pIn" placeholder="یہاں اپنا متن لکھیں یا پیسٹ کریں..."></textarea>
+     <div class="pt-row" style="margin-top:10px;"><label>عنوان (اختیاری)</label><input type="text" id="t2pTitle" placeholder="Document Title"></div>
+     <button class="pt-btn" onclick="runText2Pdf()">📤 PDF بنائیں</button>
+     <div class="pt-result" id="t2pResult"></div>`,
+
+  word2pdf: ()=> dropZoneHTML('w2pInput','.docx',false,'ورڈ (.docx) فائل چنیں') +
+    `<button class="pt-btn" onclick="runWord2Pdf()">📃 PDF بنائیں</button>
+     <div class="pt-progress" id="w2pProg"><div class="bar"></div></div>
+     <div class="pt-result" id="w2pResult"></div>`,
+
+  ocr: ()=> dropZoneHTML('ocrInput','image/*,application/pdf',false,'تصویر یا PDF چنیں') +
+    `<div class="pt-row"><label>زبان</label><select id="ocrLang"><option value="eng">English</option><option value="urd">اردو</option></select></div>
+     <button class="pt-btn" onclick="runOcr()">🔍 متن پہچانیں</button>
+     <div class="pt-progress" id="ocrProg"><div class="bar"></div></div>
+     <p class="pt-status" id="ocrStatus"></p>
+     <textarea class="pt-textarea" id="ocrOut" placeholder="پہچانا گیا متن یہاں آئے گا..."></textarea>
+     <div style="margin-top:10px;"><button class="pt-btn outline" onclick="downloadTextArea('ocrOut','ocr-result.txt')">⬇️ TXT ڈاؤن لوڈ</button></div>`,
+};
+
+const TOOL_INIT = {
+  editor: ()=> window.__edZone = wireDropZone('edInput', async fs=>{ if(fs[0]) await loadEditorPdf(fs[0]); }),
+  merge: ()=> window.__mergeZone = wireDropZone('mergeInput', ()=>{}),
+  split: ()=> window.__splitZone = wireDropZone('splitInput', ()=>{}),
+  rotate: ()=> window.__rotateZone = wireDropZone('rotateInput', ()=>{}),
+  watermark: ()=> window.__wmZone = wireDropZone('wmInput', ()=>{}),
+  pagenum: ()=> window.__pnZone = wireDropZone('pnInput', ()=>{}),
+  compress: ()=> window.__cmZone = wireDropZone('cmInput', ()=>{}),
+  esign: ()=>{ window.__esignZone = wireDropZone('esignInput', ()=>{}); initSigPad(); },
+  pdf2img: ()=> window.__p2iZone = wireDropZone('p2iInput', ()=>{}),
+  img2pdf: ()=> window.__i2pZone = wireDropZone('i2pInput', ()=>{}),
+  pdf2text: ()=> window.__p2tZone = wireDropZone('p2tInput', ()=>{}),
+  word2pdf: ()=> window.__w2pZone = wireDropZone('w2pInput', ()=>{}),
+  ocr: ()=> window.__ocrZone = wireDropZone('ocrInput', ()=>{}),
+};
+
+/* ===================== PDF EDITOR ===================== */
+let editorPdfBytes = null, editorPdfJsDoc = null, editorCurrentPage = 1, editorNumPages = 0;
+let editorAnnotations = {}; // {pageNum: [{x,y,text,size,color}]}
+const EDITOR_SCALE = 1.4;
+
+async function loadEditorPdf(file){
+  editorPdfBytes = await file.arrayBuffer();
+  const copyForView = editorPdfBytes.slice(0);
+  editorPdfJsDoc = await pdfjsLib.getDocument({data: copyForView}).promise;
+  editorNumPages = editorPdfJsDoc.numPages;
+  editorCurrentPage = 1;
+  editorAnnotations = {};
+  document.getElementById('edEditorArea').style.display = 'block';
+  await renderEditorPage();
+}
+async function renderEditorPage(){
+  const page = await editorPdfJsDoc.getPage(editorCurrentPage);
+  const viewport = page.getViewport({scale: EDITOR_SCALE});
+  const canvas = document.getElementById('edCanvas');
+  canvas.width = viewport.width; canvas.height = viewport.height;
+  await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+  document.getElementById('edPageIndicator').textContent = `صفحہ ${editorCurrentPage} / ${editorNumPages}`;
+  const overlay = document.getElementById('edOverlay');
+  overlay.style.width = canvas.width + 'px';
+  overlay.style.height = canvas.height + 'px';
+  overlay.onclick = edOverlayClick;
+  renderEditorOverlay();
+}
+function edOverlayClick(e){
+  if(e.target !== e.currentTarget) return; // ignore clicks on existing boxes
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const size = +document.getElementById('edFontSize').value;
+  const color = document.getElementById('edFontColor').value;
+  if(!editorAnnotations[editorCurrentPage]) editorAnnotations[editorCurrentPage] = [];
+  editorAnnotations[editorCurrentPage].push({x, y, text:'', size, color});
+  renderEditorOverlay();
+  // focus the newly created box's text area
+  const boxes = document.querySelectorAll('.ed-text');
+  if(boxes.length) boxes[boxes.length-1].focus();
+}
+function renderEditorOverlay(){
+  const overlay = document.getElementById('edOverlay');
+  overlay.innerHTML = '';
+  const anns = editorAnnotations[editorCurrentPage] || [];
+  anns.forEach((ann, idx)=>{
+    const box = document.createElement('div');
+    box.className = 'ed-textbox';
+    box.style.left = ann.x + 'px'; box.style.top = ann.y + 'px';
+
+    const del = document.createElement('span');
+    del.className = 'ed-del'; del.textContent = '✕';
+    del.onclick = (e)=>{ e.stopPropagation(); anns.splice(idx,1); renderEditorOverlay(); };
+
+    const drag = document.createElement('span');
+    drag.className = 'ed-drag'; drag.textContent = '⠿';
+    drag.addEventListener('mousedown', e=>{
+      e.stopPropagation(); e.preventDefault();
+      const startX = e.clientX, startY = e.clientY, origX = ann.x, origY = ann.y;
+      function move(ev){ ann.x = origX + (ev.clientX-startX); ann.y = origY + (ev.clientY-startY); box.style.left=ann.x+'px'; box.style.top=ann.y+'px'; }
+      function up(){ window.removeEventListener('mousemove',move); window.removeEventListener('mouseup',up); }
+      window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+    });
+
+    const text = document.createElement('div');
+    text.className = 'ed-text'; text.contentEditable = 'true';
+    text.style.fontSize = ann.size+'px'; text.style.color = ann.color;
+    text.textContent = ann.text;
+    text.addEventListener('click', e=> e.stopPropagation());
+    text.addEventListener('input', ()=>{ ann.text = text.textContent; });
+
+    box.appendChild(del); box.appendChild(drag); box.appendChild(text);
+    overlay.appendChild(box);
+  });
+}
+function edChangePage(delta){
+  const next = editorCurrentPage + delta;
+  if(next<1 || next>editorNumPages) return;
+  editorCurrentPage = next;
+  renderEditorPage();
+}
+function undoLastAnnotation(){
+  const anns = editorAnnotations[editorCurrentPage];
+  if(anns && anns.length) anns.pop();
+  renderEditorOverlay();
+}
+function hexToRgbPdfLib(hex){
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+  return rgb(r,g,b);
+}
+async function saveEditedPdf(){
+  if(!editorPdfBytes){ alert('پہلے PDF چنیں'); return; }
+  const pdfDoc = await PDFDocument.load(editorPdfBytes);
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const pages = pdfDoc.getPages();
+  for(const pageNumStr in editorAnnotations){
+    const pageNum = parseInt(pageNumStr);
+    const anns = editorAnnotations[pageNum] || [];
+    if(anns.length===0) continue;
+    const p = pages[pageNum-1];
+    if(!p) continue;
+    const {height} = p.getSize();
+    anns.forEach(ann=>{
+      if(!ann.text.trim()) return;
+      const sizePt = ann.size / EDITOR_SCALE;
+      const xPt = ann.x / EDITOR_SCALE;
+      const lines = ann.text.split('\n');
+      lines.forEach((line,i)=>{
+        const yPt = height - (ann.y / EDITOR_SCALE) - sizePt*(i+1);
+        p.drawText(line, {x:xPt, y:yPt, size:sizePt, font, color: hexToRgbPdfLib(ann.color)});
+      });
+    });
+  }
+  await addMfjFooterPdfLib(pdfDoc);
+  const bytes = await pdfDoc.save();
+  const blob = new Blob([bytes], {type:'application/pdf'});
+  showResult('edResult', `<a href="#" onclick="downloadBlob(window.__edBlob,'edited.pdf');return false;">⬇️ edited.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__edBlob = blob;
+}
+
+/* ===================== MERGE ===================== */
+async function runMerge(){
+  const files = window.__mergeZone.getFiles();
+  if(files.length<2){ alert('کم از کم 2 PDF فائلیں چنیں'); return; }
+  setProgress('mergeProg', 5);
+  const outDoc = await PDFDocument.create();
+  for(let i=0;i<files.length;i++){
+    const bytes = await files[i].arrayBuffer();
+    const src = await PDFDocument.load(bytes);
+    const pages = await outDoc.copyPages(src, src.getPageIndices());
+    pages.forEach(p=>outDoc.addPage(p));
+    setProgress('mergeProg', 5 + (90*(i+1)/files.length));
+  }
+  await addMfjFooterPdfLib(outDoc);
+  const bytes = await outDoc.save();
+  setProgress('mergeProg', null);
+  const blob = new Blob([bytes], {type:'application/pdf'});
+  showResult('mergeResult', `<a href="#" onclick="downloadBlob(window.__mergeBlob,'merged.pdf');return false;">⬇️ merged.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__mergeBlob = blob;
+}
+
+/* ===================== SPLIT ===================== */
+function parseRanges(str, max){
+  if(!str.trim()) return null;
+  const out = [];
+  str.split(',').forEach(part=>{
+    part = part.trim();
+    if(part.includes('-')){
+      const [a,b] = part.split('-').map(n=>parseInt(n.trim()));
+      for(let i=a;i<=Math.min(b,max);i++) out.push(i-1);
+    } else if(part){ out.push(parseInt(part)-1); }
+  });
+  return out.filter(i=>i>=0 && i<max);
+}
+async function runSplit(){
+  const files = window.__splitZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('splitProg', 10);
+  const bytes = await files[0].arrayBuffer();
+  const src = await PDFDocument.load(bytes);
+  const total = src.getPageCount();
+  const rangeStr = document.getElementById('splitRange').value;
+  const zip = new JSZip();
+  if(rangeStr.trim()){
+    const idxs = parseRanges(rangeStr, total);
+    const out = await PDFDocument.create();
+    const pages = await out.copyPages(src, idxs);
+    pages.forEach(p=>out.addPage(p));
+    await addMfjFooterPdfLib(out);
+    const b = await out.save();
+    zip.file('split.pdf', b);
+  } else {
+    for(let i=0;i<total;i++){
+      const out = await PDFDocument.create();
+      const [p] = await out.copyPages(src,[i]);
+      out.addPage(p);
+      await addMfjFooterPdfLib(out);
+      const b = await out.save();
+      zip.file(`page-${i+1}.pdf`, b);
+      setProgress('splitProg', 10 + (85*(i+1)/total));
+    }
+  }
+  const zipBlob = await zip.generateAsync({type:'blob'});
+  setProgress('splitProg', null);
+  showResult('splitResult', `<a href="#" onclick="downloadBlob(window.__splitBlob,'split-files.zip');return false;">⬇️ ZIP ڈاؤن لوڈ کریں (${fmtSize(zipBlob.size)})</a>`);
+  window.__splitBlob = zipBlob;
+}
+
+/* ===================== ROTATE ===================== */
+async function runRotate(){
+  const files = window.__rotateZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('rotateProg', 20);
+  const deg = parseInt(document.getElementById('rotateDeg').value);
+  const bytes = await files[0].arrayBuffer();
+  const doc = await PDFDocument.load(bytes);
+  doc.getPages().forEach(p=>{ p.setRotation(degrees((p.getRotation().angle + deg) % 360)); });
+  await addMfjFooterPdfLib(doc);
+  const out = await doc.save();
+  setProgress('rotateProg', null);
+  const blob = new Blob([out], {type:'application/pdf'});
+  showResult('rotateResult', `<a href="#" onclick="downloadBlob(window.__rotateBlob,'rotated.pdf');return false;">⬇️ rotated.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__rotateBlob = blob;
+}
+
+/* ===================== WATERMARK ===================== */
+async function runWatermark(){
+  const files = window.__wmZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('wmProg', 20);
+  const text = document.getElementById('wmText').value || 'WATERMARK';
+  const opacity = parseFloat(document.getElementById('wmOpacity').value);
+  const bytes = await files[0].arrayBuffer();
+  const doc = await PDFDocument.load(bytes);
+  const font = await doc.embedFont(StandardFonts.HelveticaBold);
+  doc.getPages().forEach(p=>{
+    const {width,height} = p.getSize();
+    p.drawText(text, {
+      x: width/2 - (text.length*14), y: height/2, size:46, font,
+      color: rgb(0.5,0.5,0.5), opacity, rotate: degrees(45)
+    });
+  });
+  await addMfjFooterPdfLib(doc);
+  const out = await doc.save();
+  setProgress('wmProg', null);
+  const blob = new Blob([out], {type:'application/pdf'});
+  showResult('wmResult', `<a href="#" onclick="downloadBlob(window.__wmBlob,'watermarked.pdf');return false;">⬇️ watermarked.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__wmBlob = blob;
+}
+
+/* ===================== PAGE NUMBERS / HEADER-FOOTER ===================== */
+async function runPageNum(){
+  const files = window.__pnZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('pnProg', 20);
+  const pos = document.getElementById('pnPos').value;
+  const extra = document.getElementById('pnExtra').value;
+  const bytes = await files[0].arrayBuffer();
+  const doc = await PDFDocument.load(bytes);
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages();
+  pages.forEach((p,i)=>{
+    const {width,height} = p.getSize();
+    const label = extra ? `${extra}  —  ${i+1} / ${pages.length}` : `${i+1} / ${pages.length}`;
+    let x = width/2 - label.length*2.2, y = 24;
+    if(pos==='bottom-right'){ x = width-90; y=24; }
+    if(pos==='top-center'){ y = height-30; }
+    p.drawText(label, {x, y, size:10, font, color: rgb(0.3,0.3,0.3)});
+  });
+  await addMfjFooterPdfLib(doc);
+  const out = await doc.save();
+  setProgress('pnProg', null);
+  const blob = new Blob([out], {type:'application/pdf'});
+  showResult('pnResult', `<a href="#" onclick="downloadBlob(window.__pnBlob,'numbered.pdf');return false;">⬇️ numbered.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__pnBlob = blob;
+}
+
+/* ===================== COMPRESS (rasterize pages at lower quality) ===================== */
+async function runCompress(){
+  const files = window.__cmZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('cmProg', 5);
+  const quality = parseFloat(document.getElementById('cmQuality').value);
+  const bytes = await files[0].arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+  const { jsPDF } = window.jspdf;
+  let outPdf = null;
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale:1.4});
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
+    const imgData = canvas.toDataURL('image/jpeg', quality);
+    const orient = viewport.width>viewport.height ? 'l':'p';
+    if(!outPdf) outPdf = new jsPDF({orientation:orient, unit:'pt', format:[viewport.width, viewport.height]});
+    else outPdf.addPage([viewport.width, viewport.height], orient);
+    outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height);
+    setProgress('cmProg', 5 + (90*i/pdf.numPages));
+  }
+  addMfjFooterJsPdf(outPdf);
+  const blob = outPdf.output('blob');
+  setProgress('cmProg', null);
+  showResult('cmResult', `<a href="#" onclick="downloadBlob(window.__cmBlob,'compressed.pdf');return false;">⬇️ compressed.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)}) — اصل سائز تھا ${fmtSize(files[0].size)}</a>`);
+  window.__cmBlob = blob;
+}
+
+/* ===================== E-SIGNATURE ===================== */
+let sigCtx, sigDrawing=false, sigHasContent=false;
+function initSigPad(){
+  const c = document.getElementById('sigPad');
+  sigCtx = c.getContext('2d');
+  sigCtx.lineWidth=2.5; sigCtx.lineCap='round'; sigCtx.strokeStyle='#152238';
+  function pos(e){
+    const r = c.getBoundingClientRect();
+    const cx = (e.touches? e.touches[0].clientX : e.clientX) - r.left;
+    const cy = (e.touches? e.touches[0].clientY : e.clientY) - r.top;
+    return {x: cx*(c.width/r.width), y: cy*(c.height/r.height)};
+  }
+  function start(e){ sigDrawing=true; sigHasContent=true; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); }
+  function move(e){ if(!sigDrawing) return; e.preventDefault(); const p=pos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); }
+  function end(){ sigDrawing=false; }
+  c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+  c.addEventListener('touchstart', start); c.addEventListener('touchmove', move, {passive:false}); c.addEventListener('touchend', end);
+}
+function clearSig(){ sigCtx.clearRect(0,0,500,180); sigHasContent=false; }
+async function runEsign(){
+  const files = window.__esignZone.getFiles();
+  if(!sigHasContent){ alert('پہلے دستخط بنائیں'); return; }
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('esignProg', 20);
+  const sigDataUrl = document.getElementById('sigPad').toDataURL('image/png');
+  const pageNum = parseInt(document.getElementById('esignPage').value)||1;
+  const pos = document.getElementById('esignPos').value;
+  const bytes = await files[0].arrayBuffer();
+  const doc = await PDFDocument.load(bytes);
+  const pngBytes = await fetch(sigDataUrl).then(r=>r.arrayBuffer());
+  const pngImage = await doc.embedPng(pngBytes);
+  const pages = doc.getPages();
+  const p = pages[Math.min(pageNum-1, pages.length-1)];
+  const {width,height} = p.getSize();
+  const sigW = 150, sigH = 54;
+  let x = width-sigW-40, y = 40;
+  if(pos==='bottom-left') x = 40;
+  if(pos==='bottom-center') x = width/2 - sigW/2;
+  p.drawImage(pngImage, {x, y, width:sigW, height:sigH});
+  await addMfjFooterPdfLib(doc);
+  const out = await doc.save();
+  setProgress('esignProg', null);
+  const blob = new Blob([out], {type:'application/pdf'});
+  showResult('esignResult', `<a href="#" onclick="downloadBlob(window.__esignBlob,'signed.pdf');return false;">⬇️ signed.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__esignBlob = blob;
+}
+
+/* ===================== PDF -> IMAGE ===================== */
+async function runPdf2Img(){
+  const files = window.__p2iZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('p2iProg', 5);
+  const fmt = document.getElementById('p2iFmt').value;
+  const bytes = await files[0].arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+  const thumbs = document.getElementById('p2iThumbs');
+  thumbs.innerHTML='';
+  const zip = new JSZip();
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale:1.6});
+    const canvas = document.createElement('canvas');
+    canvas.width=viewport.width; canvas.height=viewport.height;
+    await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
+    const dataUrl = canvas.toDataURL(fmt, 0.92);
+    const img = document.createElement('img'); img.src = dataUrl; thumbs.appendChild(img);
+    const ext = fmt==='image/png'?'png':'jpg';
+    const base64 = dataUrl.split(',')[1];
+    zip.file(`page-${i}.${ext}`, base64, {base64:true});
+    setProgress('p2iProg', 5 + (90*i/pdf.numPages));
+  }
+  const zipBlob = await zip.generateAsync({type:'blob'});
+  setProgress('p2iProg', null);
+  showResult('p2iResult', `<a href="#" onclick="downloadBlob(window.__p2iBlob,'pages.zip');return false;">⬇️ سب تصاویر ZIP میں ڈاؤن لوڈ کریں</a>`);
+  window.__p2iBlob = zipBlob;
+}
+
+/* ===================== IMAGE -> PDF ===================== */
+async function runImg2Pdf(){
+  const files = window.__i2pZone.getFiles();
+  if(files.length<1){ alert('کم از کم ایک تصویر چنیں'); return; }
+  setProgress('i2pProg', 10);
+  const { jsPDF } = window.jspdf;
+  let doc=null;
+  for(let i=0;i<files.length;i++){
+    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(files[i]); });
+    const img = await new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.src=dataUrl; });
+    const orient = img.width>img.height ? 'l':'p';
+    if(!doc) doc = new jsPDF({orientation:orient, unit:'pt', format:[img.width,img.height]});
+    else doc.addPage([img.width,img.height], orient);
+    doc.addImage(dataUrl, 'JPEG', 0, 0, img.width, img.height);
+    setProgress('i2pProg', 10 + (85*(i+1)/files.length));
+  }
+  addMfjFooterJsPdf(doc);
+  const blob = doc.output('blob');
+  setProgress('i2pProg', null);
+  showResult('i2pResult', `<a href="#" onclick="downloadBlob(window.__i2pBlob,'images.pdf');return false;">⬇️ images.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__i2pBlob = blob;
+}
+
+/* ===================== PDF -> TEXT ===================== */
+async function runPdf2Text(){
+  const files = window.__p2tZone.getFiles();
+  if(files.length<1){ alert('PDF فائل چنیں'); return; }
+  setProgress('p2tProg', 10);
+  const bytes = await files[0].arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+  let full = '';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    full += content.items.map(it=>it.str).join(' ') + '\n\n';
+    setProgress('p2tProg', 10 + (85*i/pdf.numPages));
+  }
+  document.getElementById('p2tOut').value = full.trim();
+  setProgress('p2tProg', null);
+}
+function downloadTextArea(id, filename){
+  const text = document.getElementById(id).value;
+  downloadBlob(new Blob([text], {type:'text/plain'}), filename);
+}
+
+/* ===================== TEXT -> PDF ===================== */
+function runText2Pdf(){
+  const text = document.getElementById('t2pIn').value;
+  if(!text.trim()){ alert('پہلے متن لکھیں'); return; }
+  const title = document.getElementById('t2pTitle').value;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  let y = 50;
+  if(title){ doc.setFontSize(16); doc.text(title, 40, y); y+=30; }
+  doc.setFontSize(12);
+  const lines = doc.splitTextToSize(text, 515);
+  lines.forEach(line=>{
+    if(y>780){ doc.addPage(); y=50; }
+    doc.text(line, 40, y); y += 16;
+  });
+  addMfjFooterJsPdf(doc);
+  const blob = doc.output('blob');
+  showResult('t2pResult', `<a href="#" onclick="downloadBlob(window.__t2pBlob,'document.pdf');return false;">⬇️ document.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__t2pBlob = blob;
+}
+
+/* ===================== WORD -> PDF ===================== */
+async function runWord2Pdf(){
+  const files = window.__w2pZone.getFiles();
+  if(files.length<1){ alert('.docx فائل چنیں'); return; }
+  setProgress('w2pProg', 15);
+  const arrayBuffer = await files[0].arrayBuffer();
+  const result = await mammoth.convertToHtml({arrayBuffer});
+  const wrap = document.createElement('div');
+  wrap.style.cssText='width:515pt; font-family:Arial; font-size:12pt; padding:10px; direction:ltr;';
+  wrap.innerHTML = result.value;
+  document.body.appendChild(wrap);
+  setProgress('w2pProg', 50);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  await doc.html(wrap, {
+    callback: function(doc){
+      document.body.removeChild(wrap);
+      setProgress('w2pProg', null);
+      addMfjFooterJsPdf(doc);
+      const blob = doc.output('blob');
+      showResult('w2pResult', `<a href="#" onclick="downloadBlob(window.__w2pBlob,'converted.pdf');return false;">⬇️ converted.pdf ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+      window.__w2pBlob = blob;
+    },
+    margin:[40,40,40,40], autoPaging:'text', width:515, windowWidth:700
+  });
+}
+
+/* ===================== OCR ===================== */
+async function runOcr(){
+  const files = window.__ocrZone.getFiles();
+  if(files.length<1){ alert('تصویر یا PDF چنیں'); return; }
+  const lang = document.getElementById('ocrLang').value;
+  const statusEl = document.getElementById('ocrStatus');
+  setProgress('ocrProg', 5);
+  const file = files[0];
+  let imagesToOcr = [];
+  if(file.type==='application/pdf'){
+    const bytes = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+    for(let i=1;i<=pdf.numPages;i++){
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({scale:1.8});
+      const canvas = document.createElement('canvas');
+      canvas.width=viewport.width; canvas.height=viewport.height;
+      await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
+      imagesToOcr.push(canvas.toDataURL('image/png'));
+    }
+  } else {
+    imagesToOcr.push(await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }));
+  }
+  let fullText = '';
+  for(let i=0;i<imagesToOcr.length;i++){
+    statusEl.textContent = `صفحہ ${i+1}/${imagesToOcr.length} پر کام ہو رہا ہے...`;
+    const { data } = await Tesseract.recognize(imagesToOcr[i], lang, {
+      logger: m=>{ if(m.status==='recognizing text'){ setProgress('ocrProg', 5 + (90*(i + m.progress)/imagesToOcr.length)); } }
+    });
+    fullText += data.text + '\n\n';
+  }
+  document.getElementById('ocrOut').value = fullText.trim();
+  statusEl.textContent = 'مکمل ✅';
+  setProgress('ocrProg', null);
+}
+
+/* ===================== INIT ===================== */
+const __qsTool = new URLSearchParams(location.search).get('tool');
+const __initTool = (__qsTool && TOOL_META[__qsTool]) ? __qsTool : 'merge';
+document.querySelectorAll('[data-tool]').forEach(el=> el.classList.toggle('active', el.dataset.tool===__initTool));
+renderTool(__initTool);
+</script>
+
+<!-- Feature-flag gate: same pattern as school-map-builder.html -->
+<script>
+(async function(){
+  try{
+    const client = window.supabase.createClient('https://ixgsartlktmgqfnzzatv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8');
+    const { data, error } = await client.from('site_settings').select('value').eq('key','pdf_tools_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">PDF Tools عارضی طور پر آف لائن ہیں۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

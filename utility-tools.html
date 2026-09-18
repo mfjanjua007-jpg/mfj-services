@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Utility & Web Tools | MFJ Service</title>
+<meta name="description" content="Password Generator, QR/Barcode, File Encryption, ZIP Tools, Batch Rename, Duplicate Finder, HTML→PDF/Image, URL Shortener اور مزید — سب مفت۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.ut-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.ut-brand{font-weight:700; font-size:16px;}
+.ut-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.ut-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.ut-back:hover{background:rgba(255,255,255,.22);}
+
+.ut-app{display:grid; grid-template-columns:220px 1fr; gap:16px; padding:16px; max-width:1200px; margin:0 auto; align-items:start;}
+@media (max-width:820px){ .ut-app{grid-template-columns:1fr;} }
+
+.ut-nav{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; position:sticky; top:16px; max-height:85vh; overflow-y:auto;}
+.ut-nav h4{font-size:11.5px; color:var(--mute); padding:8px 8px 4px;}
+.ut-nav-item{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);}
+.ut-nav-item:hover{background:var(--green-light);}
+.ut-nav-item.active{background:var(--navy); color:#fff;}
+
+.ut-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; min-height:60vh;}
+.ut-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.ut-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:18px;}
+
+.ut-drop{border:2px dashed var(--border); border-radius:12px; padding:26px; text-align:center; cursor:pointer; background:var(--bg); margin-bottom:14px;}
+.ut-drop:hover,.ut-drop.drag{border-color:var(--green); background:var(--green-light);}
+.ut-drop input{display:none;}
+.ut-drop .ic{font-size:28px; display:block; margin-bottom:6px;}
+.ut-filelist{display:flex; flex-direction:column; gap:6px; margin-bottom:12px;}
+.ut-fileitem{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12.5px;}
+.ut-fileitem button{margin-inline-start:auto; background:none; border:none; cursor:pointer; color:#DC2626; font-size:14px;}
+
+.ut-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+.ut-row label{font-size:12.5px; font-weight:700; color:var(--mute);}
+.ut-row input,.ut-row select,.ut-row textarea{border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit;}
+.ut-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer;}
+.ut-btn:hover{background:var(--green-dark);}
+.ut-btn.outline{background:#fff; color:var(--ink); border:1.5px solid var(--border);}
+.ut-result{margin-top:16px; padding:14px 16px; background:var(--green-light); border-radius:12px; display:none;}
+.ut-result a{color:var(--green-dark); font-weight:700; text-decoration:none;}
+.ut-pass-display{background:var(--navy); color:#fff; font-family:monospace; font-size:20px; padding:16px; border-radius:10px; text-align:center; direction:ltr; margin-bottom:14px; word-break:break-all;}
+.ut-textarea{width:100%; min-height:180px; border:1.5px solid var(--border); border-radius:10px; padding:14px; font-size:13px; font-family:monospace; resize:vertical;}
+</style>
+</head>
+<body>
+
+<div class="ut-topbar">
+  <div class="ut-brand">🔐 Utility & Web Tools <span class="sub">by MFJ Service — پرائیویسی، فائل اور ویب اوزار</span></div>
+  <a href="index.html" class="ut-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="ut-app">
+  <div class="ut-nav">
+    <h4>پرائیویسی و سیکیورٹی</h4>
+    <div class="ut-nav-item active" data-tool="password">🔑 Password Generator</div>
+    <div class="ut-nav-item" data-tool="metadata">🧹 Metadata (EXIF) Remover</div>
+    <div class="ut-nav-item" data-tool="encrypt">🔒 File Encrypt/Decrypt</div>
+    <h4>فائل مینجمنٹ</h4>
+    <div class="ut-nav-item" data-tool="zipcreate">🗜️ ZIP Creator</div>
+    <div class="ut-nav-item" data-tool="zipextract">📂 ZIP Extractor</div>
+    <div class="ut-nav-item" data-tool="rename">🏷️ Batch File Renamer</div>
+    <div class="ut-nav-item" data-tool="duplicate">🔍 Duplicate File Finder</div>
+    <h4>ویب ٹولز</h4>
+    <div class="ut-nav-item" data-tool="qr">🔲 QR Code Generator</div>
+    <div class="ut-nav-item" data-tool="qrscan">📷 QR Code Scanner</div>
+    <div class="ut-nav-item" data-tool="barcode">▮▯ Barcode Generator</div>
+    <div class="ut-nav-item" data-tool="formatter">{ } HTML/CSS/JS Formatter</div>
+    <div class="ut-nav-item" data-tool="html2pdf">📕 HTML → PDF</div>
+    <div class="ut-nav-item" data-tool="html2img">🖼️ HTML → Image</div>
+    <div class="ut-nav-item" data-tool="shortener">🔗 URL Shortener</div>
+  </div>
+
+  <div class="ut-panel" id="utPanel"></div>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+/* Adds a small "made with MFJ Service" credit line to the bottom of every page. Call right before doc.output('blob'). */
+function addMfjFooterJsPdf(doc){
+  try{
+    const pages = doc.internal.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+      doc.setFontSize(7); doc.setTextColor(170,170,170); doc.setFont(undefined,'normal');
+      doc.text('Generated via MFJ Service — mfjservice.netlify.app', w/2, h-10, {align:'center'});
+    }
+  }catch(e){ /* non-critical */ }
+}
+/* Adds a tiny "MFJ Service" credit in the bottom-right corner of a generated composition canvas. */
+function addMfjWatermarkCanvas(canvas){
+  const ctx = canvas.getContext('2d');
+  const text = 'MFJ Service';
+  ctx.save();
+  ctx.font = `${Math.max(10, canvas.width*0.014)}px Inter, sans-serif`;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+  const pad = canvas.width*0.015;
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.fillText(text, canvas.width-pad+1, canvas.height-pad+1);
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.fillText(text, canvas.width-pad, canvas.height-pad);
+  ctx.restore();
+}
+const SB_URL = 'https://ixgsartlktmgqfnzzatv.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8';
+const sbClient = window.supabase.createClient(SB_URL, SB_KEY);
+
+let activeTool = 'password';
+document.querySelectorAll('.ut-nav-item[data-tool]').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.ut-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    activeTool = item.dataset.tool;
+    renderTool(activeTool);
+  });
+});
+function fmtSize(b){ return b<1024 ? b+' B' : b<1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(1)+' MB'; }
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+function showResult(id, html){ const el=document.getElementById(id); el.innerHTML=html; el.style.display='block'; }
+function dropZoneHTML(id, accept, multiple, label){
+  return `
+    <div class="ut-drop" id="${id}_drop">
+      <span class="ic">📁</span><div>${label}</div>
+      <input type="file" id="${id}" accept="${accept}" ${multiple?'multiple':''}>
+    </div>
+    <div class="ut-filelist" id="${id}_list"></div>`;
+}
+function wireDropZone(id, onFiles){
+  const drop = document.getElementById(id+'_drop');
+  const input = document.getElementById(id);
+  let files=[];
+  drop.addEventListener('click', ()=> input.click());
+  input.addEventListener('change', ()=>{ files=Array.from(input.files); renderList(); onFiles(files); });
+  ['dragover','dragleave','drop'].forEach(evt=>{
+    drop.addEventListener(evt, e=>{
+      e.preventDefault(); drop.classList.toggle('drag', evt==='dragover');
+      if(evt==='drop'){ files=Array.from(e.dataTransfer.files); renderList(); onFiles(files); }
+    });
+  });
+  function renderList(){
+    document.getElementById(id+'_list').innerHTML = files.map((f,i)=>`<div class="ut-fileitem">📄 ${f.name} <span style="color:var(--faint)">(${fmtSize(f.size)})</span><button onclick="window['__rm_${id}'](${i})">✕</button></div>`).join('');
+  }
+  window['__rm_'+id] = (i)=>{ files.splice(i,1); renderList(); onFiles(files); };
+  return { getFiles: ()=>files };
+}
+
+const TOOL_META = {
+  password:{title:'🔑 Password Generator', desc:'مضبوط، بے ترتیب پاس ورڈ بنائیں۔'},
+  metadata:{title:'🧹 Metadata (EXIF) Remover', desc:'تصویر سے مقام/کیمرہ کی معلومات (EXIF) ہٹائیں۔'},
+  encrypt:{title:'🔒 File Encrypt / Decrypt', desc:'پاس ورڈ سے کسی بھی فائل کو محفوظ (encrypt) کریں — صرف آپ کے براؤزر میں، کہیں اپلوڈ نہیں ہوتی۔'},
+  zipcreate:{title:'🗜️ ZIP Creator', desc:'کئی فائلوں کو ایک ZIP میں جمع کریں۔'},
+  zipextract:{title:'📂 ZIP Extractor', desc:'ZIP فائل کھول کر اندر کی فائلیں دیکھیں/ڈاؤن لوڈ کریں۔'},
+  rename:{title:'🏷️ Batch File Renamer', desc:'کئی فائلوں کا نام ایک ترتیب سے تبدیل کریں (ZIP میں ملے گی)۔'},
+  duplicate:{title:'🔍 Duplicate File Finder', desc:'ایک جیسی (ڈپلیکیٹ) فائلیں پہچانیں۔'},
+  qr:{title:'🔲 QR Code Generator', desc:'لنک، متن، فون یا vCard کا QR کوڈ بنائیں۔'},
+  qrscan:{title:'📷 QR Code Scanner', desc:'کیمرہ یا تصویر سے QR کوڈ پڑھیں۔'},
+  barcode:{title:'▮▯ Barcode Generator', desc:'عام بار کوڈ (CODE128) بنائیں۔'},
+  formatter:{title:'{ } HTML / CSS / JS Formatter', desc:'کوڈ کو صاف انڈینٹیشن کے ساتھ پڑھنے کے قابل بنائیں۔'},
+  html2pdf:{title:'📕 HTML → PDF', desc:'HTML کوڈ سے براہ راست PDF بنائیں۔'},
+  html2img:{title:'🖼️ HTML → Image', desc:'HTML کوڈ کو PNG تصویر میں تبدیل کریں۔'},
+  shortener:{title:'🔗 URL Shortener', desc:'لمبے لنک کو مختصر لنک میں بدلیں (آپ کے اپنے Supabase میں محفوظ)۔'},
+};
+
+function renderTool(tool){
+  const meta = TOOL_META[tool];
+  document.getElementById('utPanel').innerHTML = `<h2>${meta.title}</h2><p class="desc">${meta.desc}</p><div id="toolBody"></div>`;
+  document.getElementById('toolBody').innerHTML = TOOL_BODIES[tool]();
+  TOOL_INIT[tool] && TOOL_INIT[tool]();
+}
+
+const TOOL_BODIES = {
+  password: ()=> `<div class="ut-pass-display" id="pgDisplay">Click Generate</div>
+    <div class="ut-row">
+      <label>لمبائی</label><input type="number" id="pgLength" value="14" min="6" max="64" style="width:70px;">
+      <label><input type="checkbox" id="pgUpper" checked> بڑے حروف (A-Z)</label>
+      <label><input type="checkbox" id="pgLower" checked> چھوٹے حروف (a-z)</label>
+      <label><input type="checkbox" id="pgNumbers" checked> نمبر (0-9)</label>
+      <label><input type="checkbox" id="pgSymbols" checked> علامتیں (!@#$)</label>
+    </div>
+    <button class="ut-btn" onclick="generatePassword()">🔑 نیا پاس ورڈ بنائیں</button>
+    <button class="ut-btn outline" onclick="copyPassword()">📋 کاپی کریں</button>`,
+
+  metadata: ()=> dropZoneHTML('mdInput','image/*',false,'تصویر چنیں') +
+    `<button class="ut-btn" onclick="runMetadataRemove()">🧹 صاف کریں</button>
+     <div class="ut-result" id="mdResult"></div>`,
+
+  encrypt: ()=> `
+    <div class="ut-row">
+      <select id="encMode"><option value="encrypt">Encrypt (محفوظ کریں)</option><option value="decrypt">Decrypt (کھولیں)</option></select>
+    </div>` + dropZoneHTML('encInput','*',false,'فائل چنیں') +
+    `<div class="ut-row"><label>پاس ورڈ</label><input type="password" id="encPassword"></div>
+     <button class="ut-btn" onclick="runEncrypt()">🔒 چلائیں</button>
+     <div class="ut-result" id="encResult"></div>`,
+
+  zipcreate: ()=> dropZoneHTML('zcInput','*',true,'کئی فائلیں چنیں') +
+    `<button class="ut-btn" onclick="runZipCreate()">🗜️ ZIP بنائیں</button>
+     <div class="ut-result" id="zcResult"></div>`,
+
+  zipextract: ()=> dropZoneHTML('zeInput','.zip',false,'ZIP فائل چنیں') +
+    `<button class="ut-btn" onclick="runZipExtract()">📂 کھولیں</button>
+     <div class="ut-filelist" id="zeFileList" style="margin-top:12px;"></div>`,
+
+  rename: ()=> dropZoneHTML('rnInput','*',true,'کئی فائلیں چنیں') +
+    `<div class="ut-row"><label>نیا نام کا پیٹرن</label><input type="text" id="rnPattern" value="File-{n}" style="min-width:200px;"><span class="desc" style="font-size:11.5px;">({n} = نمبر سے بدل جائے گا)</span></div>
+     <button class="ut-btn" onclick="runBatchRename()">🏷️ نام تبدیل کریں</button>
+     <div class="ut-result" id="rnResult"></div>`,
+
+  duplicate: ()=> dropZoneHTML('dpInput','*',true,'کئی فائلیں چنیں') +
+    `<button class="ut-btn" onclick="runDuplicateFind()">🔍 چیک کریں</button>
+     <div class="ut-result" id="dpResult"></div>`,
+
+  qr: ()=> `
+    <div class="ut-row"><label>قسم</label><select id="qrType" onchange="updateQrFields()">
+      <option value="text">متن/لنک</option><option value="phone">فون نمبر</option><option value="vcard">vCard (رابطہ کارڈ)</option>
+    </select></div>
+    <div id="qrFields"></div>
+    <button class="ut-btn" onclick="generateQr()">🔲 بنائیں</button>
+    <div style="text-align:center; margin-top:14px;"><canvas id="qrCanvas"></canvas></div>
+    <div class="ut-row" id="qrDlRow" style="display:none; justify-content:center;"><button class="ut-btn outline" onclick="downloadQr()">⬇️ PNG ڈاؤن لوڈ</button></div>`,
+
+  qrscan: ()=> `
+    <div class="ut-row">
+      <button class="ut-btn" onclick="startCameraScan()">📷 کیمرہ سے اسکین کریں</button>
+    </div>
+    <video id="qsVideo" style="width:100%; max-width:400px; border-radius:10px; display:none;"></video>
+    <canvas id="qsCanvas" style="display:none;"></canvas>
+    ` + dropZoneHTML('qsInput','image/*',false,'یا کوئی تصویر اپلوڈ کریں') +
+    `<div class="ut-result" id="qsResult"></div>`,
+
+  barcode: ()=> `
+    <div class="ut-row"><label>ڈیٹا/نمبر</label><input type="text" id="bcData" value="123456789012" oninput="generateBarcode()"></div>
+    <div style="text-align:center;"><svg id="bcSvg"></svg></div>
+    <div class="ut-row" style="justify-content:center;"><button class="ut-btn outline" onclick="downloadBarcode()">⬇️ PNG ڈاؤن لوڈ</button></div>`,
+
+  formatter: ()=> `
+    <div class="ut-row"><label>زبان</label><select id="fmtLang"><option value="html">HTML</option><option value="css">CSS</option><option value="js">JavaScript</option></select></div>
+    <textarea class="ut-textarea" id="fmtIn" placeholder="کوڈ یہاں پیسٹ کریں..."></textarea>
+    <div class="ut-row" style="margin-top:10px;"><button class="ut-btn" onclick="runFormatter()">🧹 صاف کریں</button></div>
+    <textarea class="ut-textarea" id="fmtOut" readonly></textarea>`,
+
+  html2pdf: ()=> `
+    <textarea class="ut-textarea" id="h2pIn" placeholder="&lt;h1&gt;Hello&lt;/h1&gt;&lt;p&gt;یہاں HTML کوڈ لکھیں...&lt;/p&gt;"></textarea>
+    <button class="ut-btn" onclick="runHtml2Pdf()" style="margin-top:10px;">📕 PDF بنائیں</button>
+    <div class="ut-result" id="h2pResult"></div>`,
+
+  html2img: ()=> `
+    <textarea class="ut-textarea" id="h2iIn" placeholder="&lt;div style='padding:20px;background:#0F8A5F;color:#fff;'&gt;Hello&lt;/div&gt;"></textarea>
+    <button class="ut-btn" onclick="runHtml2Img()" style="margin-top:10px;">🖼️ تصویر بنائیں</button>
+    <div id="h2iPreviewWrap" style="margin-top:14px;"></div>
+    <div class="ut-result" id="h2iResult"></div>`,
+
+  shortener: ()=> `
+    <div class="ut-row"><label>لمبا لنک</label><input type="text" id="shUrl" placeholder="https://example.com/very/long/link" style="min-width:280px; flex:1;"></div>
+    <button class="ut-btn" onclick="runShortener()">🔗 مختصر کریں</button>
+    <div class="ut-result" id="shResult"></div>
+    <p class="desc" style="margin-top:10px;">نوٹ: یہ فیچر کام کرنے کے لیے ایک چھوٹی redirect فائل (go.html) بھی آپ کی سائٹ پر ہونی چاہیے، اور Supabase میں ایک ٹیبل بنانی ہوگی — نیچے دی گئی ہدایات دیکھیں۔</p>`,
+};
+
+const TOOL_INIT = {
+  metadata: ()=> wireDropZone('mdInput', fs=>{ if(fs[0]) window.__mdFile=fs[0]; }),
+  encrypt: ()=> wireDropZone('encInput', fs=>{ if(fs[0]) window.__encFile=fs[0]; }),
+  zipcreate: ()=> window.__zcZone = wireDropZone('zcInput', ()=>{}),
+  zipextract: ()=> wireDropZone('zeInput', fs=>{ if(fs[0]) window.__zeFile=fs[0]; }),
+  rename: ()=> window.__rnZone = wireDropZone('rnInput', ()=>{}),
+  duplicate: ()=> window.__dpZone = wireDropZone('dpInput', ()=>{}),
+  qr: ()=> updateQrFields(),
+  qrscan: ()=> wireDropZone('qsInput', fs=>{ if(fs[0]) scanImageFile(fs[0]); }),
+  barcode: ()=> generateBarcode(),
+};
+
+/* ===================== PASSWORD GENERATOR ===================== */
+function generatePassword(){
+  const len = +document.getElementById('pgLength').value;
+  let chars = '';
+  if(document.getElementById('pgUpper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(document.getElementById('pgLower').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if(document.getElementById('pgNumbers').checked) chars += '0123456789';
+  if(document.getElementById('pgSymbols').checked) chars += '!@#$%^&*()_+-=[]{}';
+  if(!chars){ alert('کم از کم ایک قسم منتخب کریں'); return; }
+  const arr = new Uint32Array(len);
+  crypto.getRandomValues(arr);
+  let pass = '';
+  for(let i=0;i<len;i++) pass += chars[arr[i]%chars.length];
+  document.getElementById('pgDisplay').textContent = pass;
+  window.__generatedPassword = pass;
+}
+function copyPassword(){
+  if(!window.__generatedPassword){ alert('پہلے پاس ورڈ بنائیں'); return; }
+  navigator.clipboard.writeText(window.__generatedPassword).then(()=>alert('کاپی ہو گیا ✅'));
+}
+
+/* ===================== METADATA REMOVER ===================== */
+async function runMetadataRemove(){
+  if(!window.__mdFile){ alert('تصویر چنیں'); return; }
+  const img = await new Promise(res=>{ const r=new FileReader(); r.onload=e=>{ const im=new Image(); im.onload=()=>res(im); im.src=e.target.result; }; r.readAsDataURL(window.__mdFile); });
+  const canvas = document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height;
+  canvas.getContext('2d').drawImage(img,0,0);
+  canvas.toBlob(blob=>{
+    showResult('mdResult', `<a href="#" onclick="downloadBlob(window.__mdBlob,'clean.jpg');return false;">⬇️ clean.jpg ڈاؤن لوڈ کریں (EXIF/مقام کی معلومات ہٹا دی گئی)</a>`);
+    window.__mdBlob = blob;
+  }, 'image/jpeg', 0.95);
+}
+
+/* ===================== FILE ENCRYPT / DECRYPT (Web Crypto AES-GCM) ===================== */
+async function deriveKey(password, salt){
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:150000, hash:'SHA-256'},
+    keyMaterial, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']
+  );
+}
+async function runEncrypt(){
+  const mode = document.getElementById('encMode').value;
+  const password = document.getElementById('encPassword').value;
+  if(!window.__encFile){ alert('فائل چنیں'); return; }
+  if(!password){ alert('پاس ورڈ درج کریں'); return; }
+  const buf = await window.__encFile.arrayBuffer();
+  if(mode==='encrypt'){
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await deriveKey(password, salt);
+    const encrypted = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, buf);
+    const combined = new Uint8Array(salt.length+iv.length+encrypted.byteLength);
+    combined.set(salt,0); combined.set(iv,salt.length); combined.set(new Uint8Array(encrypted), salt.length+iv.length);
+    const blob = new Blob([combined]);
+    showResult('encResult', `<a href="#" onclick="downloadBlob(window.__encBlob,'${window.__encFile.name}.enc');return false;">⬇️ ${window.__encFile.name}.enc ڈاؤن لوڈ کریں</a>`);
+    window.__encBlob = blob;
+  } else {
+    try{
+      const data = new Uint8Array(buf);
+      const salt = data.slice(0,16), iv = data.slice(16,28), cipher = data.slice(28);
+      const key = await deriveKey(password, salt);
+      const decrypted = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, cipher);
+      const blob = new Blob([decrypted]);
+      const outName = window.__encFile.name.replace(/\.enc$/,'') || 'decrypted-file';
+      showResult('encResult', `<a href="#" onclick="downloadBlob(window.__encBlob,'${outName}');return false;">⬇️ ${outName} ڈاؤن لوڈ کریں</a>`);
+      window.__encBlob = blob;
+    }catch(e){ alert('غلط پاس ورڈ یا خراب فائل'); }
+  }
+}
+
+/* ===================== ZIP CREATE / EXTRACT ===================== */
+async function runZipCreate(){
+  const files = window.__zcZone.getFiles();
+  if(files.length<1){ alert('فائلیں چنیں'); return; }
+  const zip = new JSZip();
+  files.forEach(f=> zip.file(f.name, f));
+  const blob = await zip.generateAsync({type:'blob'});
+  showResult('zcResult', `<a href="#" onclick="downloadBlob(window.__zcBlob,'archive.zip');return false;">⬇️ archive.zip ڈاؤن لوڈ کریں (${fmtSize(blob.size)})</a>`);
+  window.__zcBlob = blob;
+}
+async function runZipExtract(){
+  if(!window.__zeFile){ alert('ZIP فائل چنیں'); return; }
+  const zip = await JSZip.loadAsync(window.__zeFile);
+  const list = document.getElementById('zeFileList');
+  list.innerHTML = '';
+  for(const name of Object.keys(zip.files)){
+    const entry = zip.files[name];
+    if(entry.dir) continue;
+    const div = document.createElement('div'); div.className='ut-fileitem';
+    div.innerHTML = `📄 ${name} <button style="margin-inline-start:auto;background:var(--green);color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">ڈاؤن لوڈ</button>`;
+    div.querySelector('button').onclick = async ()=>{ const blob = await entry.async('blob'); downloadBlob(blob, name.split('/').pop()); };
+    list.appendChild(div);
+  }
+}
+
+/* ===================== BATCH RENAME ===================== */
+async function runBatchRename(){
+  const files = window.__rnZone.getFiles();
+  if(files.length<1){ alert('فائلیں چنیں'); return; }
+  const pattern = document.getElementById('rnPattern').value || 'File-{n}';
+  const zip = new JSZip();
+  files.forEach((f,i)=>{
+    const ext = f.name.includes('.') ? '.'+f.name.split('.').pop() : '';
+    const newName = pattern.replace('{n}', String(i+1).padStart(2,'0')) + ext;
+    zip.file(newName, f);
+  });
+  const blob = await zip.generateAsync({type:'blob'});
+  showResult('rnResult', `<a href="#" onclick="downloadBlob(window.__rnBlob,'renamed-files.zip');return false;">⬇️ renamed-files.zip ڈاؤن لوڈ کریں</a>`);
+  window.__rnBlob = blob;
+}
+
+/* ===================== DUPLICATE FINDER ===================== */
+async function hashFile(file){
+  const buf = await file.arrayBuffer();
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function runDuplicateFind(){
+  const files = window.__dpZone.getFiles();
+  if(files.length<2){ alert('کم از کم 2 فائلیں چنیں'); return; }
+  const hashes = {};
+  for(const f of files){
+    const h = await hashFile(f);
+    if(!hashes[h]) hashes[h]=[];
+    hashes[h].push(f.name);
+  }
+  const dupGroups = Object.values(hashes).filter(g=>g.length>1);
+  const out = document.getElementById('dpResult');
+  out.style.display='block';
+  out.innerHTML = dupGroups.length===0 ? 'کوئی ڈپلیکیٹ نہیں ملی ✅' :
+    dupGroups.map(g=>`<div class="row" style="padding:6px 0;">🔁 ${g.join(' = ')}</div>`).join('');
+}
+
+/* ===================== QR GENERATOR ===================== */
+function updateQrFields(){
+  const type = document.getElementById('qrType').value;
+  const el = document.getElementById('qrFields');
+  if(type==='text') el.innerHTML = `<div class="ut-row"><label>متن/لنک</label><input type="text" id="qrText" style="flex:1;"></div>`;
+  else if(type==='phone') el.innerHTML = `<div class="ut-row"><label>فون نمبر</label><input type="text" id="qrText" placeholder="+923001234567"></div>`;
+  else el.innerHTML = `<div class="ut-row">
+      <input type="text" id="vName" placeholder="نام">
+      <input type="text" id="vPhone" placeholder="فون">
+      <input type="text" id="vEmail" placeholder="ای میل">
+      <input type="text" id="vOrg" placeholder="کمپنی">
+    </div>`;
+}
+async function generateQr(){
+  const type = document.getElementById('qrType').value;
+  let data;
+  if(type==='phone') data = 'tel:' + document.getElementById('qrText').value;
+  else if(type==='vcard') data = `BEGIN:VCARD\nVERSION:3.0\nN:${document.getElementById('vName').value}\nTEL:${document.getElementById('vPhone').value}\nEMAIL:${document.getElementById('vEmail').value}\nORG:${document.getElementById('vOrg').value}\nEND:VCARD`;
+  else data = document.getElementById('qrText').value;
+  if(!data.trim()){ alert('ڈیٹا درج کریں'); return; }
+  await QRCode.toCanvas(document.getElementById('qrCanvas'), data, {width:320, margin:2});
+  document.getElementById('qrDlRow').style.display='flex';
+}
+function downloadQr(){ document.getElementById('qrCanvas').toBlob(b=>downloadBlob(b,'qrcode.png'),'image/png'); }
+
+/* ===================== QR SCANNER ===================== */
+async function startCameraScan(){
+  const video = document.getElementById('qsVideo');
+  const canvas = document.getElementById('qsCanvas');
+  video.style.display='block';
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    video.srcObject = stream; video.play();
+    const ctx = canvas.getContext('2d');
+    function tick(){
+      if(video.readyState===video.HAVE_ENOUGH_DATA){
+        canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+        const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if(code){ showResult('qsResult', `✅ نتیجہ: <b>${code.data}</b>`); stream.getTracks().forEach(t=>t.stop()); video.style.display='none'; return; }
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }catch(e){ alert('کیمرہ تک رسائی نہیں ملی'); }
+}
+async function scanImageFile(file){
+  const img = await new Promise(res=>{ const r=new FileReader(); r.onload=e=>{ const im=new Image(); im.onload=()=>res(im); im.src=e.target.result; }; r.readAsDataURL(file); });
+  const canvas = document.createElement('canvas'); canvas.width=img.width; canvas.height=img.height;
+  const ctx = canvas.getContext('2d'); ctx.drawImage(img,0,0);
+  const data = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const code = jsQR(data.data, data.width, data.height);
+  showResult('qsResult', code ? `✅ نتیجہ: <b>${code.data}</b>` : '❌ کوئی QR کوڈ نہیں ملا');
+}
+
+/* ===================== BARCODE ===================== */
+function generateBarcode(){
+  try{ JsBarcode('#bcSvg', document.getElementById('bcData').value || '000000', {format:'CODE128', height:70}); }catch(e){}
+}
+function downloadBarcode(){
+  const svg = document.getElementById('bcSvg');
+  const xml = new XMLSerializer().serializeToString(svg);
+  const img = new Image();
+  const svgBlob = new Blob([xml], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = ()=>{
+    const canvas = document.createElement('canvas'); canvas.width=img.width||300; canvas.height=img.height||100;
+    canvas.getContext('2d').drawImage(img,0,0);
+    canvas.toBlob(b=> downloadBlob(b,'barcode.png'));
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+/* ===================== FORMATTER (lightweight, no external lib) ===================== */
+function runFormatter(){
+  const lang = document.getElementById('fmtLang').value;
+  let code = document.getElementById('fmtIn').value;
+  let out;
+  if(lang==='html' || lang==='js'){
+    code = code.replace(/></g,'>\n<').replace(/;(?!$)/g,';\n');
+    let indent=0, lines=code.split('\n'), result=[];
+    lines.forEach(line=>{
+      line = line.trim(); if(!line) return;
+      if(line.match(/^<\/\w/) || line.startsWith('}')) indent = Math.max(0,indent-1);
+      result.push('  '.repeat(indent) + line);
+      if(line.match(/^<\w[^>]*[^\/]>$/) && !line.includes('</')) indent++;
+      if(line.endsWith('{')) indent++;
+    });
+    out = result.join('\n');
+  } else {
+    out = code.replace(/\{/g,' {\n  ').replace(/\}/g,'\n}\n').replace(/;/g,';\n  ').replace(/\n\s*\n/g,'\n');
+  }
+  document.getElementById('fmtOut').value = out;
+}
+
+/* ===================== HTML -> PDF / IMAGE ===================== */
+function runHtml2Pdf(){
+  const html = document.getElementById('h2pIn').value;
+  if(!html.trim()){ alert('HTML کوڈ لکھیں'); return; }
+  const wrap = document.createElement('div');
+  wrap.style.cssText='width:515pt; padding:10px; font-family:Arial;';
+  wrap.innerHTML = html;
+  document.body.appendChild(wrap);
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  doc.html(wrap, {
+    callback: d=>{
+      document.body.removeChild(wrap);
+      addMfjFooterJsPdf(d);
+      const blob = d.output('blob');
+      showResult('h2pResult', `<a href="#" onclick="downloadBlob(window.__h2pBlob,'page.pdf');return false;">⬇️ page.pdf ڈاؤن لوڈ کریں</a>`);
+      window.__h2pBlob = blob;
+    }, margin:[30,30,30,30], width:515, windowWidth:700
+  });
+}
+async function runHtml2Img(){
+  const html = document.getElementById('h2iIn').value;
+  if(!html.trim()){ alert('HTML کوڈ لکھیں'); return; }
+  const wrap = document.createElement('div');
+  wrap.style.cssText='display:inline-block; padding:0;';
+  wrap.innerHTML = html;
+  document.getElementById('h2iPreviewWrap').innerHTML='';
+  document.getElementById('h2iPreviewWrap').appendChild(wrap);
+  const canvas = await html2canvas(wrap, {backgroundColor:null, scale:2});
+  addMfjWatermarkCanvas(canvas);
+  canvas.toBlob(blob=>{
+    showResult('h2iResult', `<a href="#" onclick="downloadBlob(window.__h2iBlob,'html-image.png');return false;">⬇️ html-image.png ڈاؤن لوڈ کریں</a>`);
+    window.__h2iBlob = blob;
+  });
+}
+
+/* ===================== URL SHORTENER ===================== */
+function randCode(len){
+  const chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let s=''; for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+async function runShortener(){
+  const longUrl = document.getElementById('shUrl').value.trim();
+  if(!longUrl){ alert('لنک درج کریں'); return; }
+  const code = randCode(6);
+  const { error } = await sbClient.from('short_urls').insert({ code, target: longUrl });
+  if(error){
+    showResult('shResult', `⚠️ ابھی یہ فیچر سیٹ اپ نہیں ہوا — نیچے دی گئی SQL چلائیں۔<br><small style="color:#DC2626;">${error.message}</small>`);
+    return;
+  }
+  const shortUrl = location.origin + location.pathname.replace('utility-tools.html','go.html') + '?c=' + code;
+  showResult('shResult', `مختصر لنک: <a href="${shortUrl}" target="_blank">${shortUrl}</a> <button class="ut-btn outline" style="margin-inline-start:10px;" onclick="navigator.clipboard.writeText('${shortUrl}');alert('کاپی ہو گیا')">📋 کاپی</button>`);
+}
+
+/* ===================== INIT ===================== */
+const __qsTool = new URLSearchParams(location.search).get('tool');
+const __initTool = (__qsTool && TOOL_META[__qsTool]) ? __qsTool : 'password';
+document.querySelectorAll('[data-tool]').forEach(el=> el.classList.toggle('active', el.dataset.tool===__initTool));
+renderTool(__initTool);
+</script>
+
+<!-- Feature-flag gate -->
+<script>
+(async function(){
+  try{
+    const { data, error } = await sbClient.from('site_settings').select('value').eq('key','utility_tools_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">Utility Tools عارضی طور پر آف لائن ہیں۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

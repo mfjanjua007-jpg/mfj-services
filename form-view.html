@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form | MFJ Service</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --border:rgba(21,34,56,.12); --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; padding:30px 16px;}
+.fv-card{max-width:560px; margin:0 auto; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:28px;}
+.fv-card h1{color:var(--navy); font-size:21px; margin-bottom:20px;}
+.fv-field{margin-bottom:16px;}
+.fv-field label{display:block; font-size:13.5px; font-weight:700; margin-bottom:6px;}
+.fv-field label .req{color:#DC2626;}
+.fv-field input[type=text],.fv-field input[type=number],.fv-field input[type=email],.fv-field input[type=date],.fv-field textarea,.fv-field select{
+  width:100%; border:1.5px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; font-family:inherit;}
+.fv-field textarea{min-height:90px; resize:vertical;}
+.fv-radio-opt,.fv-check-opt{display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13.5px;}
+.fv-btn{background:var(--green); color:#fff; border:none; border-radius:10px; padding:13px; font-size:15px; font-weight:700; cursor:pointer; width:100%;}
+.fv-btn:hover{background:var(--green-dark);}
+.fv-success{text-align:center; padding:40px 20px;}
+.fv-success .ic{font-size:44px; display:block; margin-bottom:10px;}
+.fv-mfj{text-align:center; font-size:11.5px; color:var(--mute); margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="fv-card" id="fvCard">
+  <p>فارم لوڈ ہو رہا ہے...</p>
+</div>
+
+<script>
+const sbClient = window.supabase.createClient(
+  'https://ixgsartlktmgqfnzzatv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8'
+);
+const card = document.getElementById('fvCard');
+const params = new URLSearchParams(location.search);
+const formId = params.get('id');
+
+async function loadForm(){
+  if(!formId){ card.innerHTML = '<p>غلط لنک — کوئی فارم آئی ڈی نہیں دی گئی۔</p>'; return; }
+  const { data, error } = await sbClient.from('forms').select('title, fields').eq('id', formId).single();
+  if(error || !data){ card.innerHTML = '<p>یہ فارم نہیں ملا — شاید ہٹا دیا گیا ہے۔</p>'; return; }
+  renderForm(data.title, data.fields);
+}
+function fieldHTML(f){
+  const req = f.required ? '<span class="req"> *</span>' : '';
+  const name = f.label.replace(/"/g,'');
+  if(f.type==='textarea') return `<div class="fv-field"><label>${f.label}${req}</label><textarea name="${name}" ${f.required?'required':''}></textarea></div>`;
+  if(f.type==='dropdown'){
+    const opts = (f.options||'').split(',').map(o=>o.trim()).filter(Boolean);
+    return `<div class="fv-field"><label>${f.label}${req}</label><select name="${name}" ${f.required?'required':''}><option value="">منتخب کریں</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+  }
+  if(f.type==='radio'){
+    const opts = (f.options||'').split(',').map(o=>o.trim()).filter(Boolean);
+    return `<div class="fv-field"><label>${f.label}${req}</label>${opts.map((o,i)=>`<div class="fv-radio-opt"><input type="radio" name="${name}" value="${o}" id="${name}_${i}" ${f.required?'required':''}><label for="${name}_${i}">${o}</label></div>`).join('')}</div>`;
+  }
+  if(f.type==='checkbox') return `<div class="fv-field fv-check-opt"><input type="checkbox" name="${name}" id="${name}"><label for="${name}">${f.label}</label></div>`;
+  return `<div class="fv-field"><label>${f.label}${req}</label><input type="${f.type||'text'}" name="${name}" ${f.required?'required':''}></div>`;
+}
+function renderForm(title, fields){
+  card.innerHTML = `<h1>${title}</h1><form id="fvForm">${fields.map(fieldHTML).join('')}<button class="fv-btn" type="submit">جمع کرائیں</button></form>
+    <div class="fv-mfj">Powered by MFJ Service</div>`;
+  document.getElementById('fvForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const answers = {};
+    fields.forEach(f=>{
+      if(f.type==='checkbox') answers[f.label] = fd.get(f.label.replace(/"/g,'')) ? 'ہاں' : 'نہیں';
+      else answers[f.label] = fd.get(f.label.replace(/"/g,'')) || '';
+    });
+    const { error } = await sbClient.from('form_responses').insert({ form_id: formId, answers });
+    if(error){ alert('جمع نہیں ہو سکا، دوبارہ کوشش کریں۔'); return; }
+    card.innerHTML = `<div class="fv-success"><span class="ic">✅</span><h2>شکریہ!</h2><p style="color:var(--mute); margin-top:8px;">آپ کا جواب کامیابی سے جمع ہو گیا۔</p></div>`;
+  });
+}
+loadForm();
+</script>
+</body>
+</html>

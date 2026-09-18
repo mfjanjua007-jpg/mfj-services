@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Forms & Survey Builder | MFJ Service</title>
+<meta name="description" content="اپنا فارم/سروے/کوئز بنائیں، لنک شیئر کریں، جوابات جمع کریں اور Excel میں ڈاؤن لوڈ کریں — سب مفت۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.ft-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.ft-brand{font-weight:700; font-size:16px;}
+.ft-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.ft-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.ft-back:hover{background:rgba(255,255,255,.22);}
+
+.ft-app{display:grid; grid-template-columns:1fr 320px; gap:16px; padding:16px; max-width:1200px; margin:0 auto; align-items:start;}
+@media (max-width:900px){ .ft-app{grid-template-columns:1fr;} }
+
+.ft-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px;}
+.ft-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.ft-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:16px;}
+
+.ft-tabs{display:flex; gap:6px; margin-bottom:16px;}
+.ft-tab{padding:8px 16px; border-radius:9px; background:var(--bg); border:1.5px solid var(--border); cursor:pointer; font-size:13px; font-weight:700;}
+.ft-tab.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+
+.ft-field-row{display:flex; gap:8px; align-items:center; border:1.5px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; background:var(--bg);}
+.ft-field-row input[type=text]{flex:1; border:1.5px solid var(--border); border-radius:7px; padding:7px 9px; font-size:13px;}
+.ft-field-row select{border:1.5px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12.5px;}
+.ft-field-row button{background:none; border:none; color:#DC2626; cursor:pointer; font-size:15px;}
+.ft-opts-input{width:100%; border:1.5px solid var(--border); border-radius:7px; padding:6px 9px; font-size:12px; margin-top:6px;}
+
+.ft-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:10px 20px; font-size:13.5px; font-weight:700; cursor:pointer;}
+.ft-btn:hover{background:var(--green-dark);}
+.ft-btn.outline{background:#fff; color:var(--ink); border:1.5px solid var(--border);}
+.ft-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+.ft-row input[type=text]{border:1.5px solid var(--border); border-radius:8px; padding:9px 11px; font-size:14px;}
+
+.ft-side-item{display:flex; align-items:center; justify-content:space-between; gap:6px; border:1.5px solid var(--border); border-radius:9px; padding:9px 11px; font-size:12.5px; margin-bottom:8px; background:var(--panel); cursor:pointer;}
+.ft-side-item:hover{border-color:var(--green); background:var(--green-light);}
+.ft-side-item .name{font-weight:700;}
+.ft-side-item .count{color:var(--mute); font-size:11px;}
+
+.ft-result{margin-top:16px; padding:14px; background:var(--green-light); border-radius:12px; display:none;}
+.ft-result a{color:var(--green-dark); font-weight:700; word-break:break-all;}
+.ft-templates{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;}
+.ft-tpl-btn{background:var(--panel); border:1.5px solid var(--border); border-radius:9px; padding:10px; font-size:12.5px; font-weight:700; cursor:pointer; text-align:center;}
+.ft-tpl-btn:hover{border-color:var(--green); background:var(--green-light);}
+.ft-resp-table{width:100%; border-collapse:collapse; font-size:12px; margin-top:12px;}
+.ft-resp-table th,.ft-resp-table td{border:1px solid var(--border); padding:6px 8px; text-align:right;}
+.ft-resp-table th{background:var(--navy); color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="ft-topbar">
+  <div class="ft-brand">📋 Forms & Survey Builder <span class="sub">by MFJ Service — مفت فارم بنائیں اور جوابات جمع کریں</span></div>
+  <a href="index.html" class="ft-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="ft-app">
+  <div class="ft-panel">
+    <div class="ft-tabs">
+      <div class="ft-tab active" data-tab="build" onclick="switchTab('build')">🛠️ بنائیں</div>
+      <div class="ft-tab" data-tab="responses" onclick="switchTab('responses')">📊 جوابات دیکھیں</div>
+    </div>
+
+    <div id="buildTab">
+      <h2>نیا فارم بنائیں</h2>
+      <p class="desc">تیار ٹیمپلیٹ سے شروع کریں یا خود سے فیلڈز شامل کریں۔</p>
+      <div class="ft-templates">
+        <div class="ft-tpl-btn" onclick="applyTemplate('feedback')">💬 Feedback Form</div>
+        <div class="ft-tpl-btn" onclick="applyTemplate('application')">📝 Application Form</div>
+        <div class="ft-tpl-btn" onclick="applyTemplate('survey')">📊 Survey</div>
+        <div class="ft-tpl-btn" onclick="applyTemplate('registration')">✅ Registration Form</div>
+        <div class="ft-tpl-btn" onclick="applyTemplate('attendance')">📅 Attendance Form</div>
+        <div class="ft-tpl-btn" onclick="applyTemplate('quiz')">❓ Quiz</div>
+      </div>
+
+      <div class="ft-row"><label style="font-weight:700; font-size:12.5px; color:var(--mute);">فارم کا عنوان</label><input type="text" id="formTitle" placeholder="مثلاً: کسٹمر فیڈبیک فارم" style="flex:1;"></div>
+
+      <div id="fieldsWrap"></div>
+      <button class="ft-btn outline" onclick="addField()">+ نئی فیلڈ شامل کریں</button>
+
+      <div class="ft-row" style="margin-top:20px;">
+        <button class="ft-btn" onclick="publishForm()">🚀 پبلش کریں اور لنک بنائیں</button>
+      </div>
+      <div class="ft-result" id="publishResult"></div>
+    </div>
+
+    <div id="responsesTab" style="display:none;">
+      <h2 id="respFormTitle">جوابات</h2>
+      <p class="desc" id="respFormDesc">بائیں فہرست سے کوئی فارم منتخب کریں۔</p>
+      <div class="ft-row">
+        <button class="ft-btn outline" onclick="exportResponsesExcel()">⬇️ Excel ڈاؤن لوڈ</button>
+      </div>
+      <div style="overflow-x:auto;"><table class="ft-resp-table" id="respTable"></table></div>
+    </div>
+  </div>
+
+  <div class="ft-panel">
+    <h3 style="color:var(--navy); font-size:15px; margin-bottom:10px;">📁 میرے فارمز</h3>
+    <div id="myFormsList"></div>
+    <p class="desc" style="margin-top:10px; font-size:11.5px;">یہ فہرست صرف اسی براؤزر میں محفوظ ہے۔</p>
+  </div>
+</div>
+
+<script>
+const sbClient = window.supabase.createClient(
+  'https://ixgsartlktmgqfnzzatv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8'
+);
+const MY_FORMS_KEY = 'mfj_my_forms_v1';
+let fields = [];
+let currentViewFormId = null;
+
+function getMyForms(){ try{ return JSON.parse(localStorage.getItem(MY_FORMS_KEY))||[]; }catch(e){ return []; } }
+function saveMyForm(id, title){
+  const list = getMyForms();
+  list.unshift({id, title, createdAt: new Date().toISOString()});
+  localStorage.setItem(MY_FORMS_KEY, JSON.stringify(list));
+  renderMyForms();
+}
+function renderMyForms(){
+  const wrap = document.getElementById('myFormsList');
+  const list = getMyForms();
+  if(list.length===0){ wrap.innerHTML = '<p class="desc">ابھی کوئی فارم نہیں بنایا۔</p>'; return; }
+  wrap.innerHTML = list.map(f=>`
+    <div class="ft-side-item" onclick="openResponses('${f.id}','${f.title.replace(/'/g,"")}')">
+      <div><div class="name">${f.title}</div><div class="count">${new Date(f.createdAt).toLocaleDateString()}</div></div>
+      <span>📊</span>
+    </div>`).join('');
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.ft-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.getElementById('buildTab').style.display = tab==='build' ? 'block':'none';
+  document.getElementById('responsesTab').style.display = tab==='responses' ? 'block':'none';
+}
+
+/* ===================== FIELD BUILDER ===================== */
+function addField(type, label, options, required){
+  fields.push({id:'f'+Date.now()+Math.random().toString(36).slice(2,6), type:type||'text', label:label||'', options:options||'', required:required||false});
+  renderFields();
+}
+function removeField(id){ fields = fields.filter(f=>f.id!==id); renderFields(); }
+function renderFields(){
+  const wrap = document.getElementById('fieldsWrap');
+  wrap.innerHTML = fields.map(f=>`
+    <div class="ft-field-row" style="flex-direction:column; align-items:stretch;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select onchange="updateField('${f.id}','type',this.value)">
+          <option value="text" ${f.type==='text'?'selected':''}>مختصر متن</option>
+          <option value="textarea" ${f.type==='textarea'?'selected':''}>طویل متن</option>
+          <option value="number" ${f.type==='number'?'selected':''}>نمبر</option>
+          <option value="email" ${f.type==='email'?'selected':''}>ای میل</option>
+          <option value="date" ${f.type==='date'?'selected':''}>تاریخ</option>
+          <option value="dropdown" ${f.type==='dropdown'?'selected':''}>ڈراپ ڈاؤن</option>
+          <option value="radio" ${f.type==='radio'?'selected':''}>ایک انتخاب (Radio)</option>
+          <option value="checkbox" ${f.type==='checkbox'?'selected':''}>ہاں/نہیں</option>
+        </select>
+        <input type="text" placeholder="سوال / لیبل" value="${f.label}" oninput="updateField('${f.id}','label',this.value)">
+        <label style="font-size:11.5px; white-space:nowrap;"><input type="checkbox" ${f.required?'checked':''} onchange="updateField('${f.id}','required',this.checked)"> لازمی</label>
+        <button onclick="removeField('${f.id}')">✕</button>
+      </div>
+      ${(f.type==='dropdown'||f.type==='radio') ? `<input type="text" class="ft-opts-input" placeholder="آپشنز کاما سے الگ (مثلاً: ہاں, نہیں, شاید)" value="${f.options}" oninput="updateField('${f.id}','options',this.value)">` : ''}
+    </div>`).join('');
+}
+function updateField(id, key, val){ const f = fields.find(x=>x.id===id); if(f) f[key]=val; if(key==='type') renderFields(); }
+
+/* ===================== TEMPLATES ===================== */
+function applyTemplate(type){
+  document.getElementById('formTitle').value = TEMPLATES[type].title;
+  fields = TEMPLATES[type].fields.map(f=>({...f, id:'f'+Date.now()+Math.random().toString(36).slice(2,6)}));
+  renderFields();
+}
+const TEMPLATES = {
+  feedback:{title:'کسٹمر فیڈبیک فارم', fields:[
+    {type:'text', label:'نام', required:true},
+    {type:'text', label:'فون/ای میل', required:false},
+    {type:'radio', label:'مجموعی تجربہ کیسا رہا؟', options:'بہت اچھا, اچھا, درمیانہ, خراب', required:true},
+    {type:'textarea', label:'مزید تجاویز', required:false},
+  ]},
+  application:{title:'درخواست فارم', fields:[
+    {type:'text', label:'پورا نام', required:true},
+    {type:'text', label:'CNIC', required:true},
+    {type:'text', label:'فون نمبر', required:true},
+    {type:'textarea', label:'درخواست کی تفصیل', required:true},
+  ]},
+  survey:{title:'سروے', fields:[
+    {type:'radio', label:'عمر کا گروپ', options:'18-25, 26-35, 36-50, 50+', required:true},
+    {type:'radio', label:'کیا آپ ہماری خدمات سے مطمئن ہیں؟', options:'ہاں, نہیں, کچھ حد تک', required:true},
+    {type:'textarea', label:'کوئی تجویز', required:false},
+  ]},
+  registration:{title:'رجسٹریشن فارم', fields:[
+    {type:'text', label:'پورا نام', required:true},
+    {type:'email', label:'ای میل', required:true},
+    {type:'text', label:'فون نمبر', required:true},
+    {type:'date', label:'تاریخ پیدائش', required:false},
+  ]},
+  attendance:{title:'حاضری فارم', fields:[
+    {type:'text', label:'نام', required:true},
+    {type:'date', label:'تاریخ', required:true},
+    {type:'radio', label:'حاضری', options:'حاضر, غیر حاضر, چھٹی', required:true},
+  ]},
+  quiz:{title:'کوئز', fields:[
+    {type:'text', label:'نام', required:true},
+    {type:'radio', label:'سوال 1: پاکستان کا دارالحکومت؟', options:'کراچی, لاہور, اسلام آباد, پشاور', required:true},
+    {type:'radio', label:'سوال 2: 2+2 کتنا ہے؟', options:'3, 4, 5, 22', required:true},
+  ]},
+};
+
+/* ===================== PUBLISH ===================== */
+async function publishForm(){
+  const title = document.getElementById('formTitle').value.trim();
+  if(!title){ alert('فارم کا عنوان لکھیں'); return; }
+  if(fields.length===0){ alert('کم از کم ایک فیلڈ شامل کریں'); return; }
+  const id = 'frm' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  const { error } = await sbClient.from('forms').insert({ id, title, fields });
+  if(error){
+    showPublishResult(`⚠️ ابھی سیٹ اپ نہیں ہوا — نیچے دی گئی SQL Supabase میں چلائیں۔<br><small style="color:#DC2626;">${error.message}</small>`);
+    return;
+  }
+  const link = location.origin + location.pathname.replace('forms-tools.html','form-view.html') + '?id=' + id;
+  saveMyForm(id, title);
+  showPublishResult(`✅ فارم پبلش ہو گیا۔ یہ لنک شیئر کریں:<br><a href="${link}" target="_blank">${link}</a>
+    <div style="margin-top:8px;"><button class="ft-btn outline" onclick="navigator.clipboard.writeText('${link}');alert('کاپی ہو گیا')">📋 لنک کاپی کریں</button></div>`);
+}
+function showPublishResult(html){ const el=document.getElementById('publishResult'); el.innerHTML=html; el.style.display='block'; }
+
+/* ===================== RESPONSES ===================== */
+async function openResponses(id, title){
+  switchTab('responses');
+  currentViewFormId = id;
+  document.getElementById('respFormTitle').textContent = '📊 جوابات: ' + title;
+  const { data: form } = await sbClient.from('forms').select('fields').eq('id', id).single();
+  const { data: responses, error } = await sbClient.from('form_responses').select('answers, submitted_at').eq('form_id', id).order('submitted_at', {ascending:false});
+  if(error || !responses){ document.getElementById('respFormDesc').textContent = 'جوابات لوڈ نہیں ہو سکے۔'; return; }
+  document.getElementById('respFormDesc').textContent = responses.length + ' جوابات موصول ہوئے';
+  const cols = form ? form.fields.map(f=>f.label) : Object.keys(responses[0]?.answers||{});
+  const table = document.getElementById('respTable');
+  let html = '<tr><th>تاریخ</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  responses.forEach(r=>{
+    html += '<tr><td>' + new Date(r.submitted_at).toLocaleDateString() + '</td>' + cols.map(c=>`<td>${r.answers[c]||''}</td>`).join('') + '</tr>';
+  });
+  table.innerHTML = html;
+  window.__currentResponses = {cols, responses};
+}
+function exportResponsesExcel(){
+  if(!window.__currentResponses){ alert('پہلے کوئی فارم منتخب کریں'); return; }
+  const {cols, responses} = window.__currentResponses;
+  const rows = [['تاریخ', ...cols], ...responses.map(r=>[new Date(r.submitted_at).toLocaleDateString(), ...cols.map(c=>r.answers[c]||'')]), [], ['Generated via MFJ Service — mfjservice.netlify.app']];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Responses');
+  XLSX.writeFile(wb, 'form-responses.xlsx');
+}
+
+/* ===================== INIT ===================== */
+addField('text','نام',null,true);
+renderMyForms();
+</script>
+
+<!-- Feature-flag gate -->
+<script>
+(async function(){
+  try{
+    const { data, error } = await sbClient.from('site_settings').select('value').eq('key','forms_tools_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">Forms Builder عارضی طور پر آف لائن ہے۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>

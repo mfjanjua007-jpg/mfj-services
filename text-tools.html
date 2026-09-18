@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Text Tools | MFJ Service</title>
+<meta name="description" content="Word Counter، Case Converter، Remove Duplicates، Sort Lines، Text→PDF/Image/QR Code اور مزید — سب مفت۔">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#0F2A3D; --green:#0F8A5F; --green-dark:#0B6E4A; --green-light:#E8F6EF;
+  --ink:#152238; --mute:#64748B; --faint:#94A3B8; --border:rgba(21,34,56,.12);
+  --bg:#F6F8FA; --panel:#FFFFFF;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter','Noto Nastaliq Urdu',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; visibility:hidden;}
+
+.tt-topbar{background:var(--navy); color:#fff; padding:12px 5%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.tt-brand{font-weight:700; font-size:16px;}
+.tt-brand span.sub{font-weight:500; font-size:12px; color:#cfe9de; display:block;}
+.tt-back{color:#fff; text-decoration:none; background:rgba(255,255,255,.12); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600;}
+.tt-back:hover{background:rgba(255,255,255,.22);}
+
+.tt-app{display:grid; grid-template-columns:210px 1fr; gap:16px; padding:16px; max-width:1150px; margin:0 auto; align-items:start;}
+@media (max-width:820px){ .tt-app{grid-template-columns:1fr;} }
+
+.tt-nav{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:10px; position:sticky; top:16px; max-height:85vh; overflow-y:auto;}
+.tt-nav-item{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);}
+.tt-nav-item:hover{background:var(--green-light);}
+.tt-nav-item.active{background:var(--navy); color:#fff;}
+
+.tt-panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; min-height:60vh;}
+.tt-panel h2{color:var(--navy); font-size:19px; margin-bottom:6px;}
+.tt-panel p.desc{color:var(--mute); font-size:13.5px; margin-bottom:18px;}
+
+.tt-textarea{width:100%; min-height:200px; border:1.5px solid var(--border); border-radius:10px; padding:14px; font-size:14px; font-family:inherit; resize:vertical;}
+.tt-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:12px 0;}
+.tt-row label{font-size:12.5px; font-weight:700; color:var(--mute);}
+.tt-row input,.tt-row select{border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:13px;}
+.tt-btn{background:var(--green); color:#fff; border:none; border-radius:9px; padding:10px 18px; font-size:13.5px; font-weight:700; cursor:pointer;}
+.tt-btn:hover{background:var(--green-dark);}
+.tt-btn.outline{background:#fff; color:var(--ink); border:1.5px solid var(--border);}
+.tt-stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-top:14px;}
+.tt-stat-box{background:var(--green-light); border-radius:10px; padding:12px; text-align:center;}
+.tt-stat-box .num{font-size:20px; font-weight:800; color:var(--green-dark);}
+.tt-stat-box .lbl{font-size:11px; color:var(--mute); margin-top:2px;}
+.tt-result{margin-top:14px; padding:14px; background:var(--green-light); border-radius:12px; display:none;}
+.tt-result a{color:var(--green-dark); font-weight:700; text-decoration:none;}
+#qrCanvasWrap{text-align:center; margin-top:14px;}
+</style>
+</head>
+<body>
+
+<div class="tt-topbar">
+  <div class="tt-brand">✍️ Text Tools <span class="sub">by MFJ Service — مفت، فوری متن اوزار</span></div>
+  <a href="index.html" class="tt-back">← ویب سائٹ پر واپس</a>
+</div>
+
+<div class="tt-app">
+  <div class="tt-nav">
+    <div class="tt-nav-item active" data-tool="counter">🔢 Word/Char Counter</div>
+    <div class="tt-nav-item" data-tool="case">🔠 Case Converter</div>
+    <div class="tt-nav-item" data-tool="spaces">🧹 Remove Extra Spaces</div>
+    <div class="tt-nav-item" data-tool="duplicates">🗑️ Remove Duplicate Lines</div>
+    <div class="tt-nav-item" data-tool="sort">↕️ Sort Lines</div>
+    <div class="tt-nav-item" data-tool="findreplace">🔍 Find & Replace</div>
+    <div class="tt-nav-item" data-tool="reverse">🔁 Reverse Text</div>
+    <div class="tt-nav-item" data-tool="text2pdf">📤 Text → PDF</div>
+    <div class="tt-nav-item" data-tool="text2img">🖼️ Text → Image</div>
+    <div class="tt-nav-item" data-tool="text2qr">🔲 Text → QR Code</div>
+  </div>
+
+  <div class="tt-panel" id="ttPanel"></div>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+/* Adds a small "made with MFJ Service" credit line to the bottom of every page. Call right before doc.output('blob'). */
+function addMfjFooterJsPdf(doc){
+  try{
+    const pages = doc.internal.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+      doc.setFontSize(7); doc.setTextColor(170,170,170); doc.setFont(undefined,'normal');
+      doc.text('Generated via MFJ Service — mfjservice.netlify.app', w/2, h-10, {align:'center'});
+    }
+  }catch(e){ /* non-critical */ }
+}
+let activeTool = 'counter';
+document.querySelectorAll('.tt-nav-item[data-tool]').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.tt-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    activeTool = item.dataset.tool;
+    renderTool(activeTool);
+  });
+});
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+function copyText(id){
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.value || el.textContent).then(()=>alert('کاپی ہو گیا ✅'));
+}
+
+const TOOL_META = {
+  counter:{title:'🔢 Word / Character / Sentence Counter', desc:'لکھتے ہی الفاظ، حروف اور جملوں کی تعداد دیکھیں۔'},
+  case:{title:'🔠 Case Converter', desc:'UPPERCASE، lowercase، Title Case، Sentence case میں تبدیل کریں۔'},
+  spaces:{title:'🧹 Remove Extra Spaces', desc:'اضافی خالی جگہیں اور خالی لائنیں صاف کریں۔'},
+  duplicates:{title:'🗑️ Remove Duplicate Lines', desc:'دہرائی گئی لائنیں حذف کریں۔'},
+  sort:{title:'↕️ Sort Lines', desc:'لائنوں کو حروفِ تہجی کے مطابق ترتیب دیں۔'},
+  findreplace:{title:'🔍 Find & Replace', desc:'متن میں کوئی لفظ ڈھونڈ کر دوسرے سے بدلیں۔'},
+  reverse:{title:'🔁 Reverse Text', desc:'متن کو الٹا کریں۔'},
+  text2pdf:{title:'📤 Text → PDF', desc:'سادہ متن سے PDF بنائیں۔'},
+  text2img:{title:'🖼️ Text → Image', desc:'متن کو PNG تصویر میں تبدیل کریں۔'},
+  text2qr:{title:'🔲 Text → QR Code', desc:'کسی بھی متن یا لنک کا QR کوڈ بنائیں۔'},
+};
+
+function renderTool(tool){
+  const meta = TOOL_META[tool];
+  document.getElementById('ttPanel').innerHTML = `<h2>${meta.title}</h2><p class="desc">${meta.desc}</p><div id="toolBody"></div>`;
+  document.getElementById('toolBody').innerHTML = TOOL_BODIES[tool]();
+  TOOL_INIT[tool] && TOOL_INIT[tool]();
+}
+
+const SAMPLE = 'یہاں اپنا متن لکھیں یا پیسٹ کریں...';
+
+const TOOL_BODIES = {
+  counter: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}" oninput="updateCounter()"></textarea>
+    <div class="tt-stats">
+      <div class="tt-stat-box"><div class="num" id="cWords">0</div><div class="lbl">الفاظ</div></div>
+      <div class="tt-stat-box"><div class="num" id="cChars">0</div><div class="lbl">حروف</div></div>
+      <div class="tt-stat-box"><div class="num" id="cCharsNoSpace">0</div><div class="lbl">حروف (بغیر اسپیس)</div></div>
+      <div class="tt-stat-box"><div class="num" id="cSentences">0</div><div class="lbl">جملے</div></div>
+      <div class="tt-stat-box"><div class="num" id="cLines">0</div><div class="lbl">لائنیں</div></div>
+      <div class="tt-stat-box"><div class="num" id="cParas">0</div><div class="lbl">پیراگراف</div></div>
+    </div>`,
+
+  case: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row">
+      <button class="tt-btn" onclick="applyCase('upper')">UPPERCASE</button>
+      <button class="tt-btn" onclick="applyCase('lower')">lowercase</button>
+      <button class="tt-btn" onclick="applyCase('title')">Title Case</button>
+      <button class="tt-btn" onclick="applyCase('sentence')">Sentence case</button>
+    </div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  spaces: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row"><button class="tt-btn" onclick="removeSpaces()">🧹 صاف کریں</button></div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  duplicates: ()=> `<textarea class="tt-textarea" id="inText" placeholder="ہر سطر ایک اندراج..."></textarea>
+    <div class="tt-row"><button class="tt-btn" onclick="removeDupes()">🗑️ حذف کریں</button></div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  sort: ()=> `<textarea class="tt-textarea" id="inText" placeholder="ہر سطر ایک اندراج..."></textarea>
+    <div class="tt-row">
+      <button class="tt-btn" onclick="sortLines('asc')">A→Z ترتیب</button>
+      <button class="tt-btn" onclick="sortLines('desc')">Z→A ترتیب</button>
+    </div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  findreplace: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row">
+      <label>ڈھونڈیں</label><input type="text" id="frFind">
+      <label>بدلیں</label><input type="text" id="frReplace">
+      <button class="tt-btn" onclick="findReplace()">🔍 بدلیں</button>
+    </div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  reverse: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row"><button class="tt-btn" onclick="reverseText()">🔁 الٹا کریں</button></div>
+    <textarea class="tt-textarea" id="outText" readonly></textarea>
+    <div class="tt-row"><button class="tt-btn outline" onclick="copyText('outText')">📋 کاپی کریں</button></div>`,
+
+  text2pdf: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row"><label>عنوان (اختیاری)</label><input type="text" id="pdfTitle"></div>
+    <button class="tt-btn" onclick="textToPdf()">📤 PDF بنائیں</button>
+    <div class="tt-result" id="pdfResult"></div>`,
+
+  text2img: ()=> `<textarea class="tt-textarea" id="inText" placeholder="${SAMPLE}"></textarea>
+    <div class="tt-row">
+      <label>فونٹ سائز</label><input type="number" id="imgFontSize" value="28" style="width:70px;">
+      <label>بیک گراؤنڈ</label><input type="text" id="imgBg" value="#ffffff" style="width:90px;">
+      <label>ٹیکسٹ رنگ</label><input type="text" id="imgColor" value="#152238" style="width:90px;">
+    </div>
+    <button class="tt-btn" onclick="textToImage()">🖼️ تصویر بنائیں</button>
+    <div style="margin-top:14px;"><canvas id="t2iCanvas" style="max-width:100%; border:1px solid var(--border); border-radius:8px;"></canvas></div>
+    <div class="tt-row"><button class="tt-btn outline" onclick="downloadT2I()">⬇️ PNG ڈاؤن لوڈ</button></div>`,
+
+  text2qr: ()=> `<textarea class="tt-textarea" id="inText" placeholder="متن، لنک یا فون نمبر لکھیں..." style="min-height:100px;"></textarea>
+    <div class="tt-row"><label>سائز</label><select id="qrSize"><option value="300">چھوٹا</option><option value="500" selected>درمیانہ</option><option value="800">بڑا</option></select></div>
+    <button class="tt-btn" onclick="textToQr()">🔲 QR بنائیں</button>
+    <div id="qrCanvasWrap"><canvas id="qrCanvas"></canvas></div>
+    <div class="tt-row" id="qrDownloadRow" style="display:none;"><button class="tt-btn outline" onclick="downloadQr()">⬇️ PNG ڈاؤن لوڈ</button></div>`,
+};
+
+const TOOL_INIT = { counter: ()=> updateCounter() };
+
+/* ===================== COUNTER ===================== */
+function updateCounter(){
+  const text = document.getElementById('inText').value;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+  const charsNoSpace = text.replace(/\s/g,'').length;
+  const sentences = (text.match(/[.!?۔؟]+/g)||[]).length;
+  const lines = text.split('\n').length;
+  const paras = text.split(/\n\s*\n/).filter(p=>p.trim()).length;
+  document.getElementById('cWords').textContent = words;
+  document.getElementById('cChars').textContent = chars;
+  document.getElementById('cCharsNoSpace').textContent = charsNoSpace;
+  document.getElementById('cSentences').textContent = sentences;
+  document.getElementById('cLines').textContent = lines;
+  document.getElementById('cParas').textContent = paras;
+}
+
+/* ===================== CASE CONVERTER ===================== */
+function applyCase(mode){
+  const text = document.getElementById('inText').value;
+  let out;
+  if(mode==='upper') out = text.toUpperCase();
+  else if(mode==='lower') out = text.toLowerCase();
+  else if(mode==='title') out = text.replace(/\w\S*/g, w=> w.charAt(0).toUpperCase()+w.substr(1).toLowerCase());
+  else out = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c=>c.toUpperCase());
+  document.getElementById('outText').value = out;
+}
+
+/* ===================== SPACES ===================== */
+function removeSpaces(){
+  const text = document.getElementById('inText').value;
+  const out = text.split('\n').map(l=>l.trim().replace(/\s+/g,' ')).filter(l=>l).join('\n');
+  document.getElementById('outText').value = out;
+}
+
+/* ===================== DUPLICATES ===================== */
+function removeDupes(){
+  const lines = document.getElementById('inText').value.split('\n');
+  const seen = new Set(); const out=[];
+  lines.forEach(l=>{ if(!seen.has(l.trim())){ seen.add(l.trim()); out.push(l); } });
+  document.getElementById('outText').value = out.join('\n');
+}
+
+/* ===================== SORT ===================== */
+function sortLines(dir){
+  const lines = document.getElementById('inText').value.split('\n').filter(l=>l.trim());
+  lines.sort((a,b)=> dir==='asc' ? a.localeCompare(b) : b.localeCompare(a));
+  document.getElementById('outText').value = lines.join('\n');
+}
+
+/* ===================== FIND & REPLACE ===================== */
+function findReplace(){
+  const text = document.getElementById('inText').value;
+  const find = document.getElementById('frFind').value;
+  const replace = document.getElementById('frReplace').value;
+  if(!find){ alert('ڈھونڈنے کے لیے لفظ لکھیں'); return; }
+  const out = text.split(find).join(replace);
+  document.getElementById('outText').value = out;
+}
+
+/* ===================== REVERSE ===================== */
+function reverseText(){
+  document.getElementById('outText').value = document.getElementById('inText').value.split('').reverse().join('');
+}
+
+/* ===================== TEXT -> PDF ===================== */
+function textToPdf(){
+  const text = document.getElementById('inText').value;
+  if(!text.trim()){ alert('پہلے متن لکھیں'); return; }
+  const title = document.getElementById('pdfTitle').value;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  let y=50;
+  if(title){ doc.setFontSize(16); doc.text(title, 40, y); y+=30; }
+  doc.setFontSize(12);
+  const lines = doc.splitTextToSize(text, 515);
+  lines.forEach(line=>{ if(y>780){ doc.addPage(); y=50; } doc.text(line,40,y); y+=16; });
+  addMfjFooterJsPdf(doc);
+  const blob = doc.output('blob');
+  document.getElementById('pdfResult').style.display='block';
+  document.getElementById('pdfResult').innerHTML = `<a href="#" onclick="downloadBlob(window.__t2pBlob,'text.pdf');return false;">⬇️ text.pdf ڈاؤن لوڈ کریں</a>`;
+  window.__t2pBlob = blob;
+}
+
+/* ===================== TEXT -> IMAGE ===================== */
+function textToImage(){
+  const text = document.getElementById('inText').value || 'متن';
+  const fontSize = +document.getElementById('imgFontSize').value;
+  const bg = document.getElementById('imgBg').value;
+  const color = document.getElementById('imgColor').value;
+  const canvas = document.getElementById('t2iCanvas');
+  const ctx = canvas.getContext('2d');
+  const maxWidth = 800;
+  ctx.font = `${fontSize}px Inter, sans-serif`;
+  const words = text.split(' ');
+  let lines=[], cur='';
+  words.forEach(w=>{ const test=cur?cur+' '+w:w; if(ctx.measureText(test).width>maxWidth-80 && cur){ lines.push(cur); cur=w; } else cur=test; });
+  if(cur) lines.push(cur);
+  canvas.width = maxWidth; canvas.height = lines.length*(fontSize+16)+80;
+  ctx.fillStyle = bg; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = color; ctx.font = `${fontSize}px Inter, sans-serif`; ctx.textBaseline='top';
+  lines.forEach((l,i)=> ctx.fillText(l, 40, 40+i*(fontSize+16)));
+}
+function downloadT2I(){
+  document.getElementById('t2iCanvas').toBlob(blob=> downloadBlob(blob,'text-image.png'), 'image/png');
+}
+
+/* ===================== TEXT -> QR ===================== */
+async function textToQr(){
+  const text = document.getElementById('inText').value;
+  if(!text.trim()){ alert('پہلے متن لکھیں'); return; }
+  const size = +document.getElementById('qrSize').value;
+  const canvas = document.getElementById('qrCanvas');
+  await QRCode.toCanvas(canvas, text, {width:size, margin:2, color:{dark:'#152238', light:'#ffffff'}});
+  document.getElementById('qrDownloadRow').style.display='flex';
+}
+function downloadQr(){
+  document.getElementById('qrCanvas').toBlob(blob=> downloadBlob(blob,'qrcode.png'), 'image/png');
+}
+
+/* ===================== INIT ===================== */
+const __qsTool = new URLSearchParams(location.search).get('tool');
+const __initTool = (__qsTool && TOOL_META[__qsTool]) ? __qsTool : 'counter';
+document.querySelectorAll('[data-tool]').forEach(el=> el.classList.toggle('active', el.dataset.tool===__initTool));
+renderTool(__initTool);
+</script>
+
+<!-- Feature-flag gate -->
+<script>
+(async function(){
+  try{
+    const client = window.supabase.createClient('https://ixgsartlktmgqfnzzatv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3NhcnRsa3RtZ3Fmbnp6YXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzQwODYsImV4cCI6MjA5ODU1MDA4Nn0.QP6CRf3oGS8cvQMcF8uDU-vZ7YOVfPWUJsjqQ2G6T_8');
+    const { data, error } = await client.from('site_settings').select('value').eq('key','text_tools_enabled').single();
+    if(!error && data && data.value === false){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Inter',sans-serif;">
+          <div>
+            <h1 style="color:#0F2A3D; margin-bottom:10px; font-size:22px;">🚧 یہ فیچر فی الحال دستیاب نہیں</h1>
+            <p style="color:#64748B; margin-bottom:16px;">Text Tools عارضی طور پر آف لائن ہیں۔</p>
+            <a href="index.html" style="background:#0F8A5F; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700;">← ویب سائٹ پر واپس جائیں</a>
+          </div>
+        </div>`;
+    }
+  }catch(e){ /* fail open */ }
+  document.body.style.visibility = 'visible';
+})();
+</script>
+</body>
+</html>
